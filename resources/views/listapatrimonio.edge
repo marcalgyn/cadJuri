@@ -1,0 +1,192 @@
+@layout('layouts/app')
+
+@section('content')
+
+
+    <div class="main">
+
+        <div class="details">
+            <div class="columns">
+              <div class="column is-full margin-top: 80px">
+                <div class="box is-size-7 p-0">
+                <div class="box">
+                  <form action="/patrimonios/filtro" method="post">
+                    {{ csrfField() }}
+                    <input type="hidden" name="id" id="id" value={{ patrimonios.id }}>
+
+                    <div class="card has-background-light is-7">
+                      <header class="card-header has-background-link">
+                        <p class="title is-7 p-3 has-text-white">
+                          Listagem de Patrimonios
+                        </p>
+                      </header>
+                      <div class="card-content is-7">
+                        <div class="field-body">
+                          <div class="field">
+                            <label class="label is-size-7">Empresa</label>
+                            <div class="select is-fullwidth">
+                              <select name="idEmpresa" >
+                                <option value="">Selecione uma Empresa</option>
+                                @each(empresa in empresas)
+                                  <option  value="{{ empresa.id }}">{{ empresa.razaoSocial }}</option>
+                                @endeach
+                              </select>
+                            </div>
+                          </div>
+                          <!-- Descricao -->
+                          <div class="field">
+                            <label class="label is-size-7">Nome Patrimonio</label>
+                            <div class="control is-expanded">
+                              <input type="text" name="descricao" id="descricao" class="input is-size-7 is-uppercase">
+                            </div>
+                          </div>
+
+                          <div class="field">
+                            <label class="label is-size-7">Departamento</label>
+                            <div class="select is-fullwidth">
+                              <select class="is-size-7" name="idDepartamento" >
+                                <option value="">Departamento</option>
+                                @each(departamento in departamentos)
+                                  <option value="{{ departamento.id }}">{{ departamento.nome }}</option>
+                                @endeach
+
+                              </select>
+                            </div>
+                          </div>
+
+                        </div>
+                        <hr>
+                        <div class="field is-grouped">
+                          <div class="control">
+                            <button type="submit" class="button is-link is-size-7">
+                              <span class="icon is-small">
+                                <i class="fas fa-check"></i>
+                              </span>
+                              <span>Buscar</span>
+                            </button>
+                          </div>
+                          <div class="control">
+                            <button type="reset" class="button is-warning is-size-7">
+                              Cancelar
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                  @if(flashMessages.has('notification'))
+                  <div class="notification is-success is-light">
+                    <button class="delete"></button>
+                    {{ flashMessages.get('notification') }}
+                  </div>
+                  @endif
+
+                  <div class="box">
+                    <table class="table is-fullwidth is-striped is-hoverable is-size-7">
+                      <thead>
+                        <tr>
+                          <th>
+                            Empresa
+                          </th>
+
+                          <th class="has-text-centered">
+                            Nome Equipamento
+                          </th>
+
+                          <th class="has-text-centered">
+                            GTIN
+                          </th>
+
+                          <th class="has-text-centered is-hidden-mobile">
+                            Departamento
+                          </th>
+
+                          <th class="has-text-centered is-hidden-mobile">
+                            Status
+                          </th>
+
+                          <th class="has-text-centered">
+                            Ações
+                          </th>
+                        </tr>
+
+                      </thead>
+
+                      <tbody>
+                        @each(patrimonio in patrimonios.rows)
+                        <tr>
+                          <td>
+                          <label type="" name="id" id="id">{{ patrimonio.id }}</label>
+                            {{ patrimonio.$extras.razao_social }}
+                          </td>
+
+                          <td class="has-text-left is-uppercase">
+                            {{ patrimonio.descricao }}
+                          </td>
+
+                          <td class="has-text-left is-uppercase">
+                            {{ patrimonio.gtin }}
+                          </td>
+
+                          <td class="has-text-centered is-hidden-mobile">
+                            {{ patrimonio.$extras.nome }}
+                          </td>
+
+                          <td class="has-text-left is-uppercase">
+                            {{ patrimonio.statusPatrimonio }}
+                          </td>
+
+                          <td class="has-text-left">
+                            <div class="buttons">
+                              <button type="button"
+                                class="button is-size-7 "
+                                onclick="window.location.href='{{ `/patrimonios/${ patrimonio.id }` }}'">
+                                <span class="icon is-small">
+                                  <i class="fas fa-edit"></i>
+                                </span>
+                                <span>{{ patrimonio.statusPatrimonio !== 'Baixado' ? 'Editar' : 'Visualizar' }}</span>
+                              </button>
+                            </div>
+                          </td>
+
+                        </tr>
+                        @else
+                        <tr>
+                          <td colspan="7" class="has-text-centered">Nenhum Registro Encontrado com os Dados Informados</td>
+                        </tr>
+                        @endeach
+                      </tbody>
+                    </table>
+                  </div>
+                  @if(patrimonios.hasPages)
+                  <div class="box">
+                    <nav class="pagination" role="navigation" aria-label="pagination">
+                      <a class="pagination-previous" {{ patrimonios.currentPage===1 && 'disabled' }}
+                        href="{{ patrimonios.url }}?page={{ patrimonios.currentPage - 1 }}">Anterior</a>
+                      <a class="pagination-next" {{ !patrimonios.hasMorePages && 'disabled' }}
+                        href="{{ patrimonios.url }}?page={{ patrimonios.currentPage + 1 }}">Próxima</a>
+                      <ul class="pagination-list">
+                        @each(nPatrimonio in patrimonios.getUrlsForRange(1, patrimonios.lastPage))
+                        <li>
+                          <a class="pagination-link
+                                  {{ patrimonios.currentPage === nPatrimonio.page && 'is-current' }}" href="{{ nPatrimonio.url }}">
+                            {{ nPatrimonio.page }}
+                          </a>
+                        </li>
+                        @endeach
+                      </ul>
+                    </nav>
+                  </div>
+                  @endif
+
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+
+@endsection

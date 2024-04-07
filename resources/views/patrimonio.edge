@@ -1,0 +1,253 @@
+@layout('layouts/app')
+
+@section('content')
+    <div class="main">
+        <div class="details">
+            <div class="columns">
+              <div class="column is-fullwidth">
+                <div class="box p-0">
+
+                  @if(flashMessages.has('notification'))
+                  <div class="notification is-success is-light notificacao">
+                    <button class="delete"></button>
+                    {{ flashMessages.get('notification') }}
+                  </div>
+                  @endif
+                  <div class="box">
+                    <form action="/patrimonios" method="post" enctype="multipart/form-data">
+                      {{ csrfField() }}
+                      <input type="hidden" name="id" value={{ patrimonios.id }}>
+                      <input type="hidden" name="idUsuario" value={{ auth.user.id }}>
+
+                      <div class="card has-background-light">
+                        <header class="card-header has-background-link">
+                          <p class="title is-4 p-3 has-text-white">
+                              Cadastro de Patrimonio
+                          </p>
+                        </header>
+                        <div class="card-content">
+                          <div class="field">
+                            <label class="label">Usuário: {{ auth.user.name }} </label>
+                          </div>
+                          <div class="columns">
+                            <div class="column">
+                              <div class="field-body">
+                                <div class="field">
+                                  <label class="label">Empresa</label>
+                                  <div class="select is-fullwidth">
+                                    <select name="idEmpresa" required>
+                                      <option value="">Selecione uma Empresa</option>
+                                      @each(empresa in empresas)
+                                      <option value="{{ empresa.id }}" {{empresa.id === patrimonios.idEmpresa ? 'selected' : '' }}>
+                                        {{empresa.razaoSocial }}
+                                      </option>
+                                      @endeach
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="field">
+                                  <label class="label" >Departamento</label>
+                                  <div class="select is-fullwidth">
+                                    <select name="idDepartamento" required>
+                                      <option value="">Departamento</option>
+                                      @each(departamento in departamentos)
+                                        <option value="{{ departamento.id }}" {{ departamento.id === patrimonios.idDepartamento ? 'selected' : '' }}>
+                                        {{departamento.nome}}
+                                        </option>
+                                      @endeach
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                              <br>
+
+                              <div class="field-body">
+                                <div class="field">
+                                  <label class="label">Nome do Patrimonio</label>
+                                  <div class="control is-expanded">
+                                    <input type="text" class="input is-uppercase" name="descricao"
+                                      placeholder="Descrição do Patrimonio" required
+                                      value="{{patrimonios.descricao}}">
+                                    </input>
+                                  </div>
+                                </div>
+
+                                <div class="field">
+                                  <label class="label">Codigo de Barras/GTIN</label>
+                                  <div class="control is-expanded ">
+                                    <input type="text" class="input is-uppercase" name="gtin"
+                                      placeholder="Codigo do Patrimonio" value="{{patrimonios.gtin}}">
+                                    </input>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <br>
+
+                              <div class="field-body">
+                                <div class="field">
+                                  <div id="file-documento" class="file is-warning">
+                                    <label class="file-label">
+                                      <input class="file-input" type="file" name="urlDocumento">
+                                      <span class="file-cta">
+                                        <span class="file-icon">
+                                          <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label">
+                                          Imagem do Produto
+                                        </span>
+                                      </span>
+                                    </label>
+                                  </div>
+                                  <figure class="image mt-2" style="width: 256px;">
+                                    <img  id="output" src={{patrimonios.urlDocumento}}>
+                                  </figure>
+                                </div>
+
+                                  <div class="field">
+                                  <div id="file-garantia" class="file is-primary">
+                                    <label class="file-label">
+                                      <input class="file-input" type="file" name="urlGarantia">
+                                      <span class="file-cta">
+                                        <span class="file-icon">
+                                          <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label">
+                                          Imagem da Garantia
+                                        </span>
+                                      </span>
+                                    </label>
+                                  </div>
+                                  <figure class="image mt-2" style="width: 256px;">
+                                      <img id="output2" src={{patrimonios.urlGarantia}}>
+                                  </figure>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                            <div class="column is-two-fifth">
+                              <div class="field-body">
+                                <div class="field">
+                                  <label class="label">Data Registro</label>
+                                  <div class="control is-expanded">
+                                    <input type="date" name="dataCompra" class="input"
+                                      value="{{ patrimonios.dataCompra !== null ? patrimonios.dataCompra.toFormat('yyyy-MM-dd') : '' }}"
+                                      required>
+                                  </div>
+                                </div>
+
+                                <div class="field">
+                                  <label class="label">Data Garantia</label>
+                                  <div class="control is-expanded">
+                                    <input type="date" name="dataGarantia" class="input"
+                                      value="{{ patrimonios.dataGarantia !== null ? patrimonios.dataGarantia.toFormat('yyyy-MM-dd') : '' }}"
+                                      required>
+                                  </div>
+                                </div>
+
+                                <div class="field">
+                                  <label class="label">Data Baixa</label>
+                                  <div class="control is-expanded">
+                                    <input type="date" name="dataBaixa" class="input"
+                                      value="{{ patrimonios.dataBaixa !== null ? patrimonios.dataBaixa.toFormat('yyyy-MM-dd') : '' }}">
+                                  </div>
+                                </div>
+
+                                <div class="box">
+                                    <label class="label mt-2">Status</label>
+                                  <div class="control" required>
+
+                                    <label class="radio">
+                                      <input type="radio" name="statusPatrimonio" value="Novo" {{ patrimonios.statusPatrimonio==='Novo'
+                                        ? 'checked' : '' }}
+                                        >
+                                      Novo
+                                    </label>
+                                    <br>
+                                    <label class="radio">
+                                      <input type="radio" name="statusPatrimonio" value="Semi-Novo" {{ patrimonios.statusPatrimonio==='Semi-Novo'
+                                        ? 'checked' : '' }}>
+                                      Semi-Novo
+                                    </label>
+
+                                    <br>
+                                    <label class="radio">
+                                      <input type="radio" name="statusPatrimonio" value="Baixado" {{ patrimonios.statusPatrimonio==='Baixado'
+                                        ? 'checked' : '' }}>
+                                      Baixado
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+
+                          <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+                          <div class="field is-grouped">
+
+                            @if(patrimonios.statusPatrimonio !== 'Baixado')
+                            <div class="control">
+                              <button type="submit" class="button is-link"
+                              onClick= >
+                                <span class="icon is-small">
+                                  <i class="fas fa-check"></i>
+                                </span>
+                                <span>Salvar</span>
+                              </button>
+                            </div>
+                            @endif
+
+                            <div class="control">
+                              <button type="button" class="button is-warning" onclick="window.location.href='{{ `/patrimonios` }}'">
+                                <span class="icon is-small">
+                                  <i class="fas fa-window-restore"></i>
+                                </span>
+                                <span>Cancelar</span>
+                              </button>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+  /***** Script do upload da imagem do Produto *********/
+  const fileInput = document.querySelector('#file-documento input[type=file]');
+  fileInput.onchange = () => {
+    if (fileInput.files.length > 0) {
+      /***** Pré-visualização da imagem de abertura da tarefa *********/
+      const output = document.getElementById('output');
+      output.src = URL.createObjectURL(fileInput.files[0]);
+      output.onload = function () {
+        URL.revokeObjectURL(output.src) // free memory
+      }
+
+    }
+  }
+  /***** Fim do Script de abertura *************************/
+
+  /***** Script do upload da imagem da Garantia *********/
+  const fileInput2 = document.querySelector('#file-garantia input[type=file]');
+  fileInput2.onchange = () => {
+    if (fileInput2.files.length > 0) {
+      /***** Pré-visualização da imagem de Garantia *********/
+      const output2 = document.getElementById('output2');
+      output2.src = URL.createObjectURL(fileInput2.files[0]);
+      output2.onload = function () {
+        URL.revokeObjectURL(output2.src) // free memory
+      }
+    }
+  }
+  /***** Fim do Script de conclusão da tarefa *************************/
+</script>
+
+@endsection

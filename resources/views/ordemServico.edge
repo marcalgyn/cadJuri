@@ -1,0 +1,540 @@
+@layout('layouts/app')
+
+@section('content')
+    <div class="main">
+        <div class="details">
+            <div class="columns">
+              <div class="column is-fullwidth">
+                <div class="box p-0">
+
+                  @if(flashMessages.has('notification'))
+                  <div class="notification is-success is-light notificacao">
+                    <button class="delete"></button>
+                    {{ flashMessages.get('notification') }}
+                  </div>
+                  @endif
+                  <div class="box {{disabledForm}}">
+                      <form action="/ordensServicos" method="post" enctype="multipart/form-data">
+                        {{ csrfField() }}
+                        <input type="hidden" name="id" value={{ objOrdemServico.id }}>
+                        <input type="hidden" name="usuOrigem" value={{ objOrdemServico.id === 0 ? auth.user.id : objOrdemServico.usuOrigem }}>
+                        <input type="hidden" name="usuOrigemNome" value={{ auth.user.name }}>
+                        <input type="hidden" name="empOrigem" value="1">
+
+                        <div class="card has-background-light">
+                          <header class="card-header has-background-link cab">
+                            <p class="title is-4 p-1 has-text-white">
+                              Cadastro de Orçamento
+                            </p>
+                          </header>
+                          <div class="card-content">
+                            <div class="field">
+                              <label class="label">De:  {{ objOrdemServico.id === 0 ? auth.user.name : pessoa.name }} </label>
+                              <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+                            </div>
+                            <div class="columns">
+                              <div class="column is-three-fifths">
+                                <div class="field-body mb-3">
+
+                                  <div class="field is-horizontal {{disabledField}}" >
+                                    <label class="label">Prioridade: </label>
+                                    <div class="control ml-5">
+                                      <label class="radio">
+                                        <input type="radio" name="prioridade" value="1" style="accent-color: red;"
+                                          {{objOrdemServico.prioridade===1 ? 'checked' : '' }}>
+                                        <span style="font-weight: bold; color: red">Alta</span>
+                                      </label>
+                                      <label class="radio">
+                                        <input type="radio" name="prioridade" value="2" style="accent-color: orange;"
+                                          {{objOrdemServico.prioridade===2 ? 'checked' : '' }}>
+                                        <span style="font-weight: bold; color: orange">Média</span>
+                                      </label>
+                                      <label class="radio">
+                                        <input type="radio" name="prioridade" value="3" style="accent-color: green;"
+                                          {{objOrdemServico.prioridade===3 ? 'checked' : '' }}>
+                                        <span style="font-weight: bold; color: green">Baixa</span>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="field-body {{disabledField}}">
+                                  <div class="field">
+                                    <label class="label">Empresa</label>
+                                    <div class="select is-fullwidth">
+                                      <select name="empDestino" required>
+                                        <option value="">Selecione uma Empresa</option>
+                                        @each(empresa in empresas)
+                                        <option value="{{ empresa.id }}" {{empresa.id===objOrdemServico.empDestino ? 'selected' : '' }}>{{
+                                          empresa.razaoSocial }}</option>
+                                        @endeach
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div class="field">
+                                    <label class="label">Responsavél Liberação</label>
+                                    <div class="select is-fullwidth">
+                                      <select name="usuDestino" required>
+                                        <option value="">Selecione um Responsável</option>
+                                        @each(pessoa in pessoas)
+
+                                        <option name="nomePessoa" value="{{ pessoa.id }}" {{pessoa.id === objOrdemServico.usuDestino ? 'selected' : '' }}>
+                                            {{pessoa.name }}
+                                        </option>
+
+                                        @endeach
+                                      </select>
+                                    </div>
+                                  </div>
+
+                                  <div class="field">
+                                    <label class="label">Departamento</label>
+                                    <div class="select is-fullwidth">
+                                      <select name="depDestino" required>
+                                        <option value="">Departamento</option>
+                                        @each(departamento in departamentos)
+                                        <option name="departamento"  value="{{ departamento.id }}" {{departamento.id === objOrdemServico.depDestino ? 'selected' : '' }}>
+                                          {{departamento.nome }}
+                                        </option>
+                                        @endeach
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                                <br>
+                                <div class="field {{disabledField}}">
+                                  <label class="label">Descrição do Serviço</label>
+                                  <div class="control is-expanded ">
+                                    <textarea class="textarea is-uppercase" name="descricao"
+                                      placeholder="Detalhes..." required>{{objOrdemServico.descricao}}</textarea>
+                                  </div>
+                                </div>
+
+                                <div class="columns">
+                                  <div class="column {{disabledField}}">
+                                    <div class="field-body">
+                                      <div class="field m-2">
+                                        <label class="label">Valor Orçado:</label>
+                                      </div>
+                                      <div class="field w-25">
+                                        <div class="control is-expanded ">
+                                          <div class="input-group mb-3">
+                                          <span class="input-group-text" id="basic-addon1">R$</span>
+                                            <input 
+                                              id="valor"
+                                              type="text" 
+                                              name="valor" 
+                                              class="form-control w-50" 
+                                              placeholder="0,00"
+                                              name="valor" id="valor"
+                                              value="{{ objOrdemServico.valor }}"
+                                              aria-describedby="basic-addon1"
+                                            >
+                                        </div>
+                                      </div>
+                                      </div>
+                                      <div class="field m-2">
+                                        <label class="label">Forma de Pagamento:</label>
+                                      </div>
+                                      <div class="field">
+                                        <div class="control is-expanded ">
+                                          <input class="input is-uppercase mb-1 has-text-right" name="formaPagamento" id="formaPagamento"
+                                            placeholder="30/60/90" value="{{ objOrdemServico.formaPagamento }}">
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="field-body">
+                                  <div class="field">
+                                    <div id="file-abertura" class="file is-warning">
+                                      <label class="file-label">
+                                        <input class="file-input" type="file" name="imagemAbertura">
+                                        <span class="file-cta">
+                                          <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                          </span>
+                                          <span class="file-label">
+                                            Imagem de Abertura
+                                          </span>
+                                        </span>
+                                      </label>
+                                    </div>
+
+                                    @if ( objOrdemServico.urlOrigem )
+                                      <div class="gallery-container" > 
+                                          <a class="gallery-items">
+                                            <img id="output" src={{ objOrdemServico.urlOrigem }} alt='Clique aqui!' >
+                                          </a>
+                                      </div>
+                                    @else
+                                      <figure class="image mt-2" style="width: 256px;">
+                                        <img id="output" src={{objOrdemServico.urlOrigem}}>
+                                      </figure>
+                                    @endif
+
+                                    <!--figure class="image mt-2 " style="width: 256px;">
+                                        <img class="rounded" id="output" src={{objOrdemServico.urlOrigem}}>
+                                    </figure -->
+
+                                  </div>
+                                  <div class="field">
+                                    <div id="file-concluido" class="file is-primary">
+                                      <label class="file-label">
+                                        <input class="file-input" type="file" name="imagemConclusao">
+                                        <span class="file-cta">
+                                          <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                          </span>
+                                          <span class="file-label">
+                                            Imagem de Conclusão
+                                          </span>
+                                        </span>
+                                      </label>
+                                    </div>
+                                    
+                                    @if (objOrdemServico.urlFinal )
+                                      <div class="gallery-container" > 
+                                          <a class="gallery-items">
+                                            <img id="output2" src={{objOrdemServico.urlFinal}} alt='Clique aqui!' >
+                                          </a>
+                                      </div>
+                                    @else
+                                      <figure class="image mt-2" style="width: 256px;">
+                                        <img id="output2" src={{objOrdemServico.urlFinal}}>
+                                      </figure>
+                                    @endif
+
+                                    <!-- figure class="image mt-2" style="width: 256px;">
+                                      <img id="output2" src={{objOrdemServico.urlFinal}}>
+                                    </figure -->
+                                  </div>
+                                </div>
+                                <div class="field-body mt-2">
+                                  <div class="field">
+                                    <div id="file-abertura2" class="file is-warning">
+                                      <label class="file-label">
+                                        <input class="file-input" type="file" name="imagem2Abertura">
+                                        <span class="file-cta">
+                                          <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                          </span>
+                                          <span class="file-label">
+                                            Imagem de Abertura
+                                          </span>
+                                        </span>
+                                      </label>
+                                    </div>
+                                    @if ( objOrdemServico.urlOrigem2 )
+                                      <div class="gallery-container" > 
+                                          <a class="gallery-items">
+                                            <img id="output3" src={{ objOrdemServico.urlOrigem2 }} >
+                                          </a>
+                                      </div>
+                                    @else
+                                      <figure class="image mt-2" style="width: 256px;">
+                                        <img id="output3" src={{ objOrdemServico.urlOrigem2 }}>
+                                      </figure>
+                                    @endif
+
+                                    <!-- figure class="image mt-2" style="width: 256px;">
+                                      <img id="output3" src={{objOrdemServico.urlOrigem2}}>
+                                    </figure -->
+
+                                  </div>
+                                  <div class="field">
+                                    <div id="file-concluido2" class="file is-primary">
+                                      <label class="file-label">
+                                        <input class="file-input" type="file" name="imagem2Conclusao">
+                                        <span class="file-cta">
+                                          <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                          </span>
+                                          <span class="file-label">
+                                            Imagem de Conclusão
+                                          </span>
+                                        </span>
+                                      </label>
+                                    </div>
+                                    @if ( objOrdemServico.urlFinal2 )
+                                      <div class="gallery-container" > 
+                                          <a class="gallery-items">
+                                            <img id="output4" src={{ objOrdemServico.urlFinal2 }}>
+                                          </a>
+                                      </div>
+                                    @else
+                                      <figure class="image mt-2" style="width: 256px;">
+                                        <img id="output4" src={{ objOrdemServico.urlFinal2 }}>
+                                      </figure>
+                                    @endif
+
+                                    <!-- figure class="image mt-2" style="width: 256px;">
+                                      <img id="output4" src={{objOrdemServico.urlFinal2}}>
+                                    </figure -->
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="column">
+                                <div class="field-body">
+                                  <div class="field {{disabledField}}">
+                                    <label class="label">Data Registro</label>
+                                    <div class="control is-expanded">
+                                      <input type="date" name="dataOrigem" class="input"
+                                        value="{{ objOrdemServico.dataOrigem !== null ? objOrdemServico.dataOrigem.toFormat('yyyy-MM-dd') : '' }}"
+                                        required>
+                                    </div>
+                                  </div>
+                                  <div class="field">
+                                    <label class="label">Data Realizado</label>
+                                    <div class="control is-expanded">
+                                      <input type="date" name="dataRealizado" class="input" id="dateRealizado"
+                                        value="{{ objOrdemServico.dataRealizado !== null ? objOrdemServico.dataRealizado.toFormat('yyyy-MM-dd') : '' }}">
+                                    </div>
+                                  </div>
+
+                                </div>
+                                <br/>
+
+                                <div class="field-body">
+                                  <div class="field">
+                                    <label class="label mt-2">Inicial</label>
+                                    <div class="control">
+                                      <label class="radio">
+                                        <input type="radio" name="statusOrdemServico" value="Analise" {{ objOrdemServico.statusOrdemServico==='Analise'
+                                          ? 'checked' : '' }} onclick="disableOpcEmAndamento(false)">
+                                        Em Análise
+                                      </label><br>
+                                      
+                                  
+                                      @if (auth.user.cargo === 3)
+                                        <label class="radio">
+                                          <input type="radio" disabled name="statusOrdemServico" value="Aprovado" {{ objOrdemServico.statusOrdemServico==='Aprovado'
+                                              ? 'checked' : '' }} onclick="disableOpcEmAndamento(true)">
+                                            Aprovado
+                                        </label>
+                                      @else
+                                        <label class="radio">
+                                          <input type="radio" name="statusOrdemServico" value="Aprovado" {{ objOrdemServico.statusOrdemServico==='Aprovado'
+                                              ? 'checked' : '' }} onclick="disableOpcEmAndamento(true)">
+                                            Aprovado
+                                        </label>
+                                      @endif
+                                      <br>
+                                      <label class="radio">
+                                        <input type="radio" name="statusOrdemServico" value="Reprovado" {{ objOrdemServico.statusOrdemServico==='Reprovado'
+                                          ? 'checked' : '' }} onclick="disableOpcEmAndamento(false)">
+                                        Reprovado
+                                      </label><br>
+                                      <label class="radio">
+                                        <input type="radio" name="statusOrdemServico" value="Concluido" {{ objOrdemServico.statusOrdemServico==='Concluido'
+                                          ? 'checked' : '' }} onclick="disableOpcEmAndamento(true); setDataConclusao()">
+                                        Concluído
+                                      </label><br>
+                                    </div>
+                                  </div>
+
+                                  <div class="field">
+                                    <label class="label mt-2">Status Progresso</label>
+                                    <div class="control">
+                                      <label class="radio">
+                                        <input type="radio" name="statusProgresso" value="Andamento"
+                                        {{ objOrdemServico.statusProgresso === 'Andamento'
+                                        ? 'checked' : '' }} disabled="{{objOrdemServico.id === 0}}" id="radEmAndamento">
+                                      Em Andamento
+                                      </label><br>
+                                      <label class="radio">
+                                        <input type="radio" name="statusProgresso" value="Realizado" onclick="setDataRealizado()"
+                                        {{ objOrdemServico.statusProgresso === 'Realizado'
+                                          ? 'checked' : '' }} disabled="{{objOrdemServico.id === 0}}" id="radRealizado">
+                                          Realizado
+                                      </label><br>
+                                    </div>
+                                  </div>
+                                </div>
+                                <br/>
+                                <div class="field">
+                                  <label class="label">Data Conclusão</label>
+                                  <div class="control is-expanded">
+                                    <input type="date" name="dataConclusao" class="input" disabled="{{objOrdemServico.id === 0}}" id="dateConclusao"
+                                      value="{{ objOrdemServico.dataConclusao !== null ? objOrdemServico.dataConclusao.toFormat('yyyy-MM-dd') : '' }}">
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+                            <div class="field is-grouped">
+                              @if((objOrdemServico.statusOrdemServico === 'Analise' || objOrdemServico.statusOrdemServico === 'Aprovado') ||
+                              auth.user.cargo === 1)
+                              <div class="control">
+                                <button type="submit" class="button is-link">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-check"></i>
+                                  </span>
+                                  <span>Salvar</span>
+                                </button>
+                              </div>
+                              @endif
+                              <div class="control">
+                                <button type="button" class="button is-warning" onclick="window.location.href='{{ `/ordensServicos` }}'">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-window-restore"></i>
+                                  </span>
+                                  <span>Cancelar</span>
+                                </button>
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+                      </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+  /***** Script do upload da imagem de abertura da ordemServico *********/
+  const fileInput = document.querySelector('#file-abertura input[type=file]');
+  fileInput.onchange = () => {
+    if (fileInput.files.length > 0) {
+      /***** Pré-visualização da imagem de abertura da ordemServico *********/
+      const output = document.getElementById('output');
+      output.src = URL.createObjectURL(fileInput.files[0]);
+      output.onload = function () {
+        URL.revokeObjectURL(output.src) // free memory
+      }
+
+    }
+  }
+  /***** Fim do Script de abertura *************************/
+
+  /***** Script do upload da imagem de conclusão da ordemServico *********/
+  const fileInput2 = document.querySelector('#file-concluido input[type=file]');
+  fileInput2.onchange = () => {
+    if (fileInput2.files.length > 0) {
+      /***** Pré-visualização da imagem de conclusão da ordemServico *********/
+      const output2 = document.getElementById('output2');
+      output2.src = URL.createObjectURL(fileInput2.files[0]);
+      output2.onload = function () {
+        URL.revokeObjectURL(output2.src) // free memory
+      }
+    }
+  }
+  /***** Fim do Script de conclusão da ordemServico *************************/
+
+  /***** Script do upload da imagem 2 de abertura da ordemServico *********/
+  const fileInput3 = document.querySelector('#file-abertura2 input[type=file]');
+  fileInput3.onchange = () => {
+    if (fileInput3.files.length > 0) {
+      /***** Pré-visualização da imagem de abertura da ordemServico *********/
+      const output = document.getElementById('output3');
+      output.src = URL.createObjectURL(fileInput3.files[0]);
+      output.onload = function () {
+        URL.revokeObjectURL(output.src) // free memory
+      }
+
+    }
+  }
+  /***** Fim do Script de abertura *************************/
+
+  /***** Script do upload da imagem 2 de conclusão da ordemServico *********/
+  const fileInput4 = document.querySelector('#file-concluido2 input[type=file]');
+  fileInput4.onchange = () => {
+    if (fileInput4.files.length > 0) {
+      /***** Pré-visualização da imagem de conclusão da ordemServico *********/
+      const output2 = document.getElementById('output4');
+      output2.src = URL.createObjectURL(fileInput4.files[0]);
+      output2.onload = function () {
+        URL.revokeObjectURL(output2.src) // free memory
+      }
+    }
+  }
+  /***** Fim do Script de conclusão da ordemServico *************************/
+
+  /***** Habilita ou desbilita os campos: Radio Button e Button de Realização do serviço *************************/
+  function disableOpcEmAndamento(value){
+    let radEmAndamento = document.querySelector("#radEmAndamento");
+    let radRealizado = document.querySelector("#radRealizado");
+    let dateConclusao = document.querySelector("#dateConclusao");
+
+    if (value) {
+      radEmAndamento.disabled = false;
+      radRealizado.disabled = false;
+      dateConclusao.disabled = false;
+    } else {
+      radEmAndamento.disabled = true;
+      radRealizado.disabled = true;
+      dateConclusao.disabled = true;
+    }
+  }
+
+  /***** Atribui a data atual no campo Data Conclusão *************************/
+  function setDataConclusao(){
+    let dateConclusao = document.querySelector("#dateConclusao");
+    dateConclusao.value = new Date().toISOString().split('T')[0];
+  }
+
+  /***** Atribui a data atual no campo Data Realizado *************************/
+  function setDataRealizado(){
+    let dateRealizado = document.querySelector("#dateRealizado");
+    dateRealizado.value = new Date().toISOString().split('T')[0];
+  }
+
+</script>
+
+<script type="text/javascript">
+    
+    $('input').keydown(function(e) {
+    if(e.which === 188 || e.which === 110) { // 188 é vírgula e 110 virgula do teclado numérico
+        return false;   
+        // ou:
+        //e.preventDefault();
+    }
+    });
+
+    //$('#valor').mask('0000.00', {reverse: true}); //Dinheiro
+
+
+</script>
+
+<script type="text/javascript">
+  
+  function numberToReal(numero) {
+    //alert(document.querySelector("[name='valor']").value);
+
+       /*
+    alert(numero);
+    numero = Intl.NumberFormat('pt-BR', { style: 'decimal', currency: 'BR' }).format(numero);
+    document.querySelector("[name='valor']").value = numero;
+    */
+    
+
+    return numero.replace(/\B(?=(\d{3})+(?!\d))/g, ',');;
+
+/*
+    var numero = numero.toFixed(2).split('.');
+    numero[0] = numero[0].split(/(?=(?:...)*$)/).join('.');
+    alert(numero);
+    return numero.join('.');
+    */
+}
+  
+
+
+  /*
+  $("#valor") = parseFloat($("#valor").toFixed(2));
+  var valor = document.getElementById('valor').value;
+  const f = Intl.NumberFormat('pt-br', {style: 'currency', currency: 'BRL'}).format(valor);
+  setAttribute('valor', f);
+  */
+  
+  
+
+</script>
+
+
+@endsection

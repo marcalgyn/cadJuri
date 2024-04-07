@@ -1,0 +1,33 @@
+<div class="navigation1">
+ @if(auth.isLoggedIn)
+
+      <nav class="sidebar">
+          <ul class="list-unstyled">
+              <ul>
+                <li>
+                  <img src="/logo.jpeg" alt="logo" style="max-height:50px" class="py-2 px-2" />
+                </li>
+              </ul>
+
+              <li>
+                <a href="#submenu2" data-toggle="collapse"><i class="fas fa-list-ul"></i> Menu</a>
+                <ul id="submenu2" class="list-unstyled collapse">
+                  <li><a href="/empresa/list-empresas"><i class="fas fa-landmark"></i> Empresa</a></li>
+                    <li><a href="/corretor"><i class="fas fa-money-check-alt"></i> Representantes</a></li -->
+
+                    <li><a href="/cliente"><i class="fas fa-users"></i> Cliente</a></li>
+                    <li><a href="/cliente/list-clientes"><i class="fas fa-paperclip"></i> Lista de Cadastro</a></li>
+                    <li><a href="/relatorio/rel-periodo"><i class="fas fa-paperclip"></i> Relatório Periodo</a></li>
+                </ul>
+              </li>
+          </ul>
+      </nav>
+
+
+
+  @endif
+
+</div>
+
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>

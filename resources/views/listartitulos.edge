@@ -1,0 +1,459 @@
+@layout('layouts/app')
+
+@section('content')
+
+
+<div class="main">
+
+  <div class="details">
+    <div class="columns">
+      <div class="column is-full margin-top: 80px">
+        @if(flashMessages.has('notification'))
+        <div class="notification is-success is-light">
+          <button class="delete"></button>
+          {{ flashMessages.get('notification') }}
+        </div>
+        @endif
+        <div class="box is-size-7 p-0">
+          <div class="box">
+            <form action="/titulos/filtro" method="post">
+              {{ csrfField() }}
+
+              <div class="card has-background-light is-7">
+                <header class="card-header has-background-success">
+                  <p class="title p-3 has-text-white ">
+                    Listagem de Títulos
+                  </p>
+                </header>
+                <div class="card-content is-7">
+                  <div class="field-body">
+                    <div class="field">
+                      <div class="field">
+                          <label class="label is-size-7">Nome Sacado</label>
+                          <div class="control is-expanded">
+                            <input type="text" name="nomeSacado" id="nomeSacado" class="input is-size-7 is-uppercase">
+                          </div>
+                      </div>
+                    </div>
+
+                    <div class="field">
+                      <label class="label is-size-7">Data Inicial</label>
+                      <div class="control is-expanded">
+                        <input type="date" name="dataVencimento" class="input is-size-7">
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label class="label is-size-7">Data Final</label>
+                      <div class="control is-expanded">
+                        <input type="date" name="dataFinal" class="input is-size-7">
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label class="label is-size-7">CPF</label>
+                          <div class="control is-expanded">
+                            <input type="text" name="cpf" id="cpf" class="input is-size-7 is-uppercase">
+                          </div>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="field is-grouped">
+                    <div class="control">
+                      <button type="submit" class="button is-link is-size-7">
+                        <span class="icon is-small">
+                          <i class="fas fa-check"></i>
+                        </span>
+                        <span>Buscar</span>
+                      </button>
+                    </div>
+                    <div class="control">
+                      <button type="reset" class="button is-warning is-size-7">
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="box">
+            <table class="table is-fullwidth is-striped is-hoverable is-size-7">
+              <thead>
+                <tr>
+                  <th>
+                    Sacador
+                  </th>
+                  <th>
+                    Sacado
+                  </th>
+                  <th class="has-text-centered">
+                    Documento
+                  </th>
+                  <th class="has-text-centered">
+                    Título
+                  </th>
+                  <th class="has-text-centered">
+                    Data Vencimento
+                  </th>
+                  <th class="has-text-right">
+                    Valor do Título
+                  </th>
+                  <th class="has-text-centered">
+                    Data Pagamento
+                  </th>
+                  <th class="has-text-centered">
+                    Valor Pago
+                  </th>
+                  <th class="has-text-centered">
+                    Ações
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @each(titulo in titulos.rows)
+                <tr>
+                  <td is-hidden-mobile">
+                    {{ titulo.$extras.nome_fantasia }}
+                  </td>
+                  <td is-hidden-mobile">
+                    {{ titulo.$extras.nome }}
+                  </td>
+                  <td class="has-text-centered is-hidden-mobile">
+                    {{ titulo.tipoDocumento }}
+                  </td>
+                  <td class="has-text-centered is-hidden-mobile">
+                    {{ titulo.titulo }}/{{titulo.parcela}}
+                  </td>
+                  <td class="has-text-centered ">
+                    {{{ formatDate(titulo.dataVencimento) }}}
+                  </td>
+                  <td class="has-text-right">
+                    {{{ formatCurrency(titulo.valorTitulo) }}}
+                  </td>
+                  <td class="has-text-centered ">
+                    {{{ formatDate(titulo.dataPagamento) }}}
+                  </td>
+                  <td class="has-text-centered ">
+                    {{{ formatCurrency(titulo.valorPago) }}}
+                  </td>
+
+                  <td class="has-text-centered">
+                    <div class="buttons is-centered">
+
+                      <!-- Botão Editar Título -->
+                      @if(!titulo.dataPagamento)
+                      <button type="button" class="button is-success is-size-7"
+                        onclick="window.location.href='{{ `/titulos/${titulo.id}` }}'">
+                        <span class="icon is-small">
+                          <i class="fas fa-edit"></i>
+                        </span>
+                        <span>Editar</span>
+                      </button>
+                      @endif
+
+                      <!-- Botão Editar Título -->
+                      @if(titulo.dataPagamento)
+                      <button type="button" class="button is-info is-size-7"
+                        onclick="window.location.href='{{ `/titulos/${titulo.id}` }}'">
+                        <span class="icon is-small">
+                          <i class="fas fa-eye"></i>
+                        </span>
+                        <span>Visualizar</span>
+                      </button>
+                      @endif
+
+                      <!-- Botão Baixar Título -->
+                      @if(!titulo.dataPagamento)
+                      <button class="button js-modal-trigger is-link is-size-7"
+                        data-target="modal-baixar-titulo-{{titulo.id}}">
+                        <span class="icon is-small">
+                          <i class="fa fa-money-bill" aria-hidden="true"></i>
+                        </span>
+                        <span>Baixar</span>
+                      </button>
+                      {{-- MODAL BAIXAR TITULO --}}
+                      <div id="modal-baixar-titulo-{{titulo.id}}" class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                          <header class="modal-card-head has-background-link">
+                            <p class="modal-card-title has-text-weight-bold has-text-white">Baixa de Título</p>
+                            <button class="delete" aria-label="close"></button>
+                          </header>
+                          <section class="modal-card-body">
+                            Nome do Sacado: <strong> {{ titulo.$extras.nome }} </strong><br>
+                            Número do Título: <strong> {{ titulo.titulo }} </strong><br>
+                            Data de Vencimento: <strong> {{{ formatDate(titulo.dataVencimento) }}} </strong><br>
+                            Valor do Título: <strong> {{{ formatCurrency(titulo.valorTitulo) }}} </strong>
+                            <hr class="hr-style">
+
+                            <form id="formBaixa" action="{{ `/titulos/${titulo.id}/baixar?_method=PATCH` }}"
+                              method="post">
+                              {{ csrfField() }}
+                              <input type="hidden" name="id" value={{ titulo.id }}>
+
+                              <div class="columns">
+                                <div class="column">
+                                  <label class="label">Valor Total</label>
+                                  <div class="control is-expanded">
+                                    <input type="text" name="valorPago" value="{{ titulo.valorTitulo + titulo.acrescimoPago }}" class="input"
+                                      required>
+                                  </div>
+                                </div>
+
+                                <div class="column">
+                                  <label class="label">Acréscimo</label>
+                                  <div class="control is-expanded">
+                                    <input type="text" name="acrescimoPago" value="{{ titulo.acrescimoPago }}" class="input"
+                                      required>
+                                  </div>
+                                </div>
+
+                                <div class="column">
+                                  <label class="label">Data do Pagamento</label>
+                                  <div class="control is-expanded">
+                                    <input type="date" name="dataPagamento" value="{{dataHoje.toFormat('yyyy-MM-dd')}}"
+                                      class="input" required>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <button type="submit" class="button is-link is-size-7">
+                                <span class="icon is-small">
+                                  <i class="fa fa-money-bill" aria-hidden="true"></i>
+                                </span>
+                                <span>Baixar Título</span>
+                              </button>
+                              <button type="button" class="button is-warning is-size-7 cancel-modal">
+                                <span class="icon is-small">
+                                  <i class="fas fa-window-restore"></i>
+                                </span>
+                                <span>Cancelar</span>
+                              </button>
+                            </form>
+                          </section>
+                        </div>
+                      </div>
+                      {{-- FIM MODAL BAIXAR TITULO --}}
+                      @endif
+
+                      <!-- Botão Estornar Título -->
+                      @if(titulo.dataPagamento)
+                      <button class="button js-modal-trigger is-warning is-size-7"
+                        data-target="modal-estornar-titulo-{{titulo.id}}">
+                        <span class="icon is-small">
+                          <i class="fas fa-hourglass-end"></i>
+                        </span>
+                        <span>Estornar</span>
+                      </button>
+                      {{-- MODAL ESTORNAR TITULO --}}
+                      <div id="modal-estornar-titulo-{{titulo.id}}" class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                          <header class="modal-card-head has-background-warning">
+                            <p class="modal-card-title has-text-weight-bold">Estornar Título</p>
+                            <button class="delete" aria-label="close"></button>
+                          </header>
+                          <section class="modal-card-body">
+                            Nome do Sacado: <strong> {{ titulo.$extras.nome }} </strong><br>
+                            Número do Título: <strong> {{ titulo.titulo }} </strong><br>
+                            Data de Vencimento: <strong> {{{ formatDate(titulo.dataVencimento) }}} </strong><br>
+                            Valor do Título: <strong> {{{ formatCurrency(titulo.valorTitulo) }}} </strong>
+                            <hr class="hr-style">
+
+                            <form id="formBaixa" action="{{ `/titulos/${titulo.id}/estornar?_method=PATCH` }}"
+                              method="post">
+                              {{ csrfField() }}
+                              <input type="hidden" name="id" value={{ titulo.id }}>
+                              <input type="hidden" name="valorPago" value="0">
+                              <input type="hidden" name="dataPagamento" value="">
+
+                              <div class="columns">
+                                <div class="column">
+                                  <label class="label">Valor Pago</label>
+                                  <div class="control is-expanded">
+                                    <input type="text" value="{{ titulo.valorTitulo }}" class="input" disabled>
+                                  </div>
+                                </div>
+
+                                <div class="column">
+                                  <label class="label">Data do Pagamento</label>
+                                  <div class="control is-expanded">
+                                    <input type="date"
+                                      value="{{ titulo.dataPagamento !== null ? titulo.dataPagamento.toFormat('yyyy-MM-dd') : dataHoje.toFormat('yyyy-MM-dd')}}"
+                                      class="input" disabled>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <button type="submit" class="button is-danger is-size-7">
+                                <span class="icon is-small">
+                                  <i class="fa fa-hourglass-end" aria-hidden="true"></i>
+                                </span>
+                                <span>Estornar Título</span>
+                              </button>
+                              <button type="button" class="button is-warning is-size-7 cancel-modal">
+                                <span class="icon is-small">
+                                  <i class="fas fa-window-restore"></i>
+                                </span>
+                                <span>Cancelar</span>
+                              </button>
+                            </form>
+                          </section>
+                        </div>
+                      </div>
+                      {{-- FIM MODAL ESTORNAR TITULO --}}
+
+                      @endif
+
+                      <!-- Botão Excluir -->
+                      @if(!titulo.dataPagamento)
+                      <button class="button js-modal-trigger is-danger is-size-7"
+                        data-target="modal-excluir-titulo-{{titulo.id}}">
+                        <span class="icon is-small">
+                          <i class="fa fa-ban" aria-hidden="true"></i>
+                        </span>
+                        <span>Excluir</span>
+                      </button>
+                      {{-- MODAL EXCLUIR TITULO --}}
+                      <div id="modal-excluir-titulo-{{titulo.id}}" class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                          <header class="modal-card-head has-background-danger">
+                            <p class="modal-card-title has-text-weight-bold">Exclusão de Título</p>
+                            <button class="delete" aria-label="close"></button>
+                          </header>
+                          <section class="modal-card-body">
+                            Nome do Sacado: <strong> {{ titulo.$extras.nome }} </strong><br>
+                            Número do Título: <strong> {{ titulo.titulo }} </strong><br>
+                            Data de Vencimento: <strong> {{{ formatDate(titulo.dataVencimento) }}} </strong><br>
+                            Valor do Título: <strong> {{{ formatCurrency(titulo.valorTitulo) }}} </strong>
+                            <hr>
+                            <span class="has-text-weight-bold is-size-6"> Você realmente deseja excluir o título
+                              selecionado? </span>
+                              <form id="formCancela" action="{{ `/titulos/${titulo.id}?_method=DELETE` }}" method="post">
+                                {{ csrfField() }}
+                                <br>
+                                <button type="submit" class="button is-danger is-size-7">
+                                <span class="icon is-small">
+                                  <i class="fa fa-ban" aria-hidden="true"></i>
+                                </span>
+                                <span>Excluir Título</span>
+                              </button>
+                              <button type="reset" class="button is-warning is-size-7 cancel-modal">
+                                <span class="icon is-small">
+                                  <i class="fas fa-window-restore"></i>
+                                </span>
+                                <span>Cancelar</span>
+                              </button>
+                            </form>
+                          </section>
+                        </div>
+                      </div>
+                      {{-- FIM MODAL EXCLUIR TITULO --}}
+                      @endif
+                    </div>
+                  </td>
+
+
+                </tr>
+                @else
+                <tr>
+                  <td colspan="5" class="has-text-centered">Nenhum Registro Encontrado com os Dados Informados</td>
+                </tr>
+                @endeach
+              </tbody>
+            </table>
+
+          </div>
+          @if(titulos.hasPages)
+          <div class="box">
+            <nav class="pagination" role="navigation" aria-label="pagination">
+              <a class="pagination-previous" {{ titulos.currentPage===1 && 'disabled' }}
+                href="{{ titulos.url }}?page={{ titulos.currentPage - 1 }}">Anterior</a>
+              <a class="pagination-next" {{ !titulos.hasMorePages && 'disabled' }}
+                href="{{ titulos.url }}?page={{ titulos.currentPage + 1 }}">Próxima</a>
+              <ul class="pagination-list">
+                @each(nTitulo in titulos.getUrlsForRange(1, titulos.lastPage))
+                <li>
+                  <a class="pagination-link
+                                  {{ titulos.currentPage === nTitulo.page && 'is-current' }}" href="{{ nTitulo.url }}">
+                    {{ nTitulo.page }}
+                  </a>
+                </li>
+                @endeach
+              </ul>
+            </nav>
+          </div>
+          @endif
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- MODAL EXCLUIR --}}
+<div class="modal">
+  <div class="modal-background"></div>
+
+  <div class="modal-content">
+    <div class="box">
+      <p>Modal JS example</p>
+      <!-- Your content -->
+    </div>
+  </div>
+
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+{{-- FIM MODAL EXCLUIR --}}
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+  // Functions to open and close a modal
+  function openModal($el) {
+    $el.classList.add('is-active');
+  }
+
+  function closeModal($el) {
+    $el.classList.remove('is-active');
+  }
+
+  function closeAllModals() {
+    (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+      closeModal($modal);
+    });
+  }
+
+  // Add a click event on buttons to open a specific modal
+  (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
+    const modal = $trigger.dataset.target;
+    const $target = document.getElementById(modal);
+
+    $trigger.addEventListener('click', () => {
+      openModal($target);
+    });
+  });
+
+  // Add a click event on various child elements to close the parent modal
+  (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button, .modal-card-body .cancel-modal ') || []).forEach(($close) => {
+    const $target = $close.closest('.modal');
+
+    $close.addEventListener('click', () => {
+      closeModal($target);
+    });
+  });
+
+  // Add a keyboard event to close all modals
+  document.addEventListener('keydown', (event) => {
+    const e = event || window.event;
+
+    if (e.keyCode === 27) { // Escape key
+      closeAllModals();
+    }
+  });
+});
+</script>
+
+@endsection

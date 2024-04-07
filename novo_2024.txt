@@ -1,0 +1,29 @@
+#### templates views
+    https://docs.adonisjs.com/guides/views-and-templates
+    https://ionic.io/ionicons
+
+
+#### Criar um banco com nome lucid
+#### fazer o importe ordermix.sql
+
+#### Rodar o projeto
+    npm run dev
+    node ace serve --watch
+
+#### Atualizados
+cors
+routes
+controllers -> home
+controllers -> DashboardController
+controllers -> OrdemServicoCOntroller
+controllers -> TarefaController
+
+resources -> views home
+resources -> views DashboardController
+resources -> views OrdemServicoCOntroller
+resources -> views TarefaController
+
+
+#### Endpoints trabalhados
+
+    

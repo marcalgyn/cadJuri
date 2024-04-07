@@ -1,0 +1,52 @@
+Configuração De Usuario
+* Ao editar cadastro carregar senha tbm no formulario
+*******************OBS***************************
+Senha criptografada one way, não tem como decriptar para retornar a senha do usuário, 
+verificar uma solução para alterar a senha
+*************************************************
+
+Cadastro de Orçamento
+*********************
+Sendo novo
+OK ===> - Data Realizado carregar em branco em novo
+OK ===> - Opção Novo (Em Análise) ja vem marcada
+OK ===> - Criar Status inicial "Concluido"
+
+
+
+No DashBoard
+*************
+
+OK ===> Opção de Editar Não aparecer se o status for Reprovado e ou status Progresso Realizado
+O Encarregado Pode mudar o status Inicial mas nunca o Status Progresso.
+
+OK ===> Ao Clicar em Editar o formulario nao esta trazendo o campo departamento (Corrigir).
+
+OK ===> Botao Concluir Aparecer somente se tiver com o status Aprovado e o Progresso em Andamento, não aparecer se o progresso estiver realizado
+Encarregado pode Concluir
+
+NÃO PRECISA FAZER ===> - Ao Clicar em Finalizar (concluir) Abre a tela de Editar, com a Data Atual de Conclusão 
+	preenchida com a atual e Muda o Status para Concluido.
+
+Cancelar(reprovar) aparece para todos Usuarios
+OK ===> Botao aparecer somente se o status estiver como Novo (Analise)
+Ao Clicar em Cancelar mudar para o status Reprovado e colocar a data de conclusão.
+
+Somente para (Gerente e Diretor)
+Botão Aprovado aparecer somente se o status Aprovado.
+Ao Clicar em Aprovado o status Progresso muda para Realizado e a data realizada preenchida.
+
+Status Aprovado, Concluido e Reprovado não permite mas editar os campos, permite apenas add as imgs.
+
+
+OK ===> Não esta listando os status Aprovado na tela principal.
+
+Os usuarios ENCARREGADOS so pode listar os orçamentos pertinentes a ele, feito por ele. Não pode visualizar orçamento de outro usuario
+
+O Gerente e diretor terá total acesso a todos orçamentos.
+
+
+
+Ao clicar na opção Inicial - Concluído, colocar a data atual no campo Data Conclusão.
+Ao clicar na opção Status Progresso - Realizado, colocar a data atual no campo Data Realizado.
+OK ===> colocar a opção Concluido para habilitar campos data concluido e status progresso

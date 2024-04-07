@@ -1,0 +1,27 @@
+
+Reformular o visual do dashBoard
+
+* Colocar um grafico que mostre Total de Orçamento 
+ * Total em Analise
+ * Total em Aprovado
+ * Total finalizado
+
+
+
+
+Mudar o sistema de listar em grid.
+Listagem Orçamento
+Listagem O.S
+Pensei em criar/chamar em telas separadas 
+
+
+> Preciso Criar Consulta e Relatorio que mostre:
+Quantos Orçamento por estatus, por empresa foi realizados por exenmplo.
+Filtrando por Grupo, Empresa, datas, estatus...
+
+> Tela de Cadsatro de Orçamento, ajustar campo valor Orgado com mascara de moeda "0,00".
+
+E da mesma forma por Ordem de Serviço(Pegar o que ja temos pronto e criarmos a opção de gerar relatorio).
+
+
+

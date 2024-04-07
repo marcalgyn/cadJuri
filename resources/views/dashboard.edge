@@ -1,0 +1,194 @@
+@layout('layouts/app')
+
+@section('content')
+
+
+{{ csrfField() }}
+
+    <!-- Menu -->
+    <div class="main">
+
+      <!-- card  top do dashboard -->
+      <div class="cardBox">
+        <!-- Grafico
+        <div class="card">
+            <canvas id="myChart"> </canvas>
+        </div>
+        -->
+
+        <div class="card">
+            <div class="numbers">
+              1,500
+            </div>
+            <div class="cardName">
+              Diario Visualizacao
+            </div>
+            <div class="iconBx">
+              <ion-icon name="eye-outline"></ion-icon>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="numbers">
+              1,500
+            </div>
+            <div class="cardName">
+              Tarefas
+            </div>
+            <div class="iconBx">
+              <ion-icon name="chatbubble-outline"></ion-icon>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="numbers">
+              1,500
+            </div>
+            <div class="cardName">
+              Usuario
+            </div>
+            <div class="iconBx">
+              <ion-icon name="accessibility-outline"></ion-icon>
+            </div>
+        </div>
+      </div>
+      <!-- Inserção de Graficos -->
+
+      <div class="graphBox">
+            <div class="box">
+              <canvas id="myChart" name="myChart">  </canvas>
+            </div>
+
+            <div class="box">
+          
+            </div>
+      </div>
+
+      <!-- Lista de Detalhes -->
+
+        <div class="details">
+            <div class="recentOrders">
+                <div class="cardHeader">
+                    <h2>Listagem de O.S</h2>
+                    <a href="#" class="btn"> Visualizar todos</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Nome</td>
+                            <td>Ordem</td>
+                            <td>Descricao</td>
+                            <td>Prioridade</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Clocar aqui o grid de tarefas -->
+                        <tr>
+                            <td>Inicio</td>
+                            <td>001</td>
+                            <td>Fazer descricao</td>
+                            <td><span class="status delivered">Entrega</span></td>
+                        </tr>
+                        <tr>
+                            <td>Inicio</td>
+                            <td>001</td>
+                            <td>Fazer descricao</td>
+                            <td><span class="status delivered">Entrega</span></td>
+                        </tr>
+                        <tr>
+                            <td>Inicio</td>
+                            <td>001</td>
+                            <td>Fazer descricao</td>
+                            <td><span class="status delivered">Entrega</span></td>
+                        </tr>
+                        <tr>
+                            <td>Inicio</td>
+                            <td>001</td>
+                            <td>Fazer descricao</td>
+                            <td><span class="status delivered">Entrega</span></td>
+                        </tr>
+                        <tr>
+                            <td>Inicio</td>
+                            <td>001</td>
+                            <td>Fazer descricao</td>
+                            <td><span class="status delivered">Entrega</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- menu Lateral Direito -->
+            <div class="recentCustomers">
+                <div class="cardHeader">
+                    <h2> Visualisar Todos</h2>
+                </div>
+                <table>
+                <!-- Colocar aqui a consulta de usuarios listados nos ultimos chamados -->
+                <tr>
+                    <td width="60px"><div class="imgBx"><img src="/img/user.jpg"></div></td>
+                    <td>
+                      <h4>Maria<br>
+                        <span>Brazil</span>
+                      </h4>
+                    </td>
+                <tr>
+                <tr>
+                    <td width="60px"><div class="imgBx"><img src="/img/user.jpg"></div></td>
+                    <td>
+                      <h4>Joana<br>
+                        <span>Brazil</span>
+                      </h4>
+                    </td>
+                <tr>
+                <tr>
+                    <td width="60px"><div class="imgBx"><img src="/img/user.jpg"></div></td>
+                    <td>
+                      <h4>Pedro<br>
+                        <span>France</span>
+                      </h4>
+                    </td>
+                <tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+<!-- Grafico de Atendimentos em Aberto por Prioridade -->
+<script>
+    @each(prioridade1 in tarPrioridade1)
+      @each(prioridade2 in tarPrioridade2)
+        @each(prioridade3 in tarPrioridade3)
+          const ctx = document.getElementById('myChart');
+            new Chart(ctx, {
+              type: 'polarArea',
+              data: {
+                labels: ['Alta', 'Média', 'Baixa'],
+              datasets: [{
+                data: [{{ prioridade1.$extras.quantidade }}, {{prioridade2.$extras.quantidade}}, {{ prioridade3.$extras.quantidade }}],
+                borderWidth: 2,
+                backgroundColor: ['#ff6961', '#fcfaa7', '#90ee90'],
+              }]
+            },
+            options: {
+              responsive: true,
+
+              layout: {
+                padding: 8,
+                left: 5,
+              },
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Atendimento(s) em Aberto'
+                }
+              },
+            }
+          });
+
+        @endeach
+      @endeach
+    @endeach
+</script>
+
+@endsection

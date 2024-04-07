@@ -1,0 +1,240 @@
+@layout('layouts/app')
+
+@section('content')
+
+
+    <div class="main">
+
+        <div class="details">
+            <div class="columns is-size-7" is-size-7>
+              <div class="column is-fullwidth">
+                <div class="box p-0" >
+                  @if(flashMessages.has('notification'))
+                        <div class="notification is-success is-light notificacao">
+                          <button class="delete"></button>
+                          {{ flashMessages.get('notification') }}
+                        </div>
+                  @endif
+                  <div class="box">
+                    <form action="/pessoas" method="post">
+                      {{ csrfField() }}
+                      <input type="hidden" name="id" id="id" value={{ objPessoa.id }}>
+
+                      <div class="card ">
+                        <header class="card-header has-background-danger">
+                          <p class="title is-7 p-3 has-text-white">
+                            Cadastro de Pessoa
+                          </p>
+                        </header>
+                        <div class="card-content">
+                          <div class="field">
+                            <label class="label"> Nome</label>
+                            <div class="control is-expanded">
+                              <input type="text" name="name" class="input {{ flashMessages.has('errors.name') ? 'is-danger' : '' }}"
+                                placeholder="Nome da Pessoa" value="{{ objPessoa.name }}">
+                            </div>
+                          </div>
+                          <div class="field">
+                            <label class="label">E-mail</label>
+                            <div class="control is-expanded">
+                              <input id="email" type="email" name="email" class="input" placeholder="e-mail"
+                                value="{{objPessoa.email}}">
+                            </div>
+                          </div>
+                          <div class="field">
+                            <label class="label">Telefone</label>
+                            <div class="control">
+                              <input id="telefone" type="text" name="telefone" class="input" placeholder="(99) 99999-9999"
+                                value="{{objPessoa.telefone}}">
+                            </div>
+                          </div>
+                          <div class="field">
+                            <label class="label">Senha</label>
+                            <div class="control">
+                              <input type="password" class="input {{ flashMessages.get('errors.password') ? 'is-danger' : '' }}"
+                                name="password">
+                            </div>
+
+                            @if(flashMessages.has('errors.password'))
+                            <p class="help is-danger">
+                              {{ flashMessages.get('errors.password') }}
+                            </p>
+                            @endif
+                          </div>
+                          <div class="field">
+                            <label class="label">Confirma a Senha</label>
+                            <div class="control">
+                              <input id="password_confirmation" type="password"
+                                class="input {{ flashMessages.get('errors.password_confirmation') ? 'is-danger' : '' }}"
+                                name="password_confirmation">
+                            </div>
+                            @if(flashMessages.has('errors.password_confirmation'))
+                            <p class="help is-danger">
+                              {{ flashMessages.get('errors.password_confirmation') }}
+                            </p>
+                            @endif
+                          </div>
+                          <div class="field-body is-align-items-center">
+                            
+                            <div class="field is-horizontal">
+                              <label class="label is-align-self-center mr-3">Modulo Acesso: </label>
+                              <div class="select is-expanded"> 
+                              <!-- Removido o modulo Financeiro Por enquanto -->
+                                <select id="modulo" name="modulo" required>
+                                  <option value="0" {{ objPessoa.modulo===0 ? 'selected' : '' }}> Selecione um modulo </option>
+                                  <option value="1" {{ objPessoa.modulo===1 ? 'selected' : '' }}> Tarefas </option>
+                                  <option value="2" {{ objPessoa.modulo===2 ? 'selected' : '' }}> CheckList </option>
+                                  <!-- option value="3" {{ objPessoa.modulo===3 ? 'selected' : '' }}> Financeiro </option -->
+                                  <option value="4" {{ objPessoa.modulo===4 ? 'selected' : '' }}> Tarefa e CheckList </option>
+                                  <!-- option value="5" {{ objPessoa.modulo===5 ? 'selected' : '' }}> Tarefa e Financeiro </option -->
+                                  <!-- option value="6" {{ objPessoa.modulo===6 ? 'selected' : '' }}> CheckList e Financeiro </option -->
+                                  <!-- option value="99" {{ objPessoa.modulo===99 ? 'selected' : '' }}> TODOS </option -->
+                                </select>
+                              </div>
+                            </div>
+
+                            <div class="field is-horizontal">
+                              <label class="label is-align-self-center mr-3">Cargo: </label>
+                              <div class="select is-expanded">
+                                <select id="cargo" name="cargo" required>
+                                  <option value="0" {{ objPessoa.cargo===0 ? 'selected' : '' }}> Selecione um Cargo </option>
+                                  <option value="1" {{ objPessoa.cargo===1 ? 'selected' : '' }}> Diretor </option>
+                                  <option value="2" {{ objPessoa.cargo===2 ? 'selected' : '' }}> Gerente </option>
+                                  <option value="3" {{ objPessoa.cargo===3 ? 'selected' : '' }}> Encarregado </option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <div class="field">
+                              <label for="ativo" class="checkbox">
+                                <input type="checkbox" name="ativo" {{ objPessoa.ativo ? 'checked' : '' }}>
+                                <strong> Ativo(a)? </strong>
+                              </label>
+                            </div>
+                            <div class="field">
+                              <label for="desligado" class="checkbox">
+                                <input type="checkbox" name="desligado" {{ objPessoa.desligado ? 'checked' : '' }}>
+                                <strong> Desligado(a)? </strong>
+                              </label>
+                            </div>
+                          </div>
+                          <hr>
+                          <div class="field is-grouped">
+                            <div class="control">
+                              <button type="submit" class="button is-link">
+                                <span class="icon is-small">
+                                  <i class="fas fa-check"></i>
+                                </span>
+                                <span>Salvar</span>
+                              </button>
+                            </div>
+                            <div class="control">
+                              <button type="button" class="button is-warning" onclick="window.location.href='{{ `/pessoas` }}'">
+                                <span class="icon is-small">
+                                  <i class="fas fa-window-restore"></i>
+                                </span>
+                                <span>Cancelar</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  <div>
+
+
+                  @if(flashMessages.has('notification'))
+                        <div class="notification is-success is-light">
+                          <button class="delete"></button>
+                          {{ flashMessages.get('notification') }}
+                        </div>
+                  @endif
+
+                  <div class="box">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                      <thead>
+                        <tr>
+                          <th class="is-hidden-mobile">ID</th>
+                          <th>Nome</th>
+                          <th class="has-text-centered is-hidden-mobile">Telefone</th>
+                          <th class="has-text-centered is-hidden-mobile">Cargo</th>
+                          <th class="has-text-centered">Ativo</th>
+                          <th class="has-text-centered is-hidden-mobile">Desligado</th>
+                          <th class="has-text-centered">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @each(pessoa in pessoas)
+                        <tr>
+                          <td class="is-hidden-mobile">{{ pessoa.id }}</td>
+                          <td class="is-uppercase">{{ pessoa.name }}</td>
+                          <td class="has-text-centered is-hidden-mobile">{{ pessoa.telefone !== null ? pessoa.telefone : '' }}</td>
+                          <td class="has-text-centered is-hidden-mobile">
+                            {{ pessoa.cargo === 1 ? 'Diretor' : pessoa.cargo === 2 ? 'Gerente' : 'Encarregado'}}
+                          </td>
+
+                          <td class="has-text-centered">{{ pessoa.ativo === 1 ? 'Sim' : 'Não'}}</td>
+                          <td class="has-text-centered is-hidden-mobile">{{ pessoa.desligado === 1 ? 'Sim' : 'Não'}}</td>
+                          <td class="has-text-centered">
+                            <form action="{{ `/pessoas/${pessoa.id}?_method=DELETE` }}" method="post">
+                              {{ csrfField() }}
+                              <button type="button" class="button is-small is-primary"
+                                onclick="window.location.href='{{ `/pessoas/${pessoa.id}` }}'">
+                                <span class="icon is-small">
+                                  <i class="fas fa-edit"></i>
+                                </span>
+                                <span>Editar</span>
+                              </button>
+
+                              @if (auth.user.cargo === 1 )
+                                  <button type="submit" class="button is-small is-danger">
+                                    <span class="icon is-small">
+                                      <i class="fas fa-trash"></i>
+                                    </span>
+                                    <span>Excluir</span>
+                                  </button>
+                              @endif
+                            </form>
+
+                          </td>
+                        </tr>
+                        @else
+                        <tr>
+                          <td colspan="7" class="has-text-centered">Nenhum Registro Encontrado com os Dados Informados</td>
+                        </tr>
+                        @endeach
+                      </tbody>
+                    </table>
+                  </div>
+                  @if(pessoas.hasPages)
+                  <div class="box">
+                    <nav class="pagination" role="navigation" aria-label="pagination">
+                      <a class="pagination-previous" {{ pessoas.currentPage===1 && 'disabled' }}
+                        href="{{ pessoas.url }}?page={{ pessoas.currentPage - 1 }}">Anterior</a>
+                      <a class="pagination-next" {{ !pessoas.hasMorePages && 'disabled' }}
+                        href="{{ pessoas.url }}?page={{ pessoas.currentPage + 1 }}">Próxima</a>
+                      <ul class="pagination-list">
+                        @each(nPessoa in pessoas.getUrlsForRange(1, pessoas.lastPage))
+                        <li>
+                          <a class="pagination-link
+                                  {{ pessoas.currentPage === nPessoa.page && 'is-current' }}" href="{{ nPessoa.url }}">
+                            {{ nPessoa.page }}
+                          </a>
+                        </li>
+                        @endeach
+                      </ul>
+                    </nav>
+                  </div>
+                  @endif
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+@endsection

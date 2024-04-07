@@ -1,0 +1,503 @@
+@layout('layouts/app')
+
+@section('content')
+
+{{ csrfField() }}
+
+<div class="main">
+
+
+
+      <!-- card  top do dashboard -->
+      <div class="cardBox">
+        <!-- Permissao Usuario -->
+        <div class="card">
+           @if(flashMessages.has('notificationActivate'))
+                <div class="notification is-success is-light">
+                  <button class="delete"></button>
+                  {{ flashMessages.get('notificationActivate') }}
+                </div>
+            @endif
+
+            @if(nivel == 0 && addPessoas.length !== 0)
+                <div class="contorno">
+                    <header class="card-header has-background-primary">
+                      <p class="title is-4 p-3 has-text-white ">
+                        Ativar Usuario
+                      </p>
+                    </header>
+
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                      <thead>
+                        <tr>
+                          <th>
+                            Nome
+                          </th>
+                          <th class="has-text-centered is-hidden-mobile">
+                            Data Cadastro
+                          </th>
+                          <th>
+                            Cargo
+                          </th>
+                          <th class="has-text-centered">
+                            Ativar
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @each(pessoa in addPessoas)
+                        <tr>
+                          <td>
+                            {{ pessoa.name }}
+                          </td>
+                          <td class="has-text-centered is-hidden-mobile">
+                            {{{ formatDateTime(pessoa.createdAt) }}}
+                          </td>
+
+                          <form action="{{ `/pessoas/${pessoa.id}?_method=PATCH` }}" method="post">
+                            {{ csrfField() }}
+                            <td>
+                              <div class="select is-expanded">
+                                <select id="cargo" name="cargo" required>
+                                  <option value="0" {{ pessoa.cargo===0 ? 'selected' : '' }}> Diretor </option>
+                                  <option value="2" {{ pessoa.cargo===1 ? 'selected' : '' }}> Colaborador </option>
+                                </select>
+                              </div>
+                            </td>
+                            <td class="has-text-centered">
+                              <label for="completed" class="checkbox">
+                                <input type="checkbox" name="activated" onchange="this.form.submit()" {{ pessoa.ativo ? 'checked' : ''
+                                  }}>
+                              </label>
+                            </td>
+                          </form>
+                        </tr>
+                        @endeach
+                      </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="cardName">
+                  Usuários  Pendentes
+                </div>
+                <div class="numbers">
+                  0.0
+                </div>
+                <div class="iconBx">
+                  <ion-icon name="people-outline"></ion-icon>
+                </div>
+
+              @endif
+        
+
+        </div>
+
+      </div>
+    
+      @each (empresa in empresas)
+        <label> Empresa Logada: {{ empresa.fantasia }} </label>
+      @endeach
+
+
+
+      <!-- Lista de Detalhes Tarefas -->
+      @if(auth.user.modulo <= 1)
+        <div class="details">
+            <div class="recentOrders">
+                  <!-- Inicio de Listagem de tarefas -->
+                  <div class="detalheOs" >
+                    <form action="/home/filter" method="post">
+                      {{ csrfField() }}
+
+                      <div class="card">
+                        <header class="card-header has-background-link cab">
+                          <p class="title is-6 p-2 has-text-white">
+                            Listagem de Tarefas
+                          </p>
+                        </header>
+
+                        <div class="card-content">
+                          <div class="field-body">
+                            <div class="field" >
+
+                              <label class="label is-size-7">Empresa</label>
+                              <div class="select is-fullwidth">
+                                <select class="is-size-7" name="empDestino">
+                                  <option value="">Selecione uma Empresa</option>
+                                  @each(empresa in empresas)
+                                    <option value="{{ empresa.id }}">{{ empresa.razaoSocial }}</option>
+                                  @endeach
+                                </select>
+                              </div>
+
+                            </div>
+                            <div class="field">
+                              <label class="label is-size-7">Responsável</label>
+                              <div class="select is-fullwidth ">
+                                <select class="is-size-7" name="usuDestino">
+                                  <option value="">Selecione um Responsável</option>
+                                  @each(pessoa in pessoas)
+                                  <option value="{{ pessoa.id }}">{{ pessoa.name }}</option>
+                                  @endeach
+                                </select>
+                              </div>
+                            </div>
+                            <div class="field">
+                              <label class="label is-size-7">Data Inicial</label>
+                              <div class="control is-expanded">
+                                <input type="date" name="dataInicial" class="input is-size-7">
+                              </div>
+                            </div>
+                            <div class="field">
+                              <label class="label is-size-7">Data Final</label>
+                              <div class="control is-expanded" >
+                                <input type="date" name="dataFinal" class="input is-size-7">
+                              </div>
+                            </div>
+
+                            <div class="field">
+                              <label class="label is-size-7">Departamento</label>
+                              <div class="select is-fullwidth">
+                                <select class="is-size-7" name="depTarefa">
+                                  <option value="">Departamento</option>
+                                  @each(departamento in departamentos)
+                                  <option value="{{ departamento.id }}">{{ departamento.nome }}</option>
+                                  @endeach
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <hr>
+                          <div class="field is-grouped" >
+                            <div class="control">
+                              <button type="submit" class="button is-link is-size-7">
+                                <span class="icon is-small">
+                                  <i class="fas fa-check"></i>
+                                </span>
+                                <span>Buscar</span>
+                              </button>
+                            </div>
+                            <div class="control">
+                              <button type="reset" class="button is-warning is-size-7">
+                                Cancelar
+                              </button>
+                            </div>
+
+                          </div>
+                          <div class="field">
+                            <label class="label is-size-7 has-text-danger">* Tarefas Em Aberto </label>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                    @if(flashMessages.has('notification'))
+                    <div class="notification is-success is-light">
+                      <button class="delete"></button>
+                      {{ flashMessages.get('notification') }}
+                    </div>
+                    @endif
+
+                   
+
+
+                    <div class="box" >
+                      <table class="table is-fullwidth is-striped is-hoverable is-size-7">
+                        <thead>
+                          <tr>
+                            <th style="width: 200px">
+                              Empresa
+                            </th>
+                            <th class="is-hidden-mobile" style="width: 50px">
+                              Responsável
+                            </th>
+                            <th class="has-text-centered" style="width: 500px">
+                              Tarefa
+                            </th>
+                            <th class="has-text-centered is-hidden-mobile" style="width: 30px">
+                              Departamento
+                            </th>
+                            <th class="has-text-centered" style="width: 5px">
+                              Prioridade
+                            </th>
+
+                            <th class="has-text-centered is-hidden-mobile" style="width: 10px">
+                              Data Origem
+                            </th>
+                            <th class="has-text-centered" style="width: 300px">
+                              Ações
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @each(tarefa in tarefas.rows)
+                          <tr>
+                            <td>
+                              {{ tarefa.$extras.razao_social }}
+                            </td>
+                            <td class="has-text-left is-hidden-mobile">
+                              {{ tarefa.$extras.name }}
+                            </td>
+                            <td class="has-text-left is-uppercase">
+                              {{ tarefa.descricao }}
+                            </td>
+                            <td class="has-text-left is-hidden-mobile">
+                              {{ tarefa.$extras.nome }}
+                            </td>
+
+                            <td class="has-text-centered">
+
+                              <div class="control ml-5">
+                                @if (tarefa.prioridade === 1)
+                                <span style="font-weight: bold; color: red">A</span>
+                                @endif
+
+                                @if(tarefa.prioridade===2 )
+                                <span style="font-weight: bold; color: orange">M</span>
+                                @endif
+
+                                @if(tarefa.prioridade===3)
+                                <span style="font-weight: bold; color: green">B</span>
+                                @endif
+
+                              </div>
+
+                            </td>
+
+                            <td class="has-text-centered is-hidden-mobile">
+                              {{{ formatDate(tarefa.dataOrigem) }}}
+                            </td>
+                            <td class="has-text-centered">
+                              <div class="buttons is-centered">
+                                <button type="button"
+                                  class="button is-size-7  {{ tarefa.statusTarefa !== 'Completo' ? 'is-primary' : 'is-warning' }}"
+                                  onclick="window.location.href='{{ `/tarefas/${tarefa.id}` }}'">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-edit"></i>
+                                  </span>
+                                  <span>{{ tarefa.statusTarefa !== 'Completo' ? 'Editar' : 'Visualizar' }}</span>
+                                </button>
+
+                                @if(tarefa.statusTarefa !== 'Completo' && tarefa.statusTarefa !== 'Cancelado' )
+                                <form id="formPatch" action="{{ `/tarefas/${tarefa.id}?_method=PATCH` }}" method="post">
+                                  {{ csrfField() }}
+                                  <button type="submit" class="button is-info is-size-7">
+                                    <span class="icon is-small">
+                                      <i class="fas fa-hourglass-end"></i>
+                                    </span>
+                                    <span>Finalizar</span>
+                                  </button>
+                                </form>
+                                @endif
+
+                                <!-- Atualizado -->
+                                @if((auth.user.cargo === 1 || auth.user.cargo === 2) && tarefa.statusTarefa !== 'Completo' && tarefa.statusTarefa !== 'Cancelado'  )
+                                <form id="formCancela" action="{{ `/tarefas/${tarefa.id}?_method=POST` }}" method="post">
+                                  {{ csrfField() }}
+                                  <button type="submit" class="button is-danger is-size-7">
+                                    <span class="icon is-small">
+                                      <i class="fa fa-ban" aria-hidden="true"></i>
+                                    </span>
+                                    <span>Cancelar</span>
+                                  </button>
+                                </form>
+                                @endif
+
+                              </div>
+                            </td>
+                          </tr>
+                          @else
+                          <tr>
+                            <td colspan="7" class="has-text-centered">Nenhum Registro Encontrado com os Dados Informados</td>
+                          </tr>
+                          @endeach
+                        </tbody>
+                      </table>
+                    </div>
+                    @if(tarefas.hasPages)
+                    <div class="box">
+                      <nav class="pagination" role="navigation" aria-label="pagination">
+                        <a class="pagination-previous" {{ tarefas.currentPage===1 && 'disabled' }}
+                          href="{{ tarefas.url }}?page={{ tarefas.currentPage - 1 }}">Anterior</a>
+                        <a class="pagination-next" {{ !tarefas.hasMorePages && 'disabled' }}
+                          href="{{ tarefas.url }}?page={{ tarefas.currentPage + 1 }}">Próxima</a>
+                        <ul class="pagination-list">
+                          @each(nTarefa in tarefas.getUrlsForRange(1, tarefas.lastPage))
+                          <li>
+                            <a class="pagination-link
+                                    {{ tarefas.currentPage === nTarefa.page && 'is-current' }}" href="{{ nTarefa.url }}">
+                              {{ nTarefa.page }}
+                            </a>
+                          </li>
+                          @endeach
+                        </ul>
+                      </nav>
+                    </div>
+                    @endif
+                  </div>
+                  <!-- Fim de listagem de tarefas -->
+            </div>
+        </div>
+      @endif
+</div>
+
+<!-- Inicia a Geração Relatório  -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.2/jspdf.min.js" integrity="sha512-V+hL/3ApdUCHPWddxi3cOlryuqVfenO0k78Z8RobxNpHt/vidOWa894zvuroGebGoOr9g1hv9G7mrFZg87ZWcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.2.11/jspdf.plugin.autotable.min.js"></script>
+
+<script type="text/javascript">
+
+  
+  function relListaOrcamento() {
+      var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
+      
+      const doc = new jsPDF('l', 'pt', 'a4');
+      const novaData = new Date();
+      var numeroPagina = doc.internal.getNumberOfPages();
+      doc.setTextColor(100);
+      /* Anexa Imagem*/
+      
+      const img = new Image();
+      img.src = '/logo.jpeg';
+      doc.addImage(img, 'jpeg', 10, 8, 80, 40);
+      
+      /*Titulo Relatorio*/
+      doc.setFontSize(14);
+      doc.text('LISTA DE TAREFAS', 380, 30);
+      
+  
+      /*Data Impressao*/
+      doc.setFontSize(10);
+      //doc.text('Data Emissão: ', 10, 60);
+      posicaoH = posicaoH + 60;
+      doc.text('Data Emissão: ', 10, posicaoH);
+      doc.text(novaData.toLocaleString('pt-BR', {timezone: 'UTC'}), 80, posicaoH);
+      posicaoH = posicaoH + 14;
+      
+      doc.text('Grupo Empresárial: ' + document.getElementById('nomeGrupo').value, 10, posicaoH);
+      doc.text('Empresa: ' + document.getElementById('nomeEmpresa').value, 300, posicaoH);
+  
+      posicaoH = posicaoH + 12;
+
+      //doc.text('Usuario: ' + document.getElementById('usuario').value, 10, posicaoH);
+
+      /*Cria numeração da pagina*/
+      
+      for (i=0; i < numeroPagina; i++) {
+            doc.setPage(i);
+            let paginaAtual = doc.internal.getCurrentPageInfo().numeroPagina;
+            doc.setFontSize(10);
+            doc.text('Pagina: ' + numeroPagina, 750, posicaoH);
+            /** Rodape do Relatorio **/
+            doc.text('Pagina ' + numeroPagina, doc.internal.pageSize.width / 2, 287, {
+            align: 'center' });
+          }
+          posicaoH = posicaoH + 10;
+    doc.line(10, posicaoH, 820, posicaoH);
+    
+    /**Criação Listagem de Tabelas startY: 71**/
+    posicaoH = posicaoH + 1;
+    doc.autoTable({html: '#listas', startY: posicaoH, theme: 'grid',
+      margin: Margin = 10,
+      columns: 
+         [
+          {header: 'Grupo', dataKey: 'tgrupo'},
+          {header: 'Empresa', dataKey: 'tempresa'},
+          {header: 'Descricao', dataKey: 'tdescricao'},
+          {header: 'Data', dataKey: 'tdata'},
+          {header: 'Valor', dataKey: 'tvalor'},
+          {header: 'Status', dataKey: 'tstatus'},
+        ],
+
+        columnStyles:{
+          tdata: {
+            columnWidth: 200, 
+          }
+        },
+        columnStyles: {
+          tvalor: {
+          halign: 'right',
+          columnWidth: 90,
+          }
+        }
+
+      });
+  /**    doc.autoTable({html: '#listas', startY: posicaoH, theme: 'striped',
+      margin: Margin = 10,
+        columnStyles: {
+          0: {
+            halign: 'left',
+            tableWidth:100,
+          },
+          1: {
+            halign: 'left',
+            tableWidth:100,
+          },
+          2: {
+            halign: 'left',
+            tableWidth:100,
+          },
+          3: {
+            halign: 'center',
+            tableWidth:100,
+          },
+          4: {
+            halign: 'center',
+            tableWidth:80,
+          },
+          5: {
+            halign: 'center',
+            tableWidth:80,
+          },
+          6: {
+            halign: 'center',
+            tableWidth:80,
+          }
+        },
+      });
+      **/
+
+      
+    
+      doc.save('ListaOrcamento.pdf');
+  };
+
+</script>
+
+<!-- Grafico de Atendimentos em Aberto por Prioridade -->
+<script>
+    @each(prioridade1 in tarPrioridade1)
+      @each(prioridade2 in tarPrioridade2)
+        @each(prioridade3 in tarPrioridade3)
+          const ctx = document.getElementById('totalAtendimento');
+            new Chart(ctx, {
+              type: 'polarArea',
+              data: {
+                labels: ['Alta', 'Média', 'Baixa'],
+              datasets: [{
+                data: [{{ prioridade1.$extras.quantidade }}, {{prioridade2.$extras.quantidade}}, {{ prioridade3.$extras.quantidade }}],
+                borderWidth: 2,
+                backgroundColor: ['#ff6961', '#fcfaa7', '#90ee90'],
+              }]
+            },
+            options: {
+              responsive: true,
+              layout: {
+                padding: 7,
+                left: 5,
+              },
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Atendimento(s) em Aberto',
+                },
+              },
+            },
+          });
+        @endeach
+      @endeach
+    @endeach
+
+</script>
+
+@endsection

@@ -1,0 +1,156 @@
+@layout('layouts/app')
+
+@section('content')
+
+
+    <div class="main">
+
+        <div class="details">
+            <div class="columns is-size-7" is-size-7>
+              <div class="column is-fullwidth">
+                <div class="box p-0" >
+                  @if(flashMessages.has('notification'))
+                        <div class="notification is-success is-light notificacao">
+                          <button class="delete"></button>
+                          {{ flashMessages.get('notification') }}
+                        </div>
+                  @endif
+                  <div class="box">
+                    <form action="/grupos" method="post">
+                      {{ csrfField() }}
+                      <input type="hidden" name="id" id="id" value={{ objGrupo.id }}>
+
+                      <div class="card ">
+                        <header class="card-header has-background-danger cab">
+                          <p class="title is-6 p-2 has-text-white">
+                            Cadastro de Grupo
+                          </p>
+                        </header>
+                        <div class="card-content">
+                          <div class="field">
+                            <label class="label"> Nome</label>
+                            <div class="control is-expanded">
+                              <input type="text" name="nome" class="input {{ flashMessages.has('errors.nome') ? 'is-danger' : '' }}"
+                                placeholder="Nome do Grupo" value="{{ objGrupo.nome }}">
+                            </div>
+                          </div>
+                          <div class="field">
+                            <label class="label">Observação</label>
+                            <div class="control is-expanded">
+                              <input id="observacao" type="text" name="observacao" class="input" placeholder="Observação"
+                                value="{{objGrupo.observacao}}">
+                            </div>
+                          </div>
+
+                          <hr>
+                          <div class="field is-grouped">
+                            <div class="control">
+                              <button type="submit" class="button is-link">
+                                <span class="icon is-small">
+                                  <i class="fas fa-check"></i>
+                                </span>
+                                <span>Salvar</span>
+                              </button>
+                            </div>
+                            <div class="control">
+                              <button type="button" class="button is-warning" onclick="window.location.href='{{ `/grupos` }}'">
+                                <span class="icon is-small">
+                                  <i class="fas fa-window-restore"></i>
+                                </span>
+                                <span>Cancelar</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  <div>
+
+
+                  @if(flashMessages.has('notification'))
+                        <div class="notification is-success is-light">
+                          <button class="delete"></button>
+                          {{ flashMessages.get('notification') }}
+                        </div>
+                  @endif
+
+                  <div class="box">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                      <thead>
+                        <tr>
+                          <th class="is-hidden-mobile">ID</th>
+                          <th>Nome</th>
+                          <th class="has-text-centered is-hidden-mobile">Observação</th>
+                          <th>Ação</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @each(grupo in grupos)
+                        <tr>
+                          <td class="is-hidden-mobile">{{ grupo.id }}</td>
+                          <td class="is-uppercase">{{ grupo.nome }}</td>
+                          <td class="is-uppercase">{{ grupo.observacao }}</td>
+                          <td>
+                            <form action="{{ `/grupos/${grupo.id}?_method=DELETE` }}" method="post">
+                              {{ csrfField() }}
+                              <button type="button" class="button is-small is-primary"
+                                onclick="window.location.href='{{ `/grupos/${grupo.id}` }}'">
+                                <span class="icon is-small">
+                                  <i class="fas fa-edit"></i>
+                                </span>
+                                <span>Editar</span>
+                              </button>
+
+                              @if (auth.user.cargo === 1 )
+                                  <button type="submit" class="button is-small is-danger">
+                                    <span class="icon is-small">
+                                      <i class="fas fa-trash"></i>
+                                    </span>
+                                    <span>Excluir</span>
+                                  </button>
+                              @endif
+
+                            </form>
+
+                          </td>
+                        </tr>
+                        @else
+                        <tr>
+                          <td colspan="7" class="has-text-centered">Nenhum Registro Encontrado com os Dados Informados</td>
+                        </tr>
+                        @endeach
+                      </tbody>
+                    </table>
+                  </div>
+                  @if(grupos.hasPages)
+                  <div class="box">
+                    <nav class="pagination" role="navigation" aria-label="pagination">
+                      <a class="pagination-previous" {{ grupos.currentPage===1 && 'disabled' }}
+                        href="{{ grupos.url }}?page={{ grupos.currentPage - 1 }}">Anterior</a>
+                      <a class="pagination-next" {{ !grupos.hasMorePages && 'disabled' }}
+                        href="{{ grupos.url }}?page={{ grupos.currentPage + 1 }}">Próxima</a>
+                      <ul class="pagination-list">
+                        @each(nGrupo in grupos.getUrlsForRange(1, grupos.lastPage))
+                        <li>
+                          <a class="pagination-link
+                                  {{ grupos.currentPage === nGrupo.page && 'is-current' }}" href="{{ nGrupo.url }}">
+                            {{ nGrupo.page }}
+                          </a>
+                        </li>
+                        @endeach
+                      </ul>
+                    </nav>
+                  </div>
+                  @endif
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+@endsection

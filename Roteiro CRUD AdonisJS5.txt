@@ -1,0 +1,29 @@
+Roteiro CRUD Adonis JS 5
+
+Executar o projeto Adonis.js
+0 - node ace serve --watch
+
+1 - Adicionar o ORM Lucid
+	npm i @adonisjs/lucid
+2 - Configurar o lucid para o banco de dados
+	node ace configure @adonisjs/lucid
+3 - Instalar o driver do MySql
+	npm i mysql
+4 - A configuração da conexão com o banco de dados fica em config/database.ts, porém os valores reais de conexão	
+	ficam no arquivo .env
+5 - Criação das migrations
+	node ace make:migration cfops
+6 - Alteração do arquivo criado pela migration
+7 - Executar a migration	
+	node ace migration:run
+8 - Configuração da Web Security
+	npm i @adonisjs/shield
+	node ace configure @adonisjs/shield
+9 - Add following to start/kernel.ts
+	Server.middleware.register([
+	  () => import('@ioc:Adonis/Core/BodyParser'),
+	  () => import('@ioc:Adonis/Addons/Shield')
+	])
+10 - Criar o model
+	node ace make:model Cfop
+11 - Criar e a alterar o controller CfopsController

@@ -1,0 +1,306 @@
+@layout('layouts/app')
+
+@section('content')
+
+    <div class="main">
+        <div class="details">
+              <div class="columns">
+              <div class="column is-full margin-top: 80px">
+                <div class="box is-size-7 p-0">
+                  <div class="box">
+                    <form action="/orcamento/filtro" method="post">
+                      {{ csrfField() }}
+                      <div class="card has-background-light is-7">
+                        <header class="card-header has-background-link cab">
+                          <p class="title is-6 p-2 has-text-white ">
+                            Listagem de Orçamento
+                          </p>
+                        </header>
+                        <div class="card-content is-7">
+                          <div class="field-body">
+                            <div class="field">
+                              <label class="label is-size-7">Empresa</label>
+                              <div class="select is-fullwidth">
+                                <select name="empDestino">
+                                  <option value="">Selecione uma Empresa</option>
+                                  @each(empresa in empresas)
+                                    <option value="{{ empresa.id }}">{{ empresa.razaoSocial }}</option>
+                                  @endeach
+                                </select>
+                              </div>
+                            </div>
+
+                            <div class="field">
+                              <label class="label is-size-7">Responsável</label>
+                              <div class="select is-fullwidth">
+                                <select name="usuDestino">
+                                  <option value="">Selecione um Responsável</option>
+                                  @each(pessoa in pessoas)
+                                    <option value="{{ pessoa.id }}">{{ pessoa.name }}</option>
+                                  @endeach
+                                </select>
+                              </div>
+                            </div>
+
+                            <div class="field">
+                              <label class="label is-size-7">Data Inicial</label>
+                              <div class="control is-expanded">
+                                <input type="date" name="dataInicial" class="input is-size-7">
+                              </div>
+                            </div>
+                            <div class="field">
+                              <label class="label is-size-7">Data Final</label>
+                              <div class="control is-expanded">
+                                <input type="date" name="dataFinal" class="input is-size-7">
+                              </div>
+                            </div>
+                            <div class="field">
+                              <label class="label is-size-7">Departamento</label>
+                              <div class="select is-fullwidth">
+                                <select class="is-size-7" name="depTarefa">
+                                  <option value="">Departamento</option>
+                                  @each(departamento in departamentos)
+                                    <option value="{{ departamento.id }}">{{ departamento.nome }}</option>
+                                  @endeach
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <hr>
+                          <div class="field is-grouped" id="content">
+                            <div class="control">
+                              <button type="submit" class="button is-link is-size-7">
+                                <span class="icon is-small">
+                                  <i class="fas fa-check"></i>
+                                </span>
+                                <span>Buscar</span>
+                              </button>
+                            </div>
+                            <div class="control">
+                              <button type="reset" class="button is-warning is-size-7">
+                                Cancelar
+                              </button>
+                            </div>
+                            
+                            <button onclick="relatorioListaTarefa()" class="button is-success is-size-7" id="btnPDF">
+                              Gerar PDF &nbsp;    
+                              <i class="fa-solid fa-floppy-disk text-white">
+                            </i></button>
+                            
+                          </div>
+
+                          <div class="field">
+                            <label class="label is-size-7 has-text-danger">* Lista de Tarefas Finalizadas </label>
+                          </div>
+
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                
+                  
+                  <input type="text" name="usuario" id="usuario" value={{ nomePessoa }} hidden>
+                  <input type="text" name="nomeEmpresa" id="nomeEmpresa" value={{ nomeEmpresa }} hidden>
+
+                  <div class="box">
+                      <table class="table is-fullwidth is-striped is-hoverable is-size-7" id="listas">
+                        <thead>
+                          <tr>
+                            <th>
+                              Empresa
+                            </th>
+                            <th class="is-hidden-mobile">
+                              Responsável
+                            </th>
+                            <th class="has-text-centered">
+                              Tarefa
+                            </th>
+                            <th class="has-text-centered is-hidden-mobile">
+                              Departamento
+                            </th>
+                            <th class="has-text-centered">
+                              Data Conclusão
+                            </th>
+                            <th class="has-text-centered">
+                              Valor
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @each(tarefa in tarefas.rows)
+                          <tr>
+                            <td>
+                              {{ tarefa.$extras.razao_social }}
+                            </td>
+                            <td class="is-hidden-mobile">
+                              {{ tarefa.$extras.name }}
+                            </td>
+                            <td class="has-text-left is-uppercase">
+                              {{ tarefa.descricao }}
+                            </td>
+                            <td class="has-text-centered is-hidden-mobile">
+                              {{ tarefa.$extras.nome }}
+                            </td>
+                            <td class="has-text-centered">
+                              {{{ formatDate(tarefa.dataConclusao) }}}
+                            </td>
+
+                            <td class="has-text-right" >
+                              {{{ formatCurrency(tarefa.valor) }}}
+                            </td>
+                          </tr>
+                          @else
+                          <tr>
+                            <td colspan="7" class="has-text-centered">Nenhum Registro Encontrado com os Dados Informados</td>
+                          </tr>
+                          @endeach
+                        </tbody>
+                        <thead>
+                          <tr>
+                          </tr>
+                        </thead>
+                        <tbody class="fs-6" style="text-align: right">
+                          <tr style="text-align: right">
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                              <td style="text-align: right" >
+                                TOTAL
+                              </td>
+                            
+                            <td colspan="2" style="text-align: right">
+                              {{{ formatCurrency(totalTarefas) }}}
+                            </td>
+                          </tr>
+                        </tbody>
+                          
+                      </table>
+                  </div>
+                
+
+                  @if(tarefas.hasPages)
+                  <div class="box">
+                    <nav class="pagination" role="navigation" aria-label="pagination">
+                      <a class="pagination-previous" {{ tarefas.currentPage===1 && 'disabled' }}
+                        href="{{ tarefas.url }}?page={{ tarefas.currentPage - 1 }}">Anterior</a>
+                      <a class="pagination-next" {{ !tarefas.hasMorePages && 'disabled' }}
+                        href="{{ tarefas.url }}?page={{ tarefas.currentPage + 1 }}">Próxima</a>
+                      <ul class="pagination-list">
+                        @each(nTarefa in tarefas.getUrlsForRange(1, tarefas.lastPage))
+                        <li>
+                          <a class="pagination-link
+                                  {{ tarefas.currentPage === nTarefa.page && 'is-current' }}" href="{{ nTarefa.url }}">
+                            {{ nTarefa.page }}
+                          </a>
+                        </li>
+                        @endeach
+                      </ul>
+                    </nav>
+                  </div>
+                  @endif
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  
+
+    <!-- 1.5.2-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.2/jspdf.min.js" integrity="sha512-V+hL/3ApdUCHPWddxi3cOlryuqVfenO0k78Z8RobxNpHt/vidOWa894zvuroGebGoOr9g1hv9G7mrFZg87ZWcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.2.11/jspdf.plugin.autotable.min.js"></script>
+   
+
+<script type="text/javascript">
+
+  
+function relatorioListaTarefa() {
+    var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
+    
+    const doc = new jsPDF('l', 'pt', 'a4');
+    const novaData = new Date();
+    var numeroPagina = doc.internal.getNumberOfPages();
+    doc.setTextColor(100);
+    /* Anexa Imagem*/
+    const img = new Image();
+    img.src = '/logo.jpeg';
+    doc.addImage(img, 'jpeg', 10, 8, 80, 40);
+    
+    /*Titulo Relatorio*/
+    doc.setFontSize(14);
+    doc.text('Lista de Tarefas Realizadas', 300, 30);
+    
+
+    /*Data Impressao*/
+    doc.setFontSize(10);
+    //doc.text('Data Emissão: ', 10, 60);
+    posicaoH = posicaoH + 60
+    doc.text('Data Emissão: ', 10, posicaoH);
+    doc.text(novaData.toLocaleString('pt-BR', {timezone: 'UTC'}), 80, posicaoH);
+    posicaoH = posicaoH + 14;
+    doc.text('Empresa: ' + document.getElementById('nomeEmpresa').value, 10, posicaoH);
+
+    posicaoH = posicaoH + 12;
+    doc.text('Usuario: ' + document.getElementById('usuario').value, 10, posicaoH);
+
+    /*Cria numeração da pagina*/
+  
+    for (i=0; i < numeroPagina; i++) {
+      doc.setPage(i);
+      let paginaAtual = doc.internal.getCurrentPageInfo().numeroPagina;
+      doc.setFontSize(10);
+
+      //doc.text('Pagina: ' + numeroPagina, 750, 60);
+      doc.text('Pagina: ' + numeroPagina, 750, posicaoH);
+
+      /** Rodape do Relatorio **/
+      doc.text('Pagina ' + numeroPagina, doc.internal.pageSize.width / 2, 287, {
+      align: 'center' });
+
+    }
+    
+    
+    //doc.line(10, 70, 820, 70);
+    posicaoH = posicaoH + 10;
+    doc.line(10, posicaoH, 820, posicaoH);
+    
+    /**Criação Listagem de Tabelas startY: 71**/
+    posicaoH = posicaoH + 1
+      doc.autoTable({html: '#listas', startY: posicaoH, theme: 'striped',
+        margin: Margin = 10, 
+        columnStyles: {
+          0: {
+            halign: 'left',
+            tableWidth:100,
+          },
+          1: {
+            halign: 'left',
+            tableWidth:90,
+          },
+          2: {
+            halign: 'left',
+            tableWidth:150,
+          },
+          3: {
+            halign: 'left',
+            tableWidth:100,
+          },
+          4: {
+            halign: 'center',
+            tableWidth:80,
+          },
+          5: {
+            halign: 'right',
+            tableWidth:100,
+          },
+         
+        },
+      });
+        
+    doc.save('TarefasFinalizadas.pdf');
+    
+
+  };
+
+</script>
+
+@endsection

@@ -1,0 +1,387 @@
+@layout('layouts/app')
+
+@section('content')
+
+<div class="main">
+
+  <div class="details">
+    <div class="columns">
+      <div class="column is-full">
+        <div class="box p-0">
+          @if(flashMessages.has('notification'))
+          <div class="notification is-success is-light notificacao">
+            <button class="delete"></button>
+            {{ flashMessages.get('notification') }}
+          </div>
+          @endif
+          <div class="box">
+            <form action="/sacadores" method="post">
+              {{ csrfField() }}
+              <input type="hidden" name="id" id="id" value={{ objClienteSacador.id }}>
+              <input type="hidden" name="enderecoId" id="enderecoId" value={{ objClienteSacador.enderecoId }}>
+
+              <div class="card has-background-light">
+                <header class="card-header has-background-success">
+                  <p class="title is-4 p-3 has-text-white">
+                    Cadastro de Sacador
+                  </p>
+                </header>
+                <div class="card-content">
+                  <div class="columns">
+                    <div class="column is-2">
+                      <label class="label">CNPJ</label>
+                      <div class="control is-expanded">
+                        <input id="cnpj" type="text" name="cnpj"
+                          class="input {{ flashMessages.has('errors.cnpj') ? 'is-danger' : '' }}"
+                          placeholder="Informe o CNPJ do Cliente" value="{{ objClienteSacador.cnpj }}">
+                        @if(flashMessages.has('errors.cnpj'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.cnpj') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="column is-5">
+                      <label class="label">Razão Social</label>
+                      <div class="control is-expanded">
+                        <input type="text" name="razaoSocial"
+                          class="input {{ flashMessages.has('errors.razaoSocial') ? 'is-danger' : '' }}"
+                          placeholder="Informe a Razão Social do Cliente" value="{{ objClienteSacador.razaoSocial }}">
+                        @if(flashMessages.has('errors.razaoSocial'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.razaoSocial') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="column is-5">
+                      <label class="label">Nome Fantasia</label>
+                      <div class="control is-expanded">
+                        <input type="text" name="nomeFantasia"
+                          class="input {{ flashMessages.has('errors.nomeFantasia') ? 'is-danger' : '' }}"
+                          placeholder="Informe o Nome de Fantasia do Cliente"
+                          value="{{ objClienteSacador.nomeFantasia }}">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="columns">
+                    <div class="column is-5">
+                      <label class="label">Contato</label>
+                      <div class="control is-expanded">
+                        <input type="text" name="contato"
+                          class="input {{ flashMessages.has('errors.contato') ? 'is-danger' : '' }}"
+                          placeholder="Informe o Nome de Contato" value="{{ objClienteSacador.contato }}">
+                      </div>
+                    </div>
+                    <div class="column is-5">
+                      <label class="label">E-mail</label>
+                      <div class="control is-expanded">
+                        <input id="email" type="email" name="email"
+                          class="input {{ flashMessages.has('errors.email') ? 'is-danger' : '' }}"
+                          placeholder="Informe o E-mail" value="{{ objClienteSacador.email }}">
+                      </div>
+                    </div>
+
+                    <div class="column is-2">
+                      <label class="label">Telefone</label>
+                      <div class="control is-expanded">
+                        <input id="telefone" type="text" name="telefone"
+                          class="input {{ flashMessages.has('errors.telefone') ? 'is-danger' : '' }}"
+                          placeholder="Informe o  Número do Telefone" value="{{ objClienteSacador.telefone }}">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card has-background-light">
+                    <header class="card-header has-background-success">
+                      <p class="title is-4 p-3 has-text-white">
+                        Endereço
+                      </p>
+                    </header>
+                    <div class="card-content">
+                      <div class="columns">
+                        <div class="column is-2">
+                          <label class="label">CEP</label>
+                          <div class="control is-expanded">
+                            <input id="cep" type="cep" name="cep"
+                              class="input {{ flashMessages.has('errors.cep') ? 'is-danger' : '' }}" placeholder="CEP"
+                              value="{{ objClienteSacador.endereco.cep }}" onblur="pesquisacep(this.value);">
+                          </div>
+                        </div>
+                        <div class="column is-4">
+                          <label class="label">Logradouro</label>
+                          <div class="control is-expanded">
+                            <input id="logradouro" type="logradouro" name="logradouro"
+                              class="input {{ flashMessages.has('errors.logradouro') ? 'is-danger' : '' }}"
+                              placeholder="Logradouro" value="{{ objClienteSacador.endereco.logradouro }}">
+                          </div>
+                        </div>
+
+                        <div class="column is-4">
+                          <label class="label">Complemento</label>
+                          <div class="control is-expanded">
+                            <input id="complemento" type="complemento" name="complemento"
+                              class="input {{ flashMessages.has('errors.complemento') ? 'is-danger' : '' }}"
+                              placeholder="Complemento" value="{{ objClienteSacador.endereco.complemento }}">
+                          </div>
+                        </div>
+
+                        <div class="column is-2">
+                          <label class="label">Número</label>
+                          <div class="control is-expanded">
+                            <input id="numero" type="numero" name="numero"
+                              class="input {{ flashMessages.has('errors.numero') ? 'is-danger' : '' }}"
+                              placeholder="Número" value="{{ objClienteSacador.endereco.numero }}">
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="columns">
+
+                        <div class="column is-3">
+                          <label class="label">Bairro</label>
+                          <div class="control is-expanded">
+                            <input id="bairro" type="bairro" name="bairro"
+                              class="input {{ flashMessages.has('errors.bairro') ? 'is-danger' : '' }}"
+                              placeholder="Bairro" value="{{ objClienteSacador.endereco.bairro }}">
+                          </div>
+                        </div>
+
+                        <div class="column is-4">
+                          <label class="label">Cidade</label>
+                          <div class="control is-expanded">
+                            <input id="cidade" type="cidade" name="cidade"
+                              class="input {{ flashMessages.has('errors.cidade') ? 'is-danger' : '' }}"
+                              placeholder="Cidade" value="{{ objClienteSacador.endereco.cidade }}">
+                          </div>
+                        </div>
+
+                        <div class="column is-2">
+                          <label class="label">Estado</label>
+                          <div class="control is-expanded">
+                            <input id="uf" type="uf" name="uf"
+                              class="input {{ flashMessages.has('errors.uf') ? 'is-danger' : '' }}" placeholder="uf"
+                              value="{{ objClienteSacador.endereco.uf }}">
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card has-background-light mt-3">
+                    <header class="card-header has-background-success">
+                      <p class="title is-4 p-3 has-text-white">
+                        Taxas e Limites
+                      </p>
+                    </header>
+                    <div class="card-content">
+                      <div class="columns">
+
+                        <div class="column is-2">
+                          <label class="label">Taxa Juros / Mês - %</label>
+                          <div class="control is-expanded">
+                            <input id="taxaJuros" type="taxaJuros" name="taxaJuros"
+                              class="input {{ flashMessages.has('errors.taxaJuros') ? 'is-danger' : '' }}"
+                              value="{{ objClienteSacador.taxaJuros.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
+                          </div>
+                        </div>
+
+                        <div class="column is-2">
+                          <label class="label">Limite Geral Crédito - R$</label>
+                          <div class="control is-expanded">
+                            <input id="limiteGeralCredito" type="limiteGeralCredito" name="limiteGeralCredito"
+                              class="input {{ flashMessages.has('errors.limiteGeralCredito') ? 'is-danger' : '' }}"
+                              value="{{ objClienteSacador.limiteGeralCredito.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
+                          </div>
+                        </div>
+
+                         <div class="column is-2">
+                          <label class="label">Valor Utilizado - R$</label>
+                          <div class="control is-expanded">
+                            <input id="limiteAtual" type="limiteAtual" name="limiteAtual"
+                              class="input {{ flashMessages.has('errors.limiteAtual') ? 'is-danger' : '' }}"
+                              value="{{{ objClienteSacador.limiteUtilizado.toFixed(2) }}}"
+                              style="text-align: center;"  disabled>
+                          </div>
+                        </div>
+
+                        <div class="column is-2">
+                          <label class="label">Limite Original - R$</label>
+                          <div class="control is-expanded">
+                            <input id="limiteAtual" type="limiteAtual" name="limiteAtual"
+                              class="input {{ flashMessages.has('errors.limiteAtual') ? 'is-danger' : '' }}"
+                              value="{{{ objValorOriginal.toFixed(2) }}}"
+                              style="text-align: center;"  disabled>
+                          </div>
+                        </div>
+
+                        <div class="column is-2">
+                          <label class="label">Limite Por Sacado - R$</label>
+                          <div class="control is-expanded">
+                            <input id="limiteSacado" type="limiteSacado" name="limiteSacado"
+                              class="input {{ flashMessages.has('errors.limiteSacado') ? 'is-danger' : '' }}"
+                              value="{{ objClienteSacador.limiteSacado.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
+                          </div>
+                        </div>
+
+                        
+
+                      </div>
+                    </div>
+                  </div>
+                  <hr class="hr-style" />
+                  <div class="field is-grouped">
+                    <div class="control">
+                      <button type="submit" class="button is-link">
+                        <span class="icon is-small">
+                          <i class="fas fa-check"></i>
+                        </span>
+                        <span>Salvar</span>
+                      </button>
+                    </div>
+
+                    <div class="control">
+                      <button type="button" class="button is-warning"
+                        onclick="window.location.href='{{ `/sacadores` }}'">
+                        <span class="icon is-small">
+                          <i class="fas fa-window-restore"></i>
+                        </span>
+                        <span>Cancelar</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+            </form>
+          </div>
+
+          <div class="box">
+            <table class="table is-fullwidth is-striped is-hoverable">
+              <thead>
+                <tr>
+                  <div>
+                    <th class="is-hidden-mobile">CNPJ</th>
+                  </div>
+                  <th>Razão Social</th>
+                  <th class="is-hidden-mobile">e-mail</th>
+                  <th class="has-text-centered">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                @each(sacador in sacadores)
+                <tr>
+                  <div>
+                    <td class="is-hidden-mobile">{{ sacador.cnpj }}</td>
+                  </div>
+                  <td>{{ sacador.razaoSocial }}</td>
+                  <td class="is-hidden-mobile">{{ sacador.email }}</td>
+                  <td class="has-text-centered">
+                    <form action="{{ `/sacadores/${sacador.id}?_method=DELETE` }}" method="post">
+                      {{ csrfField() }}
+                      <button type="button" class="button is-small is-primary"
+                        onclick="window.location.href='{{ `/sacadores/${sacador.id}` }}'">
+                        <span class="icon is-small">
+                          <i class="fas fa-edit"></i>
+                        </span>
+                        <span>Editar</span>
+                      </button>
+                      {{-- <button type="submit" class="button is-small is-danger">
+                        <span class="icon is-small">
+                          <i class="fas fa-trash"></i>
+                        </span>
+                        <span>Excluir</span>
+                      </button> --}}
+                    </form>
+                  </td>
+                </tr>
+                @else
+                <tr>
+                  <td colspan="2" class="has-text-centered">Nenhum Cliente Sacador Cadastrado</td>
+                </tr>
+                @endeach
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- Script Busca endereço ViaCEP --}}
+<script>
+  function limpa_formulário_cep() {
+          //Limpa valores do formulário de cep.
+          document.getElementById('logradouro').value=("");
+          document.getElementById('bairro').value=("");
+          document.getElementById('cidade').value=("");
+          document.getElementById('uf').value=("");
+  }
+
+  function meu_callback(conteudo) {
+      if (!("erro" in conteudo)) {
+          //Atualiza os campos com os valores.
+          document.getElementById('logradouro').value=(conteudo.logradouro);
+          document.getElementById('bairro').value=(conteudo.bairro);
+          document.getElementById('cidade').value=(conteudo.localidade);
+          document.getElementById('uf').value=(conteudo.uf);
+      } //end if.
+      else {
+          //CEP não Encontrado.
+          limpa_formulário_cep();
+          alert("CEP não encontrado.");
+      }
+  }
+
+  function pesquisacep(valor) {
+
+      //Nova variável "cep" somente com dígitos.
+      var cep = valor.replace(/\D/g, '');
+
+      //Verifica se campo cep possui valor informado.
+      if (cep != "") {
+
+          //Expressão regular para validar o CEP.
+          var validacep = /^[0-9]{8}$/;
+
+          //Valida o formato do CEP.
+          if(validacep.test(cep)) {
+
+              //Preenche os campos com "..." enquanto consulta webservice.
+              document.getElementById('logradouro').value="...";
+              document.getElementById('bairro').value="...";
+              document.getElementById('cidade').value="...";
+              document.getElementById('uf').value="...";
+
+              //Cria um elemento javascript.
+              var script = document.createElement('script');
+
+              //Sincroniza com o callback.
+              script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+
+              //Insere script no documento e carrega o conteúdo.
+              document.body.appendChild(script);
+
+          } //end if.
+          else {
+              //cep é inválido.
+              limpa_formulário_cep();
+              alert("Formato de CEP inválido.");
+          }
+      } //end if.
+      else {
+          //cep sem valor, limpa formulário.
+          limpa_formulário_cep();
+      }
+  };
+
+</script>
+
+@endsection

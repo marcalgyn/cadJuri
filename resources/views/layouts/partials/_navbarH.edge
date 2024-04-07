@@ -1,0 +1,211 @@
+@if(auth.isLoggedIn)
+
+    <cabecalho class="active">
+        
+            <a href="/" class="logo">
+                <img src="/logo2.png" alt="logo" style="max-height:80px" class="py-1 px-1" />
+            </a>
+
+       <div class="menuToggle"></div>
+        <nav >
+            <ul>
+                <!-- Menu Principal -->
+                 <li class="menu">
+                    <a href="/home" class="menu-a">
+                        <span class="icon"> <ion-icon name="home-outline"> </ion-icon></span>
+                        <span class="titulo">PRINCIPAL</span>
+                    </a>
+                </li>
+                    <!-- Menu de Controle de Tarefas-->
+                  {{--  @if(auth.user.modulo === 1 || auth.user.modulo === 4 || auth.user.modulo === 5 || auth.user.modulo === 99) --}}
+                        <li>
+                            <a href="#">
+                                <span class="titulo">CADASTROS</span>
+                                <span class="icon"> <ion-icon name="arrow-down-sharp"> </ion-icon></span>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="/clientes">
+                                        <span class="icon"><ion-icon name="business-outline"></ion-icon></span>
+                                        <span class="titulo">Clientes</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/tarefas">
+                                        <span class="icon"><ion-icon name="warning-outline"></ion-icon></span>
+                                        <span class="titulo">Juizados</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/tarefas">
+                                        <span class="icon"><ion-icon name="warning-outline"></ion-icon></span>
+                                        <span class="titulo">Processos</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/ordensServicos">
+                                        <span class="icon"><ion-icon name="clipboard-outline"></ion-icon></span>
+                                        <span class="titulo">Status</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                  {{--  @endif --}}
+
+                    <!-- menu de Controle Financeiro -->
+                    <li>
+                       {{-- @if(auth.user.modulo === 3 || auth.user.modulo === 5 || auth.user.modulo === 6 || auth.user.modulo === 99) --}}
+                            <a href="#">
+                                <span class="titulo">FINANCEIRO</span>
+                                <span class="icon"> <ion-icon name="arrow-down-sharp"> </ion-icon></span>
+                            </a>
+                       {{-- @endif --}}
+
+                        <ul>
+                          <li>
+                            @if((auth.user.cargo === 1 || auth.user.cargo === 2))
+                                <a href="/sacadores">
+                                    <span class="icon"><ion-icon name="person-add-sharp"></ion-icon></span>
+                                    <span class="titulo">Cadastro de Sacador</span>
+                                </a>
+                            @endif
+                           </li>
+
+                           <li>
+                                @if((auth.user.cargo === 1 || auth.user.cargo === 2))
+                                <a href="/sacados">
+                                    <span class="icon"><ion-icon name="people-sharp"></ion-icon></span>
+                                    <span class="titulo">Cadastro de Sacado</span>
+                                </a>
+                                @endif
+                           </li>
+
+                            <li>
+                             {{--   @if((auth.user.cargo === 1 || auth.user.cargo === 2))--}}
+                                <a href="/titulos">
+                                    <span class="icon"><ion-icon name="wallet"></ion-icon></span>
+                                    <span class="titulo">Cadastro de Titulos</span>
+                                </a>
+                                {{-- @endif --}}
+                            </li>
+
+                            <li>
+                                <hr />
+                            </li>
+
+                            <li>
+                                <a href="#">
+                                    <span class="titulo">Relatórios</span>
+                                    <span class="icon"> <ion-icon name="arrow-redo-outline"> </ion-icon></span>
+                                </a>
+                                <ul>
+                                    <li>
+                                        @if((auth.user.cargo === 1 || auth.user.cargo === 2))
+                                        <a href="/titulos/lista">
+                                            <span class="icon"><ion-icon name="albums"></ion-icon></span>
+                                            <span class="titulo">Titulos</span>
+                                        </a>
+                                        @endif
+                                    </li>
+                                </ul>
+
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <li>
+                            <a href="#">
+                                <span class="titulo">RELATÓRIOS</span>
+                                <span class="icon"> <ion-icon name="arrow-redo-outline"> </ion-icon></span>
+                            </a>
+
+                            <ul>
+                                <li>
+
+                                    <a href="#">
+                                        <span class="icon"><ion-icon name="document-attach-outline"></ion-icon></span>
+                                        <span class="titulo">Lista Orçamentos!</span>
+                                    </a>
+
+                                </li>
+
+                                <li>
+                                    <a href="#">
+                                        <span class="icon"><ion-icon name="document-attach-outline"></ion-icon></span>
+                                        <span class="titulo">Tarefas</span>
+                                    </a>
+
+                                </li>
+                                
+                                <li>
+                                    <a href="#">
+                                        <span class="icon"><ion-icon name="server-outline"></ion-icon></span>
+                                        <span class="titulo">Patrimonios</span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
+                    </li>
+
+                    <!-- Menu Controle de Usuarios -->
+                    <li> <a href="#">
+                            <span class="titulo">Configuração</span>
+                            <span class="icon"> <ion-icon name="arrow-down-sharp"> </ion-icon></span>
+                        </a>
+                        <ul>
+                              <li>
+                                <a href="/patrimonios">
+                                    <span class="icon"><ion-icon name="qr-code-outline"></ion-icon></span>
+                                    <span class="titulo">Perfil Empresa</span>
+                                </a>
+                              </li>
+
+                            <li>
+                                @if((auth.user.nivel == 0))
+                                <a href="/pessoas">
+                                    <span class="icon"><ion-icon name="person-add-outline"></ion-icon></span>
+                                    <span class="titulo">Usuário</span>
+                                </a>
+                                @endif
+                            </li>
+                        </ul>
+                    </li>
+            
+                <!-- Menu Sair -->
+                <li>
+                    @if(auth.isLoggedIn)
+                        <a href="/logout" onclick="event.preventDefault(); document.getElementById('logout').submit();">
+                            <span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>
+                            <span class="titulo">SAIR</span>
+                            <form id="logout" action="/logout" method="post">
+                                {{ csrfField() }}
+                            </form>
+                        </a>
+                    @else
+                        <a href="/register" class="navbar-item">Registrar</a>
+                        <a href="/login" class="navbar-item">Login</a>
+                    @endif
+
+                </li>
+
+            </ul>
+        </nav>
+
+    </cabecalho>
+@endif
+
+
+
+<script>
+      let menuToggle = document.querySelector('.menuToggle');
+      let cabecalho = document.querySelector('cabecalho');
+      menuToggle.onclick = function(){
+          cabecalho.classList.toggle('active');
+      }
+</script>

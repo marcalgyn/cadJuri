@@ -1,0 +1,326 @@
+@layout('layouts/app')
+
+@section('content')
+<div class="main">
+  <div class="details">
+    <div class="columns">
+      <div class="column is-fullwidth">
+        <div class="box p-0">
+          @if(flashMessages.has('notification'))
+          <div class="notification is-success is-light notificacao">
+            <button class="delete"></button>
+            {{ flashMessages.get('notification') }}
+          </div>
+          @endif
+          <div class="box">
+            <form action="/titulos" method="post" >
+              {{ csrfField() }}
+              <input type="hidden" name="id" value={{ objTitulo.id }}>
+
+              <div class="card has-background-light">
+                <header class="card-header has-background-success">
+                  <p class="title is-4 p-3 has-text-white">
+                    Cadastro de Titulos
+                  </p>
+                </header>
+                <div class="card-content">
+                  <div class="columns">
+
+                    <div class="column is-5">
+                      <label class="label">Sacado - Titulo Sacado</label>
+                      <div class="select is-fullwidth">
+                        <select name="sacadoId" required onchange="carregarTaxas(this.value)" {{ objTitulo.id !==0
+                          ? 'disabled' : '' }}>
+                          <option value="">Selecione um Sacado - Titulo Sacado</option>
+                          @each(sacado in sacados)
+                          <option value="{{ sacado.id }}" {{sacado.id===objTitulo.sacadoId ? 'selected' : '' }}>{{
+                            sacado.nome }}</option>
+                          @endeach
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="column is-5">
+                      <label class="label">Empresa - Cliente Sacador</label>
+                      <div class="select is-fullwidth">
+                        <select name="sacadorId" required>
+                          <option value="">Selecione uma Empresa - Cliente Sacador</option>
+                          @each(sacador in sacadores)
+                          <option value="{{ sacador.id }}" {{sacador.id===objTitulo.sacadorId ? 'selected' : '' }}>{{
+                            sacador.nomeFantasia }}</option>
+                          @endeach
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="column is-2">
+                      <label class="label">Tipo de Documento</label>
+                      <div class="select is-fullwidth">
+                        <select name="tipoDocumento" required>
+                          <option value=""> Tipo Documento
+                          </option>
+                          <option value="1" {{ objTitulo.tipoDocumento===1 ? 'selected' : '' }}> Boleto </option>
+                          <option value="2" {{ objTitulo.tipoDocumento===2 ? 'selected' : '' }}> Promissoria </option>
+                          <option value="3" {{ objTitulo.tipoDocumento===3 ? 'selected' : '' }}> Cheque </option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="columns">
+                    <div class="column is-2">
+                      <label class="label">Número do Titulo</label>
+                      <div class="control is-expanded">
+                        <input id="titulo" type="text" name="titulo" placeholder="Informe o n titulo"
+                          value="{{ objTitulo.titulo }}" class="input" required>
+                        @if(flashMessages.has('errors.titulo'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.titulo') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="column is-2">
+                      <label class="label">Parcela</label>
+                      <div class="control is-expanded">
+                        <input id="parcela" type="number" name="parcela" placeholder="Informe a parcela"
+                          value="{{ objTitulo.parcela }}" class="input" required>
+                        @if(flashMessages.has('errors.parcela'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.parcela') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="column is-2">
+                      <label class="label">Número Contrato</label>
+                      <div class="control is-expanded">
+                        <input type="text" name="nContrato" value="{{ objTitulo.nContrato }}" class="input" required>
+                        @if(flashMessages.has('errors.nContrato'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.nContrato') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+                    <div class="column is-2">
+                      <label class="label">Valor do Titulo</label>
+                      <div class="control is-expanded">
+                        <input type="text" name="valorTitulo"
+                        value="{{ objTitulo.valorTitulo.toFixed(2) }}"
+                        class="input has-text-right"
+                        id="money1" style="text-align: right;" placeholder="0.000.00"
+                        onkeypress="$(this).mask('##0.00', {reverse: true})" required>
+                        @if(flashMessages.has('errors.valorTitulo'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.valorTitulo') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+                    <div class="column is-2">
+                      <label class="label">Data Emissão</label>
+                      <div class="control is-expanded">
+                        <input type="date" name="dataEmissao"
+                          value="{{ objTitulo.dataEmissao !== null ? objTitulo.dataEmissao.toFormat('yyyy-MM-dd') : ''}}"
+                          class="input" required>
+                        @if(flashMessages.has('errors.dataEmissao'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.dataEmissao') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="column is-2">
+                      <label class="label">Data Vencimento</label>
+                      <div class="control is-expanded">
+                        <input type="date" name="dataVencimento"
+                          value="{{ objTitulo.dataVencimento !== null ? objTitulo.dataVencimento.toFormat('yyyy-MM-dd') : '' }}"
+                          class="input" required>
+                        @if(flashMessages.has('errors.dataVencimento'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.dataVencimento') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="card has-background-light mt-3">
+                    <header class="card-header has-background-success">
+                      <p class="title is-4 p-3 has-text-white">
+                        Taxas e Limites
+                      </p>
+                    </header>
+                    <div class="card-content">
+                      <div class="columns">
+                        <div class="column">
+                          <label class="label">Taxa Juros / Mês - %</label>
+                          <div class="control is-expanded">
+                            <input id="taxaJuros" type="text" name="taxaJuros" value="{{ objTitulo.taxaJuros.toFixed(2) }}"
+                            style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})"
+                              class="input {{ flashMessages.has('errors.taxaJuros') ? 'is-danger' : '' }}">
+                            @if(flashMessages.has('errors.taxaJuros'))
+                            <p class="help is-danger">
+                              {{ flashMessages.get('errors.taxaJuros') }}
+                            </p>
+                            @endif
+                          </div>
+                        </div>
+                        <div class="column">
+                          <label class="label">Taxa Flutuante - R$</label>
+                          <div class="control is-expanded">
+                            <input type="text" name="taxaFloat" value="{{ objTitulo.taxaFloat.toFixed(2) }}" class="input"
+                            style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
+                            @if(flashMessages.has('errors.taxaFloat'))
+                            <p class="help is-danger">
+                              {{ flashMessages.get('errors.taxaFloat') }}
+                            </p>
+                            @endif
+                          </div>
+                        </div>
+                        <div class="column">
+                          <label class="label">IOF - %</label>
+                          <div class="control is-expanded">
+                            <input id="iof" type="iof" name="iof"
+                              class="input {{ flashMessages.has('errors.iof') ? 'is-danger' : '' }}" placeholder="IOF"
+                              value="{{ objTitulo.iof.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})" >
+                          </div>
+                        </div>
+                        <div class="column">
+                          <label class="label">Taxa Emissão - R$</label>
+                          <div class="control is-expanded">
+                            <input id="taxaEmissao" type="taxaEmissao" name="taxaEmissao"
+                              class="input {{ flashMessages.has('errors.taxaEmissao') ? 'is-danger' : '' }}"
+                              value="{{ objTitulo.taxaEmissao.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})" >
+                          </div>
+                        </div>
+                        <div class="column">
+                          <label class="label">Multa - %</label>
+                          <div class="control is-expanded">
+                            <input type="text" name="multa" value="{{ objTitulo.multa.toFixed(2) }}" class="input"
+                            style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})" >
+                            @if(flashMessages.has('errors.multa'))
+                            <p class="help is-danger">
+                              {{ flashMessages.get('errors.multa') }}
+                            </p>
+                            @endif
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <br>
+                  <div class="columns">
+                    <div class="column">
+                      <div class="field">
+                        <label class="label">Descrição</label>
+                        <div class="control is-expanded ">
+                          <textarea class="textarea is-uppercase" name="descricao" rows="2"
+                            placeholder="Detalhes...">{{objTitulo.descricao}}</textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="columns">
+                    <div class="column is-2">
+                      <label class="label">Gerar Parcelas ?</label>
+                      <div class="control is-expanded" id={{ objTitulo.id !==0 ? 'disable-div' : '' }}>
+                        <label class="radio">
+                          <input type="radio" name="gParcela" value="false" onclick="desabilitarGerarParcelas(true)">
+                          Sim
+                        </label>
+                        <label class="radio">
+                          <input type="radio" name="gParcela" value="false" onclick="desabilitarGerarParcelas(false)"
+                            checked>
+                          Não
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Aparecer somente se tiver marcado SIM -->
+                    <div class="column is-2 mt-2">
+                      <input type="number" min="1" max="100" class="input" id="qtdParcelas" name="qtdParcelas"
+                        placeholder="Qtd. Parcelas" disabled=true>
+                    </div>
+
+                    <div class="column is-3 mt-2">
+                      <div class="select is-fullwidth">
+                        <select disabled=true id="tipoParcela" name="tipoParcela">
+                          <option value="30"> Mensal </option>
+                          <option value="15"> Quinzenal </option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr class="hr-style" />
+                  <div class="field is-grouped">
+
+                    <div class="control">
+                      <button type="submit" class="button is-link">
+                        <span class="icon is-small">
+                          <i class="fas fa-check"></i>
+                        </span>
+                        <span>Salvar</span>
+                      </button>
+                    </div>
+
+                    <div class="control">
+                      <button type="button" class="button is-warning" onclick="window.location.href='{{ `/titulos` }}'">
+                        <span class="icon is-small">
+                          <i class="fas fa-window-restore"></i>
+                        </span>
+                        <span>Cancelar</span>
+                      </button>
+                    </div>
+
+                    <div class="control">
+                      <button type="button" class="button is-danger"
+                        onclick="window.location.href='{{ `/titulos/lista` }}'">
+                        <span class="icon is-small">
+                          <i class="fas fa-window-restore"></i>
+                        </span>
+                        <span>Listar</span>
+                      </button>
+                    </div>
+
+
+                  </div>
+                </div>
+            </form>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  function carregarTaxas(value){
+    window.location.href=`/titulos/${value}/load-rates`;
+  }
+
+  var childNodes = document.getElementById("disable-div").getElementsByTagName('*');
+  for (var node of childNodes) {
+    node.disabled = true;
+  }
+
+</script>
+
+<script type="text/javascript">
+/*Formatação Moeda - classe moeda*/
+  $(document).ready(function(){
+    //$('#money').maskMoney({thousands:'.', decimal:',', allowZero:true, precision:2});
+    $('#money').mask('##0.00', {reverse: true})
+  });
+</script>
+
+@endsection

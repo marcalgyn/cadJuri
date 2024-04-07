@@ -1,0 +1,330 @@
+@layout('layouts/app')
+
+@section('content')
+
+    <div class="main">
+        <div class="details">
+            <div class="columns">
+              <div class="column is-fullwidth">
+                <div class="box p-0">
+
+                  @if(flashMessages.has('notification'))
+                  <div class="notification is-success is-light notificacao">
+                    <button class="delete"></button>
+                    {{ flashMessages.get('notification') }}
+                  </div>
+                  @endif
+                  <div class="box">
+                      <form action="/tarefas" method="post" enctype="multipart/form-data">
+                        {{ csrfField() }}
+                        <input type="hidden" name="id" value={{ objTarefa.id }}>
+                        <input type="hidden" name="usuOrigem" value={{ auth.user.id }}>
+                        <input type="hidden" name="usuOrigemNome" value={{ auth.user.name }}>
+                        <input type="hidden" name="empOrigem" value="1">
+
+                        <div class="card has-background-light">
+                          <header class="card-header has-background-link cab">
+                            <p class="title is-4 p-1 has-text-white">
+                              Cadastro de Tarefas
+                            </p>
+                          </header>
+                          <div class="card-content">
+                            <div class="field">
+                              <label class="label">De: {{ auth.user.name }} </label>
+                              <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+                            </div>
+                            <div class="columns">
+                              <div class="column is-three-fifths">
+                                <div class="field-body mb-3">
+                                  <div class="field">
+                                    <label class="label">Para: </label>
+                                  </div>
+                                  <div class="field is-horizontal">
+                                    <label class="label">Prioridade: </label>
+                                    <div class="control ml-5">
+                                      <label class="radio">
+                                        <input type="radio" name="prioridade" value="1" style="accent-color: red;"
+                                          {{objTarefa.prioridade===1 ? 'checked' : '' }}>
+                                        <span style="font-weight: bold; color: red">Alta</span>
+                                      </label>
+                                      <label class="radio">
+                                        <input type="radio" name="prioridade" value="2" style="accent-color: orange;"
+                                          {{objTarefa.prioridade===2 ? 'checked' : '' }}>
+                                        <span style="font-weight: bold; color: orange">Média</span>
+                                      </label>
+                                      <label class="radio">
+                                        <input type="radio" name="prioridade" value="3" style="accent-color: green;"
+                                          {{objTarefa.prioridade===3 ? 'checked' : '' }}>
+                                        <span style="font-weight: bold; color: green">Baixa</span>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="field-body">
+                                  <div class="field">
+                                    <label class="label">Empresa</label>
+                                    <div class="select is-fullwidth">
+                                      <select name="empDestino" required>
+                                        <option value="">Selecione uma Empresa</option>
+                                        @each(empresa in empresas)
+                                        <option value="{{ empresa.id }}" {{empresa.id===objTarefa.empDestino ? 'selected' : '' }}>{{
+                                          empresa.razaoSocial }}</option>
+                                        @endeach
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div class="field">
+                                    <label class="label">Responsável</label>
+                                    <div class="select is-fullwidth">
+                                      <select name="usuDestino" required>
+                                        <option value="">Selecione um Responsável</option>
+                                        @each(pessoa in pessoas)
+
+                                        <option name="nomePessoa" value="{{ pessoa.id }}" {{pessoa.id === objTarefa.usuDestino ? 'selected' : '' }}>
+                                            {{pessoa.name }}
+                                        </option>
+
+                                        @endeach
+                                      </select>
+                                    </div>
+                                  </div>
+
+                                  <div class="field">
+                                    <label class="label">Departamento</label>
+                                    <div class="select is-fullwidth">
+                                      <select name="depDestino" required>
+                                        <option value="">Departamento</option>
+                                        @each(departamento in departamentos)
+                                        <option value="{{ departamento.id }}"> {{departamento.nome }}</option>
+                                        @endeach
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                                <br>
+                                <div class="field">
+                                  <label class="label">Descrição da Tarefa</label>
+                                  <div class="control is-expanded ">
+                                    <textarea class="textarea is-uppercase" name="descricao"
+                                      placeholder="Detalhes...">{{objTarefa.descricao}}</textarea>
+                                  </div>
+                                </div>
+
+                                <div class="columns">
+                                  <div class="column is-three-fifths">
+                                    <div class="field-body">
+                                      <div class="field p-1 ">
+                                        <label class="label">Valor Orçado.:</label>
+                                      </div>
+                                          <div class="field">
+                                            <div class="control is-expanded ">
+                                                <div class="input-group mb-3">
+                                                  <span class="input-group-text" id="basic-addon1">R$</span>
+                                                    <input 
+                                                      id="valor"
+                                                      type="text" 
+                                                      name="valor" 
+                                                      class="form-control w-50" 
+                                                      placeholder="0,00"
+                                                      name="valor" id="valor"
+                                                      placeholder="0.00" value="{{ objTarefa.valor }}"
+                                                      aria-describedby="basic-addon1"
+                                                    >
+                                                </div>
+                                            </div>
+                                          </div>
+
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="field-body">
+                                  <div class="field">
+                                    <div id="file-abertura" class="file is-warning">
+                                      <label class="file-label">
+                                        <input class="file-input" type="file" name="imagemAbertura">
+                                        <span class="file-cta">
+                                          <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                          </span>
+                                          <span class="file-label">
+                                            Imagem de Abertura
+                                          </span>
+                                        </span>
+                                      </label>
+                                    </div>
+                                    <figure class="image mt-2" style="width: 256px;">
+                                      <img id="output" src={{objTarefa.urlOrigem}}>
+                                    </figure>
+                                  </div>
+                                  <div class="field">
+                                    <div id="file-concluido" class="file is-primary">
+                                      <label class="file-label">
+                                        <input class="file-input" type="file" name="imagemConclusao">
+                                        <span class="file-cta">
+                                          <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                          </span>
+                                          <span class="file-label">
+                                            Imagem de Conclusão
+                                          </span>
+                                        </span>
+                                      </label>
+                                    </div>
+                                    <figure class="image mt-2" style="width: 256px;">
+                                      <img id="output2" src={{objTarefa.urlFinal}}>
+                                    </figure>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="column">
+                                <div class="field-body">
+                                  <div class="field">
+                                    <label class="label">Data Registro</label>
+                                    <div class="control is-expanded">
+                                      <input type="date" name="dataOrigem" class="input"
+                                        value="{{ objTarefa.dataOrigem !== null ? objTarefa.dataOrigem.toFormat('yyyy-MM-dd') : '' }}"
+                                        required>
+                                    </div>
+                                  </div>
+                                  <div class="field">
+                                    <label class="label">Hora Registro</label>
+                                    <div class="control is-expanded">
+                                      <input type="time" name="horaOrigem" class="input"
+                                        value="{{ objTarefa.dataOrigem !== null ? objTarefa.dataOrigem.toFormat('HH:mm') : '' }}"
+                                        required>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="field-body mt-2">
+                                  <div class="field">
+                                    <label class="label">Data Previsão</label>
+                                    <div class="control is-expanded">
+                                      <input type="date" name="dataPrevisao" class="input"
+                                        value="{{ objTarefa.dataPrevisao !== null ? objTarefa.dataPrevisao.toFormat('yyyy-MM-dd') : '' }}">
+                                    </div>
+                                  </div>
+                                  <div class="field">
+                                    <label class="label">Hora Previsão</label>
+                                    <div class="control is-expanded">
+                                      <input type="time" name="horaPrevisao" class="input"
+                                        value="{{ objTarefa.dataPrevisao !== null ? objTarefa.dataPrevisao.toFormat('HH:mm') : '' }}">
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="field-body mt-2">
+                                  <div class="field">
+                                    <label class="label">Data Conclusão</label>
+                                    <div class="control is-expanded">
+                                      <input type="date" name="dataConclusao" class="input"
+                                        value="{{ objTarefa.dataConclusao !== null ? objTarefa.dataConclusao.toFormat('yyyy-MM-dd') : '' }}">
+                                    </div>
+                                  </div>
+                                  <div class="field">
+                                    <label class="label">Hora Conclusão</label>
+                                    <div class="control is-expanded">
+                                      <input type="time" name="horaConclusao" class="input"
+                                        value="{{ objTarefa.dataConclusao !== null ? objTarefa.dataConclusao.toFormat('HH:mm') : '' }}">
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <label class="label mt-2">Concluído?</label>
+                                <div class="box">
+                                  <div class="control">
+                                    <label class="radio">
+                                      <input type="radio" name="statusTarefa" value="Novo" {{ objTarefa.statusTarefa==='Novo'
+                                        ? 'checked' : '' }}>
+                                      Novo
+                                    </label><br>
+                                    <label class="radio">
+                                      <input type="radio" name="statusTarefa" value="Completo" {{ objTarefa.statusTarefa==='Completo'
+                                        ? 'checked' : '' }}>
+                                      Completo
+                                    </label><br>
+                                    <label class="radio">
+                                      <input type="radio" name="statusTarefa" value="Parcial" {{ objTarefa.statusTarefa==='Parcial'
+                                        ? 'checked' : '' }}>
+                                      Parcial
+                                    </label><br>
+                                    <label class="radio">
+                                      <input type="radio" name="statusTarefa" value="Cancelado" {{ objTarefa.statusTarefa==='Cancelado'
+                                        ? 'checked' : '' }}>
+                                      Cancelado
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+                            <div class="field is-grouped">
+                              @if(objTarefa.statusTarefa !== 'Completo')
+                              <div class="control">
+                                <button type="submit" class="button is-link">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-check"></i>
+                                  </span>
+                                  <span>Salvar</span>
+                                </button>
+                              </div>
+                              @endif
+                              <div class="control">
+                                <button type="button" class="button is-warning" onclick="window.location.href='{{ `/tarefas` }}'">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-window-restore"></i>
+                                  </span>
+                                  <span>Cancelar</span>
+                                </button>
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+                      </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+  /***** Script do upload da imagem de abertura da tarefa *********/
+  const fileInput = document.querySelector('#file-abertura input[type=file]');
+  fileInput.onchange = () => {
+    if (fileInput.files.length > 0) {
+      /***** Pré-visualização da imagem de abertura da tarefa *********/
+      const output = document.getElementById('output');
+      output.src = URL.createObjectURL(fileInput.files[0]);
+      output.onload = function () {
+        URL.revokeObjectURL(output.src) // free memory
+      }
+
+    }
+  }
+  /***** Fim do Script de abertura *************************/
+
+  /***** Script do upload da imagem de conclusão da tarefa *********/
+  const fileInput2 = document.querySelector('#file-concluido input[type=file]');
+  fileInput2.onchange = () => {
+    if (fileInput2.files.length > 0) {
+      /***** Pré-visualização da imagem de conclusão da tarefa *********/
+      const output2 = document.getElementById('output2');
+      output2.src = URL.createObjectURL(fileInput2.files[0]);
+      output2.onload = function () {
+        URL.revokeObjectURL(output2.src) // free memory
+      }
+    }
+  }
+  /***** Fim do Script de conclusão da tarefa *************************/
+</script>
+
+<script type="text/javascript">
+		$('#valor').mask('000000000000.00', {reverse: true}); //Dinheiro
+</script>
+
+
+
+@endsection

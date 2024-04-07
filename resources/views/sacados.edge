@@ -1,0 +1,378 @@
+@layout('layouts/app')
+
+@section('content')
+
+
+<div class="main">
+
+  <div class="details">
+    <div class="columns">
+      <div class="column is-full">
+        <div class="box p-0">
+          @if(flashMessages.has('notification'))
+          <div class="notification is-success is-light notificacao">
+            <button class="delete"></button>
+            {{ flashMessages.get('notification') }}
+          </div>
+          @endif
+          <div class="box">
+            <form action="/sacados" method="post">
+              {{ csrfField() }}
+              <input type="hidden" name="id" id="id" value={{ objClienteSacado.id }}>
+              <input type="hidden" name="enderecoId" id="enderecoId" value={{ objClienteSacado.enderecoId }}>
+
+              <div class="card has-background-light">
+                <header class="card-header has-background-success">
+                  <p class="title is-4 p-3 has-text-white">
+                    Cadastro de Cliente - Sacado
+                  </p>
+                </header>
+                <div class="card-content">
+                  <div class="columns">
+                    <div class="column is-4">
+                      <label class="label">CPF</label>
+                      <div class="control is-expanded">
+                        <input id="cpf" type="text" name="cpf"
+                          class="input {{ flashMessages.has('errors.cpf') ? 'is-danger' : '' }}"
+                          placeholder="Informe o cpf do Cliente" value="{{ objClienteSacado.cpf }}" required>
+                          @if(flashMessages.has('errors.cpf'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.cpf') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="column is-8">
+                      <label class="label">Nome do Cliente</label>
+                      <div class="control is-expanded">
+                        <input type="text" name="nome"
+                          class="input {{ flashMessages.has('errors.nome') ? 'is-danger' : '' }}"
+                          placeholder="Informe o Nome do Cliente" value="{{ objClienteSacado.nome }}" required>
+                          @if(flashMessages.has('errors.nome'))
+                          <p class="help is-danger">
+                            {{ flashMessages.get('errors.nome') }}
+                          </p>
+                          @endif
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="columns">
+                    <div class="column is-9">
+                      <label class="label">E-mail</label>
+                      <div class="control is-expanded">
+                        <input id="email" type="email" name="email"
+                          class="input {{ flashMessages.has('errors.email') ? 'is-danger' : '' }}"
+                          placeholder="Informe o E-mail" value="{{ objClienteSacado.email }}">
+                          
+                          @if(flashMessages.has('errors.email'))
+                          <p class="help is-danger">
+                            {{ flashMessages.get('errors.email') }}
+                          </p>
+                          @endif
+
+                      </div>
+                    </div>
+
+                    <div class="column is-3">
+                      <label class="label">Telefone</label>
+                      <div class="control is-expanded">
+                        <input id="telefone" type="text" name="telefone"
+                          class="input {{ flashMessages.has('errors.telefone') ? 'is-danger' : '' }}"
+                          placeholder="Informe o  Número do Telefone" value="{{ objClienteSacado.telefone }}" required>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card has-background-light">
+                    <header class="card-header has-background-success">
+                      <p class="title is-4 p-3 has-text-white">
+                        Endereço
+                      </p>
+                    </header>
+                    <div class="card-content">
+                      <div class="columns">
+                        <div class="column is-2">
+                          <label class="label">CEP</label>
+                          <div class="control is-expanded">
+                            <input id="cep" type="cep" name="cep"
+                              class="input {{ flashMessages.has('errors.cep') ? 'is-danger' : ' ' }}" placeholder="CEP"
+                              value="{{ objClienteSacado.endereco.cep }}"
+                              onblur="pesquisacep(this.value);">
+                          </div>
+                        </div>
+
+                        <div class="column is-4">
+                          <label class="label">Logradouro</label>
+                          <div class="control is-expanded">
+                            <input id="logradouro" type="logradouro" name="logradouro"
+                              class="input {{ flashMessages.has('errors.logradouro') ? 'is-danger' : ' ' }}"
+                              placeholder="Logradouro" value="{{ objClienteSacado.endereco.logradouro }}">
+                          </div>
+                        </div>
+
+                        <div class="column is-4">
+                          <label class="label">Complemento</label>
+                          <div class="control is-expanded">
+                            <input id="complemento" type="complemento" name="complemento"
+                              class="input {{ flashMessages.has('errors.complemento') ? 'is-danger' : ' ' }}"
+                              placeholder="Complemento" value="{{ objClienteSacado.endereco.complemento }}">
+                          </div>
+                        </div>
+
+                        <div class="column is-2">
+                          <label class="label">Número</label>
+                          <div class="control is-expanded">
+                            <input id="numero" type="numero" name="numero"
+                              class="input {{ flashMessages.has('errors.numero') ? 'is-danger' : ' ' }}"
+                              placeholder="Número" value="{{ objClienteSacado.endereco.numero }}">
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="columns">
+
+                        <div class="column is-3">
+                          <label class="label">Bairro</label>
+                          <div class="control is-expanded">
+                            <input id="bairro" type="bairro" name="bairro"
+                              class="input {{ flashMessages.has('errors.bairro') ? 'is-danger' : ' ' }}"
+                              placeholder="Bairro" value="{{ objClienteSacado.endereco.bairro }}">
+                          </div>
+                        </div>
+
+                        <div class="column is-4">
+                          <label class="label">Cidade</label>
+                          <div class="control is-expanded">
+                            <input id="cidade" type="cidade" name="cidade"
+                              class="input {{ flashMessages.has('errors.cidade') ? 'is-danger' : ' ' }}"
+                              placeholder="Cidade" value="{{ objClienteSacado.endereco.cidade }}">
+                          </div>
+                        </div>
+
+                        <div class="column is-2">
+                          <label class="label">Estado</label>
+                          <div class="control is-expanded">
+                            <input id="uf" type="uf" name="uf"
+                              class="input {{ flashMessages.has('errors.uf') ? 'is-danger' : ' ' }}"
+                              placeholder="uf" value="{{ objClienteSacado.endereco.uf }}">
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card has-background-light mt-3">
+                    <header class="card-header has-background-success">
+                      <p class="title is-4 p-3 has-text-white">
+                        Taxas e Limites
+                      </p>
+                    </header>
+                    <div class="card-content">
+                      <div class="columns">
+
+                        <div class="column">
+                          <label class="label">Taxa Juros / Mês - %</label>
+                          <div class="control is-expanded">
+                            <input id="taxaJuros" type="taxaJuros" name="taxaJuros"
+                              class="input {{ flashMessages.has('errors.taxaJuros') ? 'is-danger' : '' }}"
+                              value="{{ objClienteSacado.taxaJuros.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
+                          </div>
+                        </div>
+
+                        <div class="column">
+                          <label class="label">Taxa Flutuante - R$</label>
+                          <div class="control is-expanded">
+                            <input id="taxaFloat" type="taxaFloat" name="taxaFloat"
+                              class="input {{ flashMessages.has('errors.taxaFloat') ? 'is-danger' : '' }}"
+                              value="{{ objClienteSacado.taxaFloat.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
+                          </div>
+                        </div>
+
+                        <div class="column">
+                          <label class="label">IOF</label>
+                          <div class="control is-expanded">
+                            <input id="iof" type="iof" name="iof"
+                              class="input {{ flashMessages.has('errors.iof') ? 'is-danger' : '' }}"
+                              value="{{ objClienteSacado.iof.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
+                          </div>
+                        </div>
+
+                        <div class="column">
+                          <label class="label">Juros</label>
+                          <div class="control is-expanded">
+                            <input id="juros" type="juros" name="juros"
+                              class="input {{ flashMessages.has('errors.juros') ? 'is-danger' : '' }}"
+                              value="{{ objClienteSacado.juros.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
+                          </div>
+                        </div>
+
+                        <div class="column">
+                          <label class="label">Taxa Emissão</label>
+                          <div class="control is-expanded">
+                            <input id="taxaEmissao" type="taxaEmissao" name="taxaEmissao"
+                              class="input {{ flashMessages.has('errors.taxaEmissao') ? 'is-danger' : '' }}"
+                              value="{{ objClienteSacado.taxaEmissao.toFixed(2) }}"
+                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                  <hr class="hr-style" />
+                  <div class="field is-grouped">
+                    <div class="control">
+                      <button type="submit" class="button is-link">
+                        <span class="icon is-small">
+                          <i class="fas fa-check"></i>
+                        </span>
+                        <span>Salvar</span>
+                      </button>
+                    </div>
+
+                    <div class="control">
+                      <button type="button" class="button is-warning"
+                        onclick="window.location.href='{{ `/sacados` }}'">
+                        <span class="icon is-small">
+                          <i class="fas fa-window-restore"></i>
+                        </span>
+                        <span>Cancelar</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+            </form>
+          </div>
+
+          <div class="box">
+            <table class="table is-fullwidth is-striped is-hoverable">
+              <thead>
+                <tr>
+                  <div>
+                    <th class="is-hidden-mobile">CPF</th>
+                  </div>
+                  <th>Nome</th>
+                  <th class="is-hidden-mobile">E-mail</th>
+                  <th class="has-text-centered">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                @each(sacado in sacados)
+                <tr>
+                  <div>
+                    <td class="is-hidden-mobile">{{ sacado.cpf }}</td>
+                  </div>
+                  <td>{{ sacado.nome }}</td>
+                  <td class="is-hidden-mobile">{{ sacado.email }}</td>
+                  <td class="has-text-centered">
+                    <form action="{{ `/sacados/${sacado.id}?_method=DELETE` }}" method="post">
+                      {{ csrfField() }}
+                      <button type="button" class="button is-small is-link"
+                        onclick="window.location.href='{{ `/sacados/${sacado.id}` }}'">
+                        <span class="icon is-small">
+                          <i class="fas fa-edit"></i>
+                        </span>
+                        <span>Editar</span>
+                      </button>
+                      {{--  <button type="submit" class="button is-small is-danger">
+                        <span class="icon is-small">
+                          <i class="fas fa-trash"></i>
+                        </span>
+                        <span>Excluir</span>
+                      </button>  --}}
+                    </form>
+                  </td>
+                </tr>
+                @else
+                <tr>
+                  <td colspan="2" class="has-text-centered">Nenhum Cliente Sacado Cadastrado</td>
+                </tr>
+                @endeach
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{--  Script Busca endereço ViaCEP  --}}
+<script>
+  function limpa_formulário_cep() {
+          //Limpa valores do formulário de cep.
+          document.getElementById('logradouro').value=("");
+          document.getElementById('bairro').value=("");
+          document.getElementById('cidade').value=("");
+          document.getElementById('uf').value=("");
+  }
+
+  function meu_callback(conteudo) {
+      if (!("erro" in conteudo)) {
+          //Atualiza os campos com os valores.
+          document.getElementById('logradouro').value=(conteudo.logradouro);
+          document.getElementById('bairro').value=(conteudo.bairro);
+          document.getElementById('cidade').value=(conteudo.localidade);
+          document.getElementById('uf').value=(conteudo.uf);
+      } //end if.
+      else {
+          //CEP não Encontrado.
+          limpa_formulário_cep();
+          alert("CEP não encontrado.");
+      }
+  }
+
+  function pesquisacep(valor) {
+
+      //Nova variável "cep" somente com dígitos.
+      var cep = valor.replace(/\D/g, '');
+
+      //Verifica se campo cep possui valor informado.
+      if (cep != "") {
+
+          //Expressão regular para validar o CEP.
+          var validacep = /^[0-9]{8}$/;
+
+          //Valida o formato do CEP.
+          if(validacep.test(cep)) {
+
+              //Preenche os campos com "..." enquanto consulta webservice.
+              document.getElementById('logradouro').value="...";
+              document.getElementById('bairro').value="...";
+              document.getElementById('cidade').value="...";
+              document.getElementById('uf').value="...";
+
+              //Cria um elemento javascript.
+              var script = document.createElement('script');
+
+              //Sincroniza com o callback.
+              script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+
+              //Insere script no documento e carrega o conteúdo.
+              document.body.appendChild(script);
+
+          } //end if.
+          else {
+              //cep é inválido.
+              limpa_formulário_cep();
+              alert("Formato de CEP inválido.");
+          }
+      } //end if.
+      else {
+          //cep sem valor, limpa formulário.
+          limpa_formulário_cep();
+      }
+  };
+
+</script>
+
+@endsection
