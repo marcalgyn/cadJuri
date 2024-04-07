@@ -58,7 +58,7 @@ export default class ClientesController {
           bairro: request.input("bairro") === 'null' ? '' : request.input("bairro"),
           cidade: request.input("cidade") === 'null' ? '' : request.input("cidade"),
           estado: request.input("estado") === 'null' ? 'GO' : request.input("estado"),
-          empresa_id: pegar a empresa aqui,
+          empresa_id: pegar a empresa aqui, que foi logado inicialmente
 
 
           enderecoId: novoEndereco.id
