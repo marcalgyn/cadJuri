@@ -22,9 +22,19 @@ Route.group(() => {
   Route.post("/", "PessoasController.create");
   Route.patch("/:id", "PessoasController.activate");
   Route.delete("/:id", "PessoasController.delete");
+  Route.get("/add", "PessoasController.add");
 })
   .prefix("/pessoas")
   .middleware("auth");
+
+  Route.group(() => {
+    Route.get("/", "ClientesController.index");
+    Route.get("/:id", "ClientesController.edit");
+    Route.post("/", "ClientesController.create");
+  })
+    .prefix("/clientes")
+    .middleware("auth");
+
 
   /*
 Route.group(() => {
@@ -84,15 +94,11 @@ Route.group(() => {
 })
   .prefix("/patrimonios")
   .middleware("auth");
+*/
 
-Route.group(() => {
-  Route.get("/", "ClienteSacadosController.index");
-  Route.get("/:id", "ClienteSacadosController.edit");
-  Route.post("/", "ClienteSacadosController.create");
-})
-  .prefix("/sacados")
-  .middleware("auth");
 
+
+  /*
 Route.group(() => {
   Route.get("/", "ClienteSacadoresController.index");
   Route.get("/:id", "ClienteSacadoresController.edit");

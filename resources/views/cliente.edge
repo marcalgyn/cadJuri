@@ -22,39 +22,41 @@
 
 
                   <div class="box">
-                    <form action="/empresas" method="post">
+                    <form action="/clientes" method="post">
                       {{ csrfField() }}
-                      <input type="hidden" name="id" id="id" value={{ objEmpresa.id }}>
+                      <input type="hidden" name="id" id="id" value={{ objCliente.id }}>
 
                       <div class="card has-background-light">
                         <header class="card-header has-background-link cab">
                           <p class="title is-5 p-2 has-text-white">
-                            Cadastro de Empresa
+                            Cadastro de Clientes
                           </p>
                         </header>
                         <div class="card-content">
-                          <div class="field">
+                          <div class="field col-md-2">
                             <label class="label">CNPJ</label>
                             <div class="control is-expanded">
                               <input
-                                id="cnpj"
+                                id="cpfcnpj"
                                 type="text"
-                                name="cnpj"
-                                class="input {{ flashMessages.has('errors.cnpj') ? 'is-danger' : '' }}" placeholder="Informe o CNPJ da Empresa"
-                                value="{{ objEmpresa.cnpj }}"
+                                name="cpfcnpj"
+                                class="input {{ flashMessages.has('errors.cpfcnpj') ? 'is-danger' : '' }}" placeholder="CPF/CNPJ"
+                                value="{{ objCliente.cpfcnpj }}"
                               >
                             </div>
+
                           </div>
 
-                          <div class="field">
+                          <div class="field col-md-8">
                             <label class="label">Razão Social</label>
                             <div class="control is-expanded">
                               <input
                                 type="text"
-                                name="razaoSocial"
-                                class="input {{ flashMessages.has('errors.razaoSocial') ? 'is-danger' : '' }}"
-                                placeholder="Informe a Razão Social da Empresa"
-                                value="{{ objEmpresa.razaoSocial }}"
+                                id="nome"
+                                name="nome"
+                                class="input {{ flashMessages.has('errors.nome') ? 'is-danger' : '' }}"
+                                placeholder="Informe o Nome do Cliente"
+                                value="{{ objCliente.nome }}"
                                 style="text-transform:uppercase" 
                               >
                             </div>
@@ -64,15 +66,41 @@
                             <div class="row">
                               <div class="field-body mb-12">  
                                 <div class="field">
-                                  <label class="label">Seleciona o Grupo</label>
-                                    <div class="select is-fullwidth">
-                                      <select name="grupo" required>
-                                        <option value="">Selecione um Grupo</option>
-                                        @each(grupo in grupos)
-                                        <option value="{{ grupo.id }}" {{grupo.id === objEmpresa.grupo_id ? 'selected' : '' }}>{{
-                                          grupo.nome }}</option>
-                                        @endeach
-                                      </select>
+                                  <label class="label">Registro</label>
+                                  <div class="control is-expanded">
+                                    <input
+                                      id="registro"
+                                      type="text"
+                                      name="registro"
+                                      class="input" placeholder="N de registro do Cliente"
+                                      value="{{ objCliente.registro }}"
+                                    >
+                                  </div>
+                                </div>
+
+                                <div class="field">
+                                  <label class="label">Estado Civil</label>
+                                    <div class="control is-expanded">
+                                      <input type="text"
+                                              name="estadocivil"
+                                              class="input {{ flashMessages.has('errors.estadocivil') ? 'is-danger' : '' }}"
+                                              placeholder="Estado Civil"
+                                              value="{{objCliente.estadocivil }}"
+                                              style="text-transform:uppercase" 
+                                      >
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                  <label class="label">Naturalidade</label>
+                                    <div class="control is-expanded">
+                                      <input type="text"
+                                              name="naturalidade"
+                                              class="input {{ flashMessages.has('errors.naturalidade') ? 'is-danger' : '' }}"
+                                              placeholder="Naturalidade"
+                                              value="{{objCliente.naturalidade}}"
+                                              style="text-transform:uppercase" 
+                                      >
                                     </div>
                                 </div>
 
@@ -80,7 +108,7 @@
                                    <label class="label">E-mail</label>
                                    <div class="control is-expanded">
                                         <input id="email" type="email" name="email" class="input {{ flashMessages.has('errors.email') ? 'is-danger' : '' }}"
-                                          placeholder="email" value="{{ objEmpresa.email }}"
+                                          placeholder="email" value="{{ objCliente.email }}"
                                           style="text-transform:downcase"
                                         >
                                     </div>
@@ -91,26 +119,26 @@
                           <div class="column">
                               <div class="row">
                                 <div class="field-body mb-12">    
-                              
-                                      <div class="col-3 field">
+                                      <div class="col-3 col-sm-1 field">
                                         <button type="button" class="btn btn-primary"
                                             onclick="pesquisacep(cep.value)">Buscar</button>
                                       </div>
 
                                       <div class="col-2 field">
                                           <input name="cep" type="search" class="input" id="cep"
-                                              value="{{objEmpresa.cep}}" placeholder="Cep" onblur="pesquisacep(cep.value)"
+                                              value="{{objCliente.cep}}" placeholder="Cep" onblur="pesquisacep(cep.value)"
                                               required onkeypress="$(this).mask('00.000-000')">
                                       </div>
 
                                   <div class="field">
                                       <input name="logradouro" type="text" class="input" id="logradouro"
-                                          value="{{objEmpresa.logradouro}}" placeholder="Logradouro" required
+                                          value="{{objCliente.logradouro}}" placeholder="Logradouro" required
                                           style="text-transform:uppercase">
                                   </div>
+
                                   <div class="form-group field">
                                       <input type="text" name="bairro" type="text" class="input" id="bairro"
-                                          placeholder="Bairro" value="{{objEmpresa.bairro}}"
+                                          placeholder="Bairro" value="{{objCliente.bairro}}"
                                           style="text-transform:uppercase">
                                   </div>
                                 </div>
@@ -122,28 +150,22 @@
                                 
                                   <div class="form-group col-md-4">
                                     <input name="cidade" type="text" class="input" id="cidade"
-                                        value="{{objEmpresa.cidade}}" placeholder="Cidade" required
+                                        value="{{objCliente.cidade}}" placeholder="Cidade" required
                                         style="text-transform:uppercase">
                                   </div>
                                 
-                                  <div class="form-group col-md-2 field">
-                                      <input name="uf" type="text" class="input" id="uf" placeholder="UF"
-                                          value="{{objEmpresa.uf}}" required
+                                  <div class="form-group col-sm-1">
+                                      <input name="uf" type="text" maxlength="2" class="input" id="uf" placeholder="UF"
+                                          value="{{objCliente.estado}}" required
                                           style="text-transform:uppercase">
                                   </div>
                                 
                                 
-                                  <div class="form-group col-md-1 field">
-                                    <input name="complemento" type="text" class="input" id="complemento" placeholder="Complemento"
-                                        value="{{objEmpresa.complemento}}" 
-                                        style="text-transform:uppercase">
-                                  </div>
-                                
-
-                                
-                                  <div class="form-group col-md-1 field">
-                                    <input name="telefone" type="text" class="input" id="telefone" placeholder="telefone"
-                                        value="{{objEmpresa.telefone}}" >
+                                  <div class="control col-sm-2">
+                                    <input name="telefone" type="text" 
+                                    class="input {{ flashMessages.has('errors.telefone') ? 'is-danger' : '' }}" 
+                                        id="telefone" placeholder="telefone"
+                                        value="{{objCliente.telefone}}" >
                                   </div>
                                 
                               </div>    
@@ -161,7 +183,7 @@
                             </div>
 
                             <div class="control">
-                              <button type="button" class="button is-warning" onclick="window.location.href='{{ `/empresas` }}'">
+                              <button type="button" class="button is-warning" onclick="window.location.href='{{ `/clientes` }}'">
                                 <span class="icon is-small">
                                   <i class="fas fa-window-restore"></i>
                                 </span>
@@ -192,32 +214,34 @@
 
 
                   <div class="box">
-                    <table class="table is-fullwidth is-striped is-hoverable">
+                    <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
+                    
+                    <table class="table is-fullwidth is-striped is-hoverable" id="lista">
                       <thead>
                         <tr>
                           <div>
-                            <th class="is-hidden-mobile">CNPJ</th>
+                            <th class="is-hidden-mobile">CPF/CNPJ</th>
                           </div>
-                          <th>Razão Social</th>
+                          <th>Nome</th>
                           <th class="is-hidden-mobile">e-mail</th>
                           <th class="has-text-centered">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
-                        @each(empresa in empresas)
+                        @each(cliente in clientes)
                         <tr>
                           <div>
-                            <td class="is-hidden-mobile">{{ empresa.cnpj }}</td>
+                            <td class="is-hidden-mobile">{{ cliente.cpfcnpj }}</td>
                           </div>
-                          <td>{{ empresa.razaoSocial }}</td>
-                          <td class="is-hidden-mobile">{{ empresa.email }}</td>
+                          <td style="text-transform: uppercase" >{{ cliente.nome }}</td>
+                          <td class="is-hidden-mobile">{{ cliente.email }}</td>
                           <td class="has-text-centered">
-                            <form action="{{ `/empresas/${empresa.id}?_method=DELETE` }}" method="post">
+                            <form action="{{ `/clientes/${cliente.id}?_method=DELETE` }}" method="post">
                               {{ csrfField() }}
                               <button
                                 type="button"
                                 class="button is-small is-primary"
-                                onclick="window.location.href='{{ `/empresas/${empresa.id}` }}'" >
+                                onclick="window.location.href='{{ `/clientes/${cliente.id}` }}'" >
                                 <span class="icon is-small">
                                   <i class="fas fa-edit"></i>
                                 </span>
@@ -234,7 +258,7 @@
                         </tr>
                         @else
                           <tr>
-                            <td colspan="2" class="has-text-centered">Nenhum Empresa Cadastrada</td>
+                            <td colspan="2" class="has-text-centered">Nenhum Cliente Cadastrado</td>
                           </tr>
                         @endeach
                       </tbody>
@@ -247,5 +271,23 @@
         </div>
     </div>
 
+<script>
 
+document.getElementById('filtro-nome').addEventListener('keyup', pesquisaTabela());
+
+function pesquisaTabela() {
+  var filter, table, tr, td, i;
+  table = document.getElementById("lista");
+  return function() {
+    tr = table.querySelectorAll("tbody tr");
+    filter = this.value.toUpperCase();
+    for (i = 0; i < tr.length; i++) {
+      var match = tr[i].innerHTML.toUpperCase().indexOf(filter) > -1;
+      tr[i].style.display = match ? "table-row" : "none";
+    }
+  }
+}
+
+
+</script>
 @endsection

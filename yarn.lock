@@ -276,10 +276,10 @@
     "@poppinss/utils" "^4.0.4"
     fs-extra "^10.1.0"
 
-"@adonisjs/shield@^7.1.0":
-  version "7.1.0"
-  resolved "https://registry.npmjs.org/@adonisjs/shield/-/shield-7.1.0.tgz"
-  integrity sha512-+a4Z+LBcWd46gMh99Wf0+iJMowq4aKuD04kvYB4AgTV78ffn21AXq3bsnoklFACkidEJwZ3FlRfQfKE+z1vg+g==
+"@adonisjs/shield@^7.1.1":
+  version "7.1.1"
+  resolved "https://registry.npmjs.org/@adonisjs/shield/-/shield-7.1.1.tgz"
+  integrity sha512-y1YzXwravcS/A1yxcyfSD/UrRi2+H9v0ntX9NgVhLYvBF5eHuPzQKgv9sICVjmj2z7n94HzcTAio0Rc32EX51Q==
   dependencies:
     "@poppinss/utils" "^4.0.4"
     csrf "^3.1.0"
@@ -1792,17 +1792,7 @@ concat-map@0.0.1:
   resolved "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
   integrity sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==
 
-concat-stream@:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/concat-stream/-/concat-stream-2.0.0.tgz"
-  integrity sha512-MWufYdFw53ccGjCA+Ol7XJYpAlW6/prSMzuPOTRnJGcGzuhLn4Scrz7qf6o8bROZ514ltazcIFJZevcfbo0x7A==
-  dependencies:
-    buffer-from "^1.0.0"
-    inherits "^2.0.3"
-    readable-stream "^3.0.2"
-    typedarray "^0.0.6"
-
-concat-stream@^1.6.2:
+concat-stream@, concat-stream@^1.6.2:
   version "1.6.2"
   resolved "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.2.tgz"
   integrity sha512-27HBghJxjiZtIk3Ycvn/4kbJk/1uZuJFfuPEns6LaEvpvG1f0hTea8lilrouyo9mVc2GWdcEZ8OLoGmSADlrCw==
@@ -2795,16 +2785,7 @@ form-data-encoder@^2.1.2:
   resolved "https://registry.npmjs.org/form-data-encoder/-/form-data-encoder-2.1.4.tgz"
   integrity sha512-yDYSgNMraqvnxiEXO4hi88+YZxaHC6QKzb5N84iRCTDeRO7ZALpir/lVmf/uXUhnwUr2O4HU8s/n6x+yNjQkHw==
 
-form-data@^2.3.1:
-  version "2.5.1"
-  resolved "https://registry.npmjs.org/form-data/-/form-data-2.5.1.tgz"
-  integrity sha512-m21N3WOmEEURgk6B9GLOE4RuWOFf28Lhh9qGYeNlGq4VDXUlJy2th2slBNU8Gp8EzloYZOibZJ7t5ecIrFSjVA==
-  dependencies:
-    asynckit "^0.4.0"
-    combined-stream "^1.0.6"
-    mime-types "^2.1.12"
-
-form-data@~2.3.2:
+form-data@^2.3.1, form-data@~2.3.2:
   version "2.3.3"
   resolved "https://registry.npmjs.org/form-data/-/form-data-2.3.3.tgz"
   integrity sha512-1lLKB2Mu3aGP1Q/2eCOx0fNbRMe7XdwktwOruhfqqd0rIJWwN4Dh+E3hrPSlDCXnSR7UtZ1N38rVXm+6+MEhJQ==
@@ -4902,15 +4883,6 @@ readable-stream@^2.0.5, readable-stream@^2.2.2, readable-stream@2.3.7:
     safe-buffer "~5.1.1"
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
-
-readable-stream@^3.0.2:
-  version "3.6.0"
-  resolved "https://registry.npmjs.org/readable-stream/-/readable-stream-3.6.0.tgz"
-  integrity sha512-BViHy7LKeTz4oNnkcLJ+lVSL6vpiFeX6/d3oSH8zCW7UxP2onchk+vTGB143xuFjHS3deTgkKoXXymXqymiIdA==
-  dependencies:
-    inherits "^2.0.3"
-    string_decoder "^1.1.1"
-    util-deprecate "^1.0.1"
 
 readable-stream@^3.6.0:
   version "3.6.0"

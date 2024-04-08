@@ -33,8 +33,7 @@ export default class HomeController {
 
     //HomeController.baseUrl("/home");
 
-    console.log('Empresas ', empresas[0].fantasia);
-
+    
     return view.render("home/index", {
       empresas,
       addPessoas,
@@ -49,8 +48,8 @@ export default class HomeController {
 
 
     const pessoas = await Pessoa.query()
-      .where({ ativo: true, desligado: false })
-      .orderBy("name");
+      .where({ status: true, desligado: false })
+      .orderBy("nome");
 
     const page = request.input("page", 1);
     const limit = 50;
@@ -128,7 +127,7 @@ export default class HomeController {
 
         //Total de Usuarios Ativos
       const totalUsuarios = await Pessoa.query()
-      .where({ ativo: true, desligado: false })
+      .where({ status: true, desligado: false })
       .count("pessoas.id", "qnt");
 
 
@@ -167,10 +166,10 @@ export default class HomeController {
       //cargoUserLogado = auth.user.cargo;
     }
 
-    const grupos = await Grupo.all();
+    
     const empresas = await Empresa.all();
     const pessoas = await Pessoa.query()
-      .where({ ativo: true, desligado: false })
+      .where({ status: true, desligado: false })
       .orderBy("name");
 
     const pageOS = request.input("pageOS", 1);
@@ -185,10 +184,7 @@ export default class HomeController {
     const dataFinal = request.input("dataFinal");
     const statusOS = request.input("statusOS");
 
-    const consGrupo = await Grupo.query()
-    .where('grupos.id', '=', grupo)
-    .select('grupos.nome');
-
+    
     const consEmpresas = await Empresa.query()
     .where('empresas.id', '=', empDestino)
     .select('empresas.razao_social');
@@ -282,7 +278,7 @@ export default class HomeController {
 
 
     const addPessoas = await Pessoa.query()
-      .where({ ativo: false, desligado: false })
+      .where({ status: false, desligado: false })
       .orderBy("name");
 
 

@@ -9,22 +9,24 @@
       <h6 class="login subtitle has-text-centered">Registrar Novo Usuário</h6>
       <form action="/register" method="post">
         {{ csrfField() }}
-        <input type="hidden" name="ativo" id="ativo" value="0" >
+        <input type="hidden" name="ativo" id="ativo" value="1" >
+        <input name="empresa_id" id="empresa_id" value="1" hidden>
+        
 
         <div class="field">
           <label class="login label">Nome</label>
           <div class="control">
             <input
               type="text"
-              class="input {{ flashMessages.get('errors.name') ? 'is-danger' : '' }}"
-              name="name"
-              value="{{ flashMessages.get('name') || '' }}"
+              class="input {{ flashMessages.get('errors.nome') ? 'is-danger' : '' }}"
+              name="nome"
+              value="{{ flashMessages.get('nome') || '' }}"
               >
           </div>
 
-          @if(flashMessages.has('errors.name'))
+          @if(flashMessages.has('errors.nome'))
             <p class="help is-danger">
-              {{ flashMessages.get('errors.name') }}
+              {{ flashMessages.get('errors.nome') }}
             </p>
           @endif
         </div>

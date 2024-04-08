@@ -1,6 +1,6 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { rules, schema } from "@ioc:Adonis/Core/Validator";
-import Pessoa from "App/Models/Usuario";
+import Usuario from "App/Models/Usuario";
 
 export default class AuthController {
   public async showLogin({ view }: HttpContextContract) {
@@ -14,20 +14,25 @@ export default class AuthController {
   public async register({ request, view }: HttpContextContract) {
     const validationSchema = schema.create({
       ativo: schema.boolean(),
-      name: schema.string({ trim: true }),
-      email: schema.string({ trim: true }, [
+      nome: schema.string({ trim: true }),
+      empresa_id: schema.number(),
+      email: schema.string({ trim: true },[
         rules.email(),
         rules.maxLength(180),
-        rules.unique({ table: "pessoas", column: "email" }),
+        rules.unique({ table: "usuarios", column: "email" }),
       ]),
       password: schema.string({ trim: true }, [rules.confirmed()]),
-    });
-
+      
+    });''
+    
+    
     const validateData = await request.validate({
       schema: validationSchema,
     });
 
-    const objPessoa = await Pessoa.create(validateData);
+    console.log('Registrou ', validateData);
+
+    const objPessoa = await Usuario.create(validateData);
 
     return view.render("welcome", { objPessoa });
   }
@@ -38,26 +43,24 @@ export default class AuthController {
     session,
     response,
   }: HttpContextContract) {
-    const { email, password } = request.all();
+
+    const { email,  password} = request.all();
+
+    //console.log(request.all());
+    
+      
 
     try {
+      
       await auth.attempt(email, password);
       const isAtivo: boolean = auth.user?.$original.ativo;
-      const isDesligado: boolean = auth.user?.$original.desligado;
-     // const isEmpresa: number = auth.user?.$original.empresa_id
-
-      if (isDesligado) {
-        await auth.logout();
-        session.flash(
-          "notification",
-          "O seu acesso ao sistema foi bloqueado, favor falar com a administração."
-        );
-        return response.redirect("back");
-      }
-
+      console.log('Ativo: ');
+     
+      
       if (isAtivo) {
         console.log("Acesso liberado");
         return response.redirect("/home");
+        
       } else {
         await auth.logout();
         session.flash(
@@ -69,9 +72,11 @@ export default class AuthController {
     } catch (error) {
       session.flash(
         "notification",
-        "Não foi possível verificar suas credenciais"
+        "Não foi possível verificar suas credenciais: " + error
       );
       return response.redirect("back");
+      
+
     }
   }
 
@@ -80,4 +85,6 @@ export default class AuthController {
 
     return response.redirect("/login");
   }
+
+  
 }

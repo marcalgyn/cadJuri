@@ -9,10 +9,10 @@ export default class extends BaseSchema {
       table.string("nome").notNullable();
       table.string("email").notNullable();
       table.string("telefone").nullable();
-      table.string("login").notNullable();
-      table.string("senha").notNullable();
-      table.string("status").notNullable();
+      table.string("password").notNullable();
+      table.boolean("ativo").nullable();
       table.string("nivel").nullable();
+      table.string("remember_me_token").nullable();
 
       table
         .integer('empresa_id')

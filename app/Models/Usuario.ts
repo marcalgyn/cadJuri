@@ -23,29 +23,31 @@ export default class Usuario extends BaseModel {
 
   @column()
   public telefone: string;
-
-  @column()
-  public login: string;
   
   @column({ serializeAs: null })
-  public senha: string;
+  public password: string;
 
   @column()
-  public status: string;
+  public ativo: boolean;
 
   @column()
   public nivel: string;
 
+
   @column()
-  public rememberMeToken?: string;
+  public remember_me_token?: string;
 
   @column.dateTime({ autoCreate: true })
   public created_at: DateTime;
 
   @beforeSave()
-  public static async hashPassword(pessoa: Usuario) {
-    if (pessoa.$dirty.password) {
-      pessoa.senha = await Hash.make(pessoa.senha);
+  public static async hashPassword(usuario: Usuario) {
+    console.log('Senha Antes', usuario);
+    
+    if (usuario.$dirty.password) {
+      usuario.password = await Hash.make(usuario.password);
+      console.log('Senha dirty ', usuario.$dirty.password);
+      console.log('Senha depois ', usuario.password);
     }
   }
 

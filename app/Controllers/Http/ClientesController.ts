@@ -6,13 +6,15 @@ import Clientes from "App/Models/Cliente";
 
 
 export default class ClientesController {
-  public async index({ view }: HttpContextContract) {
+  public async index({ view, auth }: HttpContextContract) {
+    const idEmpresa = auth.user?.empresa_id;
+    
     const objCliente = {
       id: 0,
       cpfcnpj: "",
       nome: "",
       registro: "",
-      estadociviel: "",
+      estadocivil: "",
       naturalidade: "",
       telefone: "",
       email: "sem@email",
@@ -22,12 +24,15 @@ export default class ClientesController {
       cidade: "",
       estado: "",
     };
-    const clientes = await Clientes.query().orderBy("nome", "asc");
+    const clientes = await Clientes.query()
+    .where('empresa_id', '=', Number(idEmpresa))
+    .orderBy("nome", "asc");
+    
 
-    return view.render("clientes", { objCliente, clientes });
+    return view.render("cliente", { objCliente, clientes, idEmpresa });
   }
 
-  public async create({ request, response, session }: HttpContextContract) {
+  public async create({ request, response, session, auth }: HttpContextContract) {
     const validationSchema = schema.create({
       cpfcnpj: schema.string({ trim: true }, [rules.maxLength(14)]),
       nome: schema.string({ trim: true }, [rules.maxLength(180)]),
@@ -41,9 +46,13 @@ export default class ClientesController {
         "nome.required": "Informe o Nome do Cliente",
       },
     });
+    
+    console.log("Empresa: ", auth.user?.empresa_id);
 
     try {
       if (request.input("id") === "0") {
+        
+        
 
         await Clientes.create({
           cpfcnpj: validateData.cpfcnpj,
@@ -57,67 +66,56 @@ export default class ClientesController {
           logradouro: request.input("logradouro"),
           bairro: request.input("bairro") === 'null' ? '' : request.input("bairro"),
           cidade: request.input("cidade") === 'null' ? '' : request.input("cidade"),
-          estado: request.input("estado") === 'null' ? 'GO' : request.input("estado"),
-          empresa_id: pegar a empresa aqui, que foi logado inicialmente
-
-
-          enderecoId: novoEndereco.id
+          estado: request.input("estado") === 'null' ? 'GO' : request.input("uf"),
+          empresa_id: auth.user?.empresa_id,
         });
 
         session.flash(
           "notification",
-          "Cliente Sacado adicionado com sucesso!"
+          "Cliente adicionado com sucesso!"
         );
+
       } else {
   
-        const clienteSacado = await ClienteSacado.findOrFail(
+        const cliente = await Clientes.findOrFail(
           request.input("id")
         );
 
-        const endereco = await Endereco.findOrFail(request.input("enderecoId"));
-        endereco.logradouro = request.input("logradouro") === 'null' ? '' : request.input("logradouro") ;
-        endereco.bairro = request.input("bairro") === 'null' ? '': request.input("bairro");
-        endereco.cidade = request.input("cidade") === 'null' ? '' : request.input("cidade");
-        endereco.uf = request.input("uf") === 'null' ? 'GO' : request.input("uf");
-        endereco.cep = request.input("cep") === 'null' ? '' : request.input("cep");
-        endereco.numero = request.input("numero") === 'null' ? '0' : request.input("numero");
-        endereco.complemento = request.input("complemento") === 'null' ? '' : request.input("complemento");
-        await endereco.save();
+        cliente.cpfcnpj = request.input("cpfcnpj");
+        cliente.nome = request.input("nome"),
+        cliente.email = request.input("email") === 'null' ? ' ' : request.input("email") ,
+        cliente.telefone = request.input("telefone"),
+        cliente.registro = request.input("registro"),
+        cliente.estadocivil = request.input("estadocivil"),
+        cliente.naturalidade = request.input("naturalidade"),
+        cliente.cep = request.input("cep") === 'null' ? '' : request.input("cep");
+        cliente.logradouro = request.input("logradouro") === 'null' ? '' : request.input("logradouro") ;
+        cliente.bairro = request.input("bairro") === 'null' ? '': request.input("bairro");
+        cliente.cidade = request.input("cidade") === 'null' ? '' : request.input("cidade");
+        cliente.estado = request.input("estado") === 'null' ? 'GO' : request.input("uf");
 
-        clienteSacado.cpf = request.input("cpf");
-        clienteSacado.nome = request.input("nome"),
-        clienteSacado.email = request.input("email") === 'null' ? ' ' : request.input("email") ,
-        clienteSacado.telefone = request.input("telefone"),
-        clienteSacado.taxaJuros = request.input("taxaJuros").toLocaleString('pt-BR', { maximumSignificantDigits: 2 }),
-        clienteSacado.taxaFloat = request.input("taxaFloat").toLocaleString('pt-BR', { maximumSignificantDigits: 2 }),
-        clienteSacado.iof = request.input("iof").toLocaleString('pt-BR', { maximumSignificantDigits: 2 }),
-        clienteSacado.juros = request.input("juros").toLocaleString('pt-BR', { maximumSignificantDigits: 2 }),
-        clienteSacado.taxaEmissao = request.input("taxaEmissao").toLocaleString('pt-BR', { maximumSignificantDigits: 2 }),
-
-        await clienteSacado.save();
-        session.flash("notification", "Cliente Sacado alterado com sucesso!");
+        await cliente.save();
+        session.flash("notification", "Cliente alterado com sucesso!");
       }
     } catch (error) {
       console.log('Erro ao alterar', error);
       let msg: string = "";
       if (error.code === "ER_DUP_ENTRY") {
-        msg = `Cliente Sacado com o CPF ${validateData.cpf} já foi cadastrado.`;
+        msg = `Cliente com o CPF/CNPJ ${validateData.cpfcnpj} já foi cadastrado.`;
       }
       session.flash("notification", msg);
     }
-
-    return response.redirect("back");
+    return response.redirect("/clientes");
+    //return response.redirect("back");
   }
 
   public async edit({ view, params }: HttpContextContract) {
-    let objClienteSacado = await ClienteSacado.findOrFail(params.id);
-    const sacados = await ClienteSacado.query().orderBy('nome', 'asc');
+    let objCliente = await Clientes.findOrFail(params.id);
+    //const sacados = await Clientes.query().orderBy('nome', 'asc');
 
 
-    const endereco = await Endereco.findOrFail(objClienteSacado.enderecoId);
-    objClienteSacado.endereco = endereco;
 
-    return view.render("sacados", { objClienteSacado, sacados });
+    return view.render("cliente", { objCliente });
   }
 
 }
