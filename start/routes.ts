@@ -36,19 +36,21 @@ Route.group(() => {
     .middleware("auth");
 
 
-  /*
+  
 Route.group(() => {
-  Route.get("/", "TarefaController.index");
-  Route.post("/filtro", "TarefaController.filtro");
-  Route.get("/lista", "TarefaController.lista");
-  Route.get("/:id", "TarefaController.edit");
-  Route.post("/", "TarefaController.create");
-  Route.patch("/:id", "TarefaController.finalize");
-  Route.post("/:id", "TarefaController.cancela");
+  Route.get("/", "JuizadosController.index");
+  Route.post("/filtro", "JuizadosController.filtro");
+  Route.get("/lista", "JuizadosController.lista");
+  Route.get("/:id", "JuizadosController.edit");
+  Route.post("/", "JuizadosController.create");
+  Route.patch("/:id", "JuizadosController.finalize");
+  Route.post("/:id", "JuizadosController.cancela");
   
 })
-  .prefix("/tarefas")
+  .prefix("/juizados")
   .middleware("auth");
+
+/*
 
 Route.group(() => {
   Route.get("/", "OrdemServicoController.index");

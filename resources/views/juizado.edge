@@ -1,0 +1,182 @@
+@layout('layouts/app')
+
+@section('content')
+
+    <div class="main">
+        <div class="details">
+            <div class="columns">
+              <div class="column is-fullwidth">
+                <div class="box p-0">
+
+                  @if(flashMessages.has('notification'))
+                  <div class="notification is-success is-light notificacao">
+                    <button class="delete"></button>
+                    {{ flashMessages.get('notification') }}
+                  </div>
+                  @endif
+                  <div class="box">
+                      <form action="/juizados" method="post" enctype="multipart/form-data">
+                        {{ csrfField() }}
+                        <input type="hidden" name="id" value={{ objJuizado.id }}>
+
+                        <div class="card has-background-light">
+                          <header class="card-header has-background-link cab">
+                            <p class="title is-4 p-1 has-text-white">
+                              Cadastro de Juizados
+                            </p>
+                          </header>
+
+                          <div class="card-content">
+                            <div class="field col-md-8">
+                              <label class="label">Nome Juizado</label>
+                              <div class="control is-expanded">
+                                <input
+                                  type="text"
+                                  id="nomeJuizado"
+                                  name="nomeJuizado"
+                                  class="input {{ flashMessages.has('errors.nome') ? 'is-danger' : '' }}"
+                                  placeholder="Informe o Nome do Juizado"
+                                  value="{{ objJuizado.nomeJuizado }}"
+                                  style="text-transform:uppercase" 
+                                >
+                              </div>
+                            </div>
+  
+                            <div class="column ">
+                              <div class="row">
+                                <div class="field-body mb-12">  
+                                  <div class="field">
+                                    <label class="label">Comarca</label>
+                                    <div class="control is-expanded">
+                                      <input
+                                        id="comarca"
+                                        type="text"
+                                        name="comarca"
+                                        class="input" placeholder="Comarca"
+                                        value="{{ objJuizado.comarca }}"
+                                      >
+                                    </div>
+                                  </div>
+  
+                                  <div class="field">
+                                    <label class="label">Endereço</label>
+                                      <div class="control is-expanded">
+                                        <input type="text"
+                                                name="endereco"
+                                                class="input {{ flashMessages.has('errors.estadocivil') ? 'is-danger' : '' }}"
+                                                placeholder="Endereço"
+                                                value="{{objJuizado.endereco }}"
+                                                style="text-transform:uppercase" 
+                                        >
+                                      </div>
+                                  </div>
+  
+                                  <div class="field">
+                                    <label class="label">Telefone</label>
+                                      <div class="control is-expanded">
+                                        <input type="text"
+                                                name="telefone"
+                                                id="telefone"
+                                                class="input {{ flashMessages.has('errors.naturalidade') ? 'is-danger' : '' }}"
+                                                placeholder="(00) 00000-0000)"
+                                                value="{{objJuizado.telefone}}"
+                                                style="text-transform:uppercase" 
+                                        >
+                                      </div>
+                                  </div>
+  
+                                  <div class="field">
+                                     <label class="label">E-mail</label>
+                                     <div class="control is-expanded">
+                                          <input id="email" type="email" name="email" class="input {{ flashMessages.has('errors.email') ? 'is-danger' : '' }}"
+                                            placeholder="email" value="{{ objJuizado.email }}"
+                                            style="text-transform:downcase"
+                                          >
+                                      </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="column">
+                                <div class="row">
+                                  <div class="field-body mb-12">    
+                                    <div class="field">
+                                        <textarea name="observacao" type="textarea" class="input" id="observacao"
+                                            value="{{objJuizado.observacao}}" placeholder="Observacao" required
+                                            style="text-transform:uppercase">
+                                        </textarea>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+  
+                            <div class="field is-grouped">
+                              <div class="control">
+                                <button type="submit" class="button is-link">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-check"></i>
+                                  </span>
+                                  <span>Salvar</span>
+                                </button>
+                              </div>
+  
+                              <div class="control">
+                                <button type="button" class="button is-warning" onclick="window.location.href='{{ `/juizados` }}'">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-window-restore"></i>
+                                  </span>
+                                  <span>Cancelar</span>
+                                </button>
+                              </div>
+                            </div>
+  
+                          </div>
+
+                        </div>
+                      </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+  /***** Script do upload da imagem de abertura da tarefa *********/
+  const fileInput = document.querySelector('#file-abertura input[type=file]');
+  fileInput.onchange = () => {
+    if (fileInput.files.length > 0) {
+      /***** Pré-visualização da imagem de abertura da tarefa *********/
+      const output = document.getElementById('output');
+      output.src = URL.createObjectURL(fileInput.files[0]);
+      output.onload = function () {
+        URL.revokeObjectURL(output.src) // free memory
+      }
+
+    }
+  }
+  /***** Fim do Script de abertura *************************/
+
+  /***** Script do upload da imagem de conclusão da tarefa *********/
+  const fileInput2 = document.querySelector('#file-concluido input[type=file]');
+  fileInput2.onchange = () => {
+    if (fileInput2.files.length > 0) {
+      /***** Pré-visualização da imagem de conclusão da tarefa *********/
+      const output2 = document.getElementById('output2');
+      output2.src = URL.createObjectURL(fileInput2.files[0]);
+      output2.onload = function () {
+        URL.revokeObjectURL(output2.src) // free memory
+      }
+    }
+  }
+  /***** Fim do Script de conclusão da tarefa *************************/
+</script>
+
+<script type="text/javascript">
+		$('#valor').mask('000000000000.00', {reverse: true}); //Dinheiro
+</script>
+
+
+
+@endsection
