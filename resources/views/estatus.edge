@@ -16,29 +16,29 @@
                         </div>
                   @endif
                   <div class="box">
-                    <form action="/grupos" method="post">
+                    <form action="/estatus" method="post">
                       {{ csrfField() }}
-                      <input type="hidden" name="id" id="id" value={{ objGrupo.id }}>
+                      <input type="hidden" name="id" id="id" value={{ objEstatus.id }}>
 
                       <div class="card ">
                         <header class="card-header has-background-danger cab">
                           <p class="title is-6 p-2 has-text-white">
-                            Cadastro de Grupo
+                            Cadastro de Estatus
                           </p>
                         </header>
                         <div class="card-content">
                           <div class="field">
-                            <label class="label"> Nome</label>
+                            <label class="label"> Descricao</label>
                             <div class="control is-expanded">
-                              <input type="text" name="nome" class="input {{ flashMessages.has('errors.nome') ? 'is-danger' : '' }}"
-                                placeholder="Nome do Grupo" value="{{ objGrupo.nome }}">
+                              <input type="text" name="descricao" class="input {{ flashMessages.has('errors.descricao') ? 'is-danger' : '' }}"
+                                placeholder="Descrição" value="{{ objEstatus.descricao }}">
                             </div>
                           </div>
                           <div class="field">
                             <label class="label">Observação</label>
                             <div class="control is-expanded">
                               <input id="observacao" type="text" name="observacao" class="input" placeholder="Observação"
-                                value="{{objGrupo.observacao}}">
+                                value="{{objEstatus.observacao}}">
                             </div>
                           </div>
 
@@ -53,7 +53,7 @@
                               </button>
                             </div>
                             <div class="control">
-                              <button type="button" class="button is-warning" onclick="window.location.href='{{ `/grupos` }}'">
+                              <button type="button" class="button is-warning" onclick="window.location.href='{{ `/estatus` }}'">
                                 <span class="icon is-small">
                                   <i class="fas fa-window-restore"></i>
                                 </span>
@@ -67,48 +67,32 @@
                   <div>
 
 
-                  @if(flashMessages.has('notification'))
-                        <div class="notification is-success is-light">
-                          <button class="delete"></button>
-                          {{ flashMessages.get('notification') }}
-                        </div>
-                  @endif
-
                   <div class="box">
                     <table class="table is-fullwidth is-striped is-hoverable">
                       <thead>
                         <tr>
                           <th class="is-hidden-mobile">ID</th>
-                          <th>Nome</th>
+                          <th>Descrição</th>
                           <th class="has-text-centered is-hidden-mobile">Observação</th>
                           <th>Ação</th>
                         </tr>
                       </thead>
                       <tbody>
-                        @each(grupo in grupos)
+                        @each(estatus in estatus)
                         <tr>
-                          <td class="is-hidden-mobile">{{ grupo.id }}</td>
-                          <td class="is-uppercase">{{ grupo.nome }}</td>
-                          <td class="is-uppercase">{{ grupo.observacao }}</td>
+                          <td class="is-hidden-mobile">{{ estatus.id }}</td>
+                          <td class="is-uppercase">{{ estatus.descricao }}</td>
+                          <td class="is-uppercase">{{ estatus.observacao }}</td>
                           <td>
-                            <form action="{{ `/grupos/${grupo.id}?_method=DELETE` }}" method="post">
+                            <form action="{{ `/estatus/${estatus.id}?` }}" method="post">
                               {{ csrfField() }}
                               <button type="button" class="button is-small is-primary"
-                                onclick="window.location.href='{{ `/grupos/${grupo.id}` }}'">
+                                onclick="window.location.href='{{ `/estatus/${estatus.id}` }}'">
                                 <span class="icon is-small">
                                   <i class="fas fa-edit"></i>
                                 </span>
                                 <span>Editar</span>
                               </button>
-
-                              @if (auth.user.cargo === 1 )
-                                  <button type="submit" class="button is-small is-danger">
-                                    <span class="icon is-small">
-                                      <i class="fas fa-trash"></i>
-                                    </span>
-                                    <span>Excluir</span>
-                                  </button>
-                              @endif
 
                             </form>
 
@@ -122,19 +106,19 @@
                       </tbody>
                     </table>
                   </div>
-                  @if(grupos.hasPages)
+                  @if(estatus.hasPages)
                   <div class="box">
                     <nav class="pagination" role="navigation" aria-label="pagination">
-                      <a class="pagination-previous" {{ grupos.currentPage===1 && 'disabled' }}
-                        href="{{ grupos.url }}?page={{ grupos.currentPage - 1 }}">Anterior</a>
-                      <a class="pagination-next" {{ !grupos.hasMorePages && 'disabled' }}
-                        href="{{ grupos.url }}?page={{ grupos.currentPage + 1 }}">Próxima</a>
+                      <a class="pagination-previous" {{ estatus.currentPage===1 && 'disabled' }}
+                        href="{{ grupos.url }}?page={{ estatus.currentPage - 1 }}">Anterior</a>
+                      <a class="pagination-next" {{ !estatus.hasMorePages && 'disabled' }}
+                        href="{{ grupos.url }}?page={{ estatus.currentPage + 1 }}">Próxima</a>
                       <ul class="pagination-list">
-                        @each(nGrupo in grupos.getUrlsForRange(1, grupos.lastPage))
+                        @each(nEstatus in estatus.getUrlsForRange(1, estatus.lastPage))
                         <li>
                           <a class="pagination-link
-                                  {{ grupos.currentPage === nGrupo.page && 'is-current' }}" href="{{ nGrupo.url }}">
-                            {{ nGrupo.page }}
+                                  {{ estatus.currentPage === nEstatus.page && 'is-current' }}" href="{{ nEstatus.url }}">
+                            {{ nEstatus.page }}
                           </a>
                         </li>
                         @endeach

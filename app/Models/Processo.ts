@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import Empresa from "./Empresa";
 import Cliente from "./Cliente";
 import Tribunal from "./Tribunal";
-import Estatus from "./Estatus";
+import Estatus from "./Estatuses";
 
 export default class Tarefa extends BaseModel {
   @column({ isPrimary: true })

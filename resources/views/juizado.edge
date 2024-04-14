@@ -17,7 +17,7 @@
                   <div class="box">
                       <form action="/juizados" method="post" enctype="multipart/form-data">
                         {{ csrfField() }}
-                        <input type="hidden" name="id" value={{ objJuizado.id }}>
+                        <input type="hidden" name="id"  id="id" value={{ objJuizado.id }}>
 
                         <div class="card has-background-light">
                           <header class="card-header has-background-link cab">
@@ -32,11 +32,11 @@
                               <div class="control is-expanded">
                                 <input
                                   type="text"
-                                  id="nomeJuizado"
-                                  name="nomeJuizado"
-                                  class="input {{ flashMessages.has('errors.nome') ? 'is-danger' : '' }}"
+                                  id="nomejuizado"
+                                  name="nomejuizado"
+                                  class="input {{ flashMessages.has('errors.nomejuizado') ? 'is-danger' : '' }}"
                                   placeholder="Informe o Nome do Juizado"
-                                  value="{{ objJuizado.nomeJuizado }}"
+                                  value="{{ objJuizado.nomejuizado }}"
                                   style="text-transform:uppercase" 
                                 >
                               </div>
@@ -63,7 +63,7 @@
                                       <div class="control is-expanded">
                                         <input type="text"
                                                 name="endereco"
-                                                class="input {{ flashMessages.has('errors.estadocivil') ? 'is-danger' : '' }}"
+                                                class="input {{ flashMessages.has('errors.endereco') ? 'is-danger' : '' }}"
                                                 placeholder="Endereço"
                                                 value="{{objJuizado.endereco }}"
                                                 style="text-transform:uppercase" 
@@ -101,10 +101,12 @@
                                 <div class="row">
                                   <div class="field-body mb-12">    
                                     <div class="field">
-                                        <textarea name="observacao" type="textarea" class="input" id="observacao"
-                                            value="{{objJuizado.observacao}}" placeholder="Observacao" required
-                                            style="text-transform:uppercase">
-                                        </textarea>
+                                        <input name="observacao" type="text" 
+                                            class="input {{ flashMessages.has('errors.endereco') ? 'is-danger' : '' }}" 
+                                            id="observacao"
+                                            value="{{ objJuizado.observacao }}" placeholder="Observacao"
+                                            style="text-transform:uppercase"
+                                        >                                    
                                     </div>
                                   </div>
                                 </div>
@@ -135,6 +137,52 @@
                         </div>
                       </form>
                   </div>
+                  <!--  LISTA JUIZADOS -->
+
+                  <div class="box">
+                    <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
+                    
+                    <table class="table is-fullwidth is-striped is-hoverable" id="lista">
+                      <thead>
+                        <tr>
+                          <th>Nome Juizado</th>
+                          <th>Comarca</th>
+                          <th>Endereço</th>
+                          <th class="has-text-centered">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @each(juizado in juizados)
+                        <tr>
+                          <div>
+                            <td >{{ juizado.nomejuizado }}</td>
+                          </div>
+                          <td style="text-transform: uppercase" >{{ juizado.comarca }}</td>
+                          <td >{{ juizado.endereco }}</td>
+                          <td class="has-text-centered">
+                            <form action="{{ `/juizados/${juizado.id}` }}" method="post">
+                              {{ csrfField() }}
+                              <button
+                                type="button"
+                                class="button is-small is-primary"
+                                onclick="window.location.href='{{ `/juizados/${juizado.id}` }}'" >
+                                <span class="icon is-small">
+                                  <i class="fas fa-edit"></i>
+                                </span>
+                                <span>Editar</span>
+                              </button>
+                            </form>
+                          </td>
+                        </tr>
+                        @else
+                          <tr>
+                            <td colspan="2" class="has-text-centered">Nenhum Juizado Cadastrado</td>
+                          </tr>
+                        @endeach
+                      </tbody>
+                    </table>
+                  </div>
+
 
                 </div>
               </div>
@@ -142,41 +190,27 @@
         </div>
     </div>
 
-<script>
-  /***** Script do upload da imagem de abertura da tarefa *********/
-  const fileInput = document.querySelector('#file-abertura input[type=file]');
-  fileInput.onchange = () => {
-    if (fileInput.files.length > 0) {
-      /***** Pré-visualização da imagem de abertura da tarefa *********/
-      const output = document.getElementById('output');
-      output.src = URL.createObjectURL(fileInput.files[0]);
-      output.onload = function () {
-        URL.revokeObjectURL(output.src) // free memory
+
+    <script>
+
+      document.getElementById('filtro-nome').addEventListener('keyup', pesquisaTabela());
+      
+      function pesquisaTabela() {
+        var filter, table, tr, td, i;
+        table = document.getElementById("lista");
+        return function() {
+          tr = table.querySelectorAll("tbody tr");
+          filter = this.value.toUpperCase();
+          for (i = 0; i < tr.length; i++) {
+            var match = tr[i].innerHTML.toUpperCase().indexOf(filter) > -1;
+            tr[i].style.display = match ? "table-row" : "none";
+          }
+        }
       }
-
-    }
-  }
-  /***** Fim do Script de abertura *************************/
-
-  /***** Script do upload da imagem de conclusão da tarefa *********/
-  const fileInput2 = document.querySelector('#file-concluido input[type=file]');
-  fileInput2.onchange = () => {
-    if (fileInput2.files.length > 0) {
-      /***** Pré-visualização da imagem de conclusão da tarefa *********/
-      const output2 = document.getElementById('output2');
-      output2.src = URL.createObjectURL(fileInput2.files[0]);
-      output2.onload = function () {
-        URL.revokeObjectURL(output2.src) // free memory
-      }
-    }
-  }
-  /***** Fim do Script de conclusão da tarefa *************************/
-</script>
-
-<script type="text/javascript">
-		$('#valor').mask('000000000000.00', {reverse: true}); //Dinheiro
-</script>
-
+      
+      
+      </script>
+  
 
 
 @endsection

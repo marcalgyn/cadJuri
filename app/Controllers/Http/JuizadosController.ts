@@ -1,10 +1,10 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import { rules } from '@ioc:Adonis/Core/Validator';
 import { schema } from "@ioc:Adonis/Core/Validator";
 import Empresa from "App/Models/Empresa";
 import Juizados from "App/Models/Juizado";
 import Pessoa from "App/Models/Usuario";
-import { DateTime } from "luxon";
-import moment from "moment";
+
 
 
 export default class TarefaController {
@@ -13,202 +13,76 @@ export default class TarefaController {
 
     const objJuizado = {
       id: 0,
-      nomeJuizado: '',
-      comarca: '',
-      endereco: '',
-      telefone: '',
-      email: '',
-      observacao: '',
+      nomejuizado: "",
+      comarca: "",
+      endereco: "",
+      telefone: "",
+      email: "",
+      observacao: "",
     };
 
     const juizados = await Juizados.query()
     .where('empresa_id', '=', Number(idEmpresa))
     .orderBy("nomejuizado", "asc");
 
+    
     return view.render("juizado", { objJuizado, juizados, idEmpresa });
   }
 
   public async edit({ view, params }: HttpContextContract) {
-    const empresas = await Empresa.all();
-    const pessoas = await Pessoa.query()
-      .where({ ativo: true, desligado: false })
-      .orderBy("name");
-
-    const objTarefa = await Tarefa.findOrFail(params.id);
-
-    return view.render("tarefa", { objTarefa, empresas, pessoas, departamentos });
+    
+    const objJuizado = await Juizados.findOrFail(params.id);
+      
+    return view.render("juizado", { objJuizado });
   }
 
-  public async finalize({ response, session, params }: HttpContextContract) {
-    const tarefa = await Tarefa.findOrFail(params.id);
-
-    tarefa.statusTarefa = "Completo";
-    tarefa.dataConclusao = DateTime.now();
-
-    await tarefa.save();
-
-    session.flash("notification", "Tarefa finalizada com sucesso!!");
-
-    return response.redirect("back");
-  }
-
-  public async create({ request, response, session }: HttpContextContract) {
+    public async create({ request, response, session, auth }: HttpContextContract) {
 
     try {
       const validationSchema = schema.create({
-        prioridade: schema.number(),
-        empOrigem: schema.number(),
-        empDestino: schema.number(),
-        usuOrigem: schema.number(),
-        usuDestino: schema.number(),
-        depDestino: schema.number(),
-        descricao: schema.string({ trim: true }),
-        dataOrigem: schema.date(),
-        dataPrevisao: schema.date(),
-        statusTarefa: schema.string({ trim: true }),
+        nomejuizado: schema.string({trim: true}, [rules.maxLength(255)]),
+        comarca: schema.string({trim: true}),
 
       });
 
-      const validateData = await request.validate({ schema: validationSchema });
+      const validateData = await request.validate({ schema: validationSchema,
+        messages: {
+          "nomejuizado.required": "Informe o Juizado",
+          "comarca.required": "Informe a comarca",
+        }, });
 
-      let imagemAbertura: string = "";
-      let imagemConclusao: string = "";
-      const fileAbertura = request.file("imagemAbertura");
-      if (fileAbertura) {
-        const nomeImagem = this.normalizaNomeImagem(fileAbertura.clientName);
-        imagemAbertura = `/assets/img_tarefas/${nomeImagem}`;
-        await fileAbertura.move("public/assets/img_tarefas", {
-          name: nomeImagem,
-          overwrite: true,
-        });
-      }
-
-      const fileConclusao = request.file("imagemConclusao");
-      if (fileConclusao) {
-        const nomeImagem = this.normalizaNomeImagem(fileConclusao.clientName);
-        imagemConclusao = `/assets/img_tarefas/${nomeImagem}`;
-        await fileConclusao.move("public/assets/img_tarefas", {
-          name: nomeImagem,
-          overwrite: true,
-        });
-      }
-      let dataAtual: DateTime | null | undefined;
-
-
-      if (request.input("statusTarefa") === "Completo" && request.input("dataConclusao") === null) {
-        dataAtual = DateTime.now();
-      } else {
-        dataAtual = null
-      }
+      console.log(validateData);
 
       if (request.input("id") === "0") {
-        this.convertStrToDateTime(
-          request.input("dataOrigem"),
-          request.input("horaOrigem")
-        );
-
-        await Tarefa.create({
-          prioridade: validateData.prioridade,
-          empOrigem: validateData.empOrigem,
-          empDestino: validateData.empDestino,
-          usuOrigem: validateData.usuOrigem,
-          usuDestino: validateData.usuDestino,
-          depDestino: validateData.depDestino,
-          descricao: validateData.descricao,
-          valor: request.input("valor").toLocaleString('pt-BR', { maximumSignificantDigits: 2 }),
-
-          dataOrigem: this.convertStrToDateTime(
-            request.input("dataOrigem"),
-            request.input("horaOrigem")
-          ),
-          dataPrevisao: this.convertStrToDateTime(
-            request.input("dataPrevisao"),
-            request.input("horaPrevisao")
-          ),
-          statusTarefa: validateData.statusTarefa,
-          urlOrigem: imagemAbertura,
-          urlFinal: imagemConclusao,
-
-          dataConclusao:
-            request.input("dataConclusao") !== null
-              ? this.convertStrToDateTime(
-                request.input("dataConclusao"),
-                request.input("horaConclusao")
-              )
-              : dataAtual,
+        await Juizados.create({
+          nomejuizado: validateData.nomejuizado,
+          comarca: validateData.comarca,
+          endereco: request.input('endereco') === 'null' ? '' : request.input('endereco'),
+          telefone: request.input('telefone') === 'null' ? '' : request.input('telefone'),
+          email: request.input('email') === 'null' ? '' : request.input('email'),
+          observacao : request.input('observacao') === 'null' ? '' : request.input('observacao'),
+          empresa_id: auth.user?.empresa_id,
         });
 
-        session.flash("notification", "Tarefa adicionada com sucesso!");
-
-        const objEmpresa = await Empresa.findOrFail(validateData.empDestino);
-        let empresa = objEmpresa.razaoSocial;
-
-        const objPessoa = await Pessoa.findOrFail(validateData.usuDestino);
-        let usuarioDestino = objPessoa.name;
-        let emailUsuario = objPessoa.email;
-
-        const objPessoaDest = await Pessoa.findOrFail(validateData.usuOrigem);
-        let usuarioOrigem = objPessoaDest.name;
-
-
-        var defaultClient = SibApiV3Sdk.ApiClient.instance;
-        var apiKey = defaultClient.authentications['api-key'];
-        apiKey.apiKey = process.env.API_KEY; //Chave API e-mail
-
-        var smskey = defaultClient.authentications['api-key'];
-        smskey.apiKey = process.env.SMS_KEY; //Chave API SMS
-
-
-
-    
-
- 
-
-
-
-
+        session.flash("notification", "Juizado adicionado com sucesso!");
+      
       } else {
-        const tarefa = await Tarefa.findOrFail(request.input("id"));
-        tarefa.prioridade = request.input("prioridade");
-        tarefa.empOrigem = request.input("empOrigem");
-        tarefa.usuOrigem = request.input("usuOrigem");
-        tarefa.empDestino = request.input("empDestino");
-        tarefa.usuDestino = request.input("usuDestino");
-        tarefa.depDestino = request.input("depDestino");
-        tarefa.descricao = request.input("descricao");
-        tarefa.valor = request.input("valor").toLocaleString('pt-BR', { maximumSignificantDigits: 2 });
-        tarefa.dataOrigem = this.convertStrToDateTime(
-          request.input("dataOrigem"),
-          request.input("horaOrigem")
-        );
-        tarefa.dataPrevisao = this.convertStrToDateTime(
-          request.input("dataPrevisao"),
-          request.input("horaPrevisao")
-        );
-        tarefa.dataConclusao =
-          request.input("dataConclusao") !== null
-            ? this.convertStrToDateTime(
-              request.input("dataConclusao"),
-              request.input("horaConclusao")
-            )
-            : null;
-        tarefa.statusTarefa = request.input("statusTarefa");
-        if (imagemAbertura !== "") {
-          tarefa.urlOrigem = imagemAbertura;
-        }
-        if (imagemConclusao !== "") {
-          tarefa.urlFinal = imagemConclusao;
-        }
 
+        const juizado = await Juizados.findOrFail(request.input("id"));
 
-        if (request.input("statusTarefa") == "Completo" && request.input("dataConclusao") == "") {
-          tarefa.dataConclusao = DateTime.now();
-        }
+        juizado.nomejuizado = request.input("nomejuizado");
+        juizado.comarca = request.input('comarca');
+        juizado.endereco = request.input('endereco');
+        juizado.telefone = request.input('telefone');
+        juizado.email = request.input('email');
+        juizado.observacao = request.input('observacao');
+        
 
-        await tarefa.save();
+        await juizado.save();
 
-        session.flash("notification", "Tarefa alterada com sucesso!");
+        session.flash("notification", "Juizado alterada com sucesso!");
       }
+
     } catch (error) {
       console.log("Error:", error);
       let msg: string = "";
@@ -217,24 +91,12 @@ export default class TarefaController {
       }
       session.flash("notification", msg);
     }
-    return response.redirect("back");
+    return response.redirect('/juizados');
+
+    //return response.redirect("back");
   }
 
-  public async cancela({ response, session, params }: HttpContextContract) {
-    const tarefa = await Tarefa.findOrFail(params.id);
-
-    tarefa.statusTarefa = "Cancelado";
-    tarefa.dataConclusao = DateTime.now();
-    await tarefa.save();
-
-    // await tarefa.delete();
-
-    session.flash("notification", "Tarefa Cancelada com sucesso!");
-
-    return response.redirect("back");
-
-  }
-
+  /*** EDITAR A PARTIR  */
   public async lista({ request, view }: HttpContextContract) {
 
     const empresas = await Empresa.all();
@@ -357,23 +219,5 @@ export default class TarefaController {
     });
   }
 
-
-  /** Retorna um DateTime Luxon  **/
-  public convertStrToDateTime(dataInput: string, horaInput: string): any {
-    const dataLuxon = DateTime.fromISO(
-      dataInput.concat("T").concat(horaInput).concat(":00.000")
-    );
-
-    return dataLuxon;
-  }
-
-  public normalizaNomeImagem(value: String): string {
-    return (
-      moment().format("DDMMYYYYHHmmss") +
-      "_" +
-      value.normalize("NFD").split(" ").join("")
-    );
-  }
- 
 
 }

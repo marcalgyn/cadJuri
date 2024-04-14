@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table.integer('empresa_id')
       .unsigned()
       .references('empresas.id');
-      table.string('nomeJuizado');
+      table.string('nomejuizado');
       table.string('comarca');
       table.string('endereco');
       table.string('telefone');

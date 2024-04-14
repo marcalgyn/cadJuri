@@ -13,7 +13,7 @@ export default class Juizado extends BaseModel {
     public empresa_id: number;
 
     @column()
-    public nomeJuizado: string;
+    public nomejuizado: string; 
 
     @column()
     public comarca: string;

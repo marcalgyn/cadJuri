@@ -50,6 +50,16 @@ Route.group(() => {
   .prefix("/juizados")
   .middleware("auth");
 
+  Route.group(() =>{
+    Route.get("/", "EstatusController.index");
+    Route.get("/:id", "EstatusController.edit");
+    Route.post("/", "EstatusController.create");
+    Route.patch("/:id", "EstatusController.finalize");
+    Route.delete("/:id", "EstatusController.delete");
+  })
+  .prefix("/estatus")
+  .middleware("auth");
+
 /*
 
 Route.group(() => {
@@ -75,15 +85,8 @@ Route.group(() => {
   .prefix("/departamentos")
   .middleware("auth");
 
-Route.group(() =>{
-  Route.get("/", "GrupoController.index");
-  Route.get("/:id", "GrupoController.edit");
-  Route.post("/", "GrupoController.create");
-  Route.patch("/:id", "GrupoController.finalize");
-  Route.delete("/:id", "GrupoController.delete");
-})
-.prefix("/grupos")
-.middleware("auth");
+
+
 
 Route.group(() => {
   Route.get("/", "PatrimoniosController.index");
