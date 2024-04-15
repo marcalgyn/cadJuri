@@ -38,16 +38,16 @@ Route.group(() => {
 
   
 Route.group(() => {
-  Route.get("/", "JuizadosController.index");
-  Route.post("/filtro", "JuizadosController.filtro");
-  Route.get("/lista", "JuizadosController.lista");
-  Route.get("/:id", "JuizadosController.edit");
-  Route.post("/", "JuizadosController.create");
-  Route.patch("/:id", "JuizadosController.finalize");
-  Route.post("/:id", "JuizadosController.cancela");
+  Route.get("/", "TribunalController.index");
+  Route.post("/filtro", "TribunalController.filtro");
+  Route.get("/lista", "TribunalController.lista");
+  Route.get("/:id", "TribunalController.edit");
+  Route.post("/", "TribunalController.create");
+  Route.patch("/:id", "TribunalController.finalize");
+  Route.post("/:id", "TribunalController.cancela");
   
 })
-  .prefix("/juizados")
+  .prefix("/tribunais")
   .middleware("auth");
 
   Route.group(() =>{
@@ -60,21 +60,23 @@ Route.group(() => {
   .prefix("/estatus")
   .middleware("auth");
 
-/*
+
 
 Route.group(() => {
-  Route.get("/", "OrdemServicoController.index");
-  Route.post("/filtro", "OrdemServicoController.filtro");
-  Route.get("/lista", "OrdemServicoController.lista");
-  Route.get("/:id", "OrdemServicoController.edit");
-  Route.post("/", "OrdemServicoController.create");
-  Route.patch("/:id", "OrdemServicoController.finalize");
-  Route.post("/:id", "OrdemServicoController.cancela");
-  Route.post("/listaOrcamento", "OrdemServicoController.filtro");
+  Route.get("/", "ProcessosController.index");
+  Route.post("/filtro", "ProcessosController.filtro");
+  Route.get("/lista", "ProcessosController.lista");
+  Route.get("/:id", "ProcessosController.edit");
+  Route.post("/", "ProcessosController.create");
+  Route.patch("/:id", "ProcessosController.finalize");
+  Route.post("/:id", "ProcessosController.cancela");
+  Route.post("/listaProcesso", "ProcessosController.filtro");
 })
-  .prefix("/ordensServicos")
+  .prefix("/processos")
   .middleware("auth");
 
+
+/*
 Route.group(() => {
   Route.get("/", "DepartamentosController.index");
   Route.get("/:id", "DepartamentosController.edit");

@@ -2,85 +2,89 @@ import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { rules } from '@ioc:Adonis/Core/Validator';
 import { schema } from "@ioc:Adonis/Core/Validator";
 import Empresa from "App/Models/Empresa";
-import Juizados from "App/Models/Juizado";
+import Tribunais from "App/Models/Tribunal";
 import Pessoa from "App/Models/Usuario";
 
 
 
-export default class TarefaController {
+export default class TribunalController {
   public async index({ view, auth }: HttpContextContract) {
     const idEmpresa = auth.user?.empresa_id
 
-    const objJuizado = {
+    const objTribunal = {
       id: 0,
-      nomejuizado: "",
+      nome: "",
       comarca: "",
       endereco: "",
       telefone: "",
       email: "",
-      observacao: "",
+      obs: "",
+      vara: "",
+      empresa_id: Number(idEmpresa),
     };
 
-    const juizados = await Juizados.query()
+    const tribunais = await Tribunais.query()
     .where('empresa_id', '=', Number(idEmpresa))
-    .orderBy("nomejuizado", "asc");
+    .orderBy("nome", "asc");
 
     
-    return view.render("juizado", { objJuizado, juizados, idEmpresa });
+    return view.render("tribunal", { objTribunal, tribunais, idEmpresa });
   }
 
   public async edit({ view, params }: HttpContextContract) {
     
-    const objJuizado = await Juizados.findOrFail(params.id);
+    const objTribunal = await Tribunais.findOrFail(params.id);
       
-    return view.render("juizado", { objJuizado });
+    return view.render("tribunal", { objTribunal });
   }
 
-    public async create({ request, response, session, auth }: HttpContextContract) {
+  public async create({ request, response, session, auth }: HttpContextContract) {
 
     try {
       const validationSchema = schema.create({
-        nomejuizado: schema.string({trim: true}, [rules.maxLength(255)]),
+        nome: schema.string({trim: true}, [rules.maxLength(255)]),
         comarca: schema.string({trim: true}),
 
       });
 
       const validateData = await request.validate({ schema: validationSchema,
         messages: {
-          "nomejuizado.required": "Informe o Juizado",
+          "nome.required": "Informe o Tribunal",
           "comarca.required": "Informe a comarca",
         }, });
 
       console.log(validateData);
 
       if (request.input("id") === "0") {
-        await Juizados.create({
-          nomejuizado: validateData.nomejuizado,
+        await Tribunais.create({
+          nome: validateData.nome,
           comarca: validateData.comarca,
           endereco: request.input('endereco') === 'null' ? '' : request.input('endereco'),
           telefone: request.input('telefone') === 'null' ? '' : request.input('telefone'),
           email: request.input('email') === 'null' ? '' : request.input('email'),
-          observacao : request.input('observacao') === 'null' ? '' : request.input('observacao'),
+          vara: request.input('vara') === 'null' ? '' : request.input('vara'),
+          obs : request.input('observacao') === 'null' ? '' : request.input('observacao'),
           empresa_id: auth.user?.empresa_id,
         });
 
-        session.flash("notification", "Juizado adicionado com sucesso!");
+        session.flash("notification", "Tribunal adicionado com sucesso!");
       
       } else {
 
-        const juizado = await Juizados.findOrFail(request.input("id"));
+        const tribunal = await Tribunais.findOrFail(request.input("id"));
 
-        juizado.nomejuizado = request.input("nomejuizado");
-        juizado.comarca = request.input('comarca');
-        juizado.endereco = request.input('endereco');
-        juizado.telefone = request.input('telefone');
-        juizado.email = request.input('email');
-        juizado.observacao = request.input('observacao');
+        tribunal.nome = request.input("nomejuizado");
+        tribunal.comarca = request.input('comarca');
+        tribunal.endereco = request.input('endereco');
+        tribunal.telefone = request.input('telefone');
+        tribunal.email = request.input('email');
+        tribunal.vara = request.input('vara');
+        tribunal.obs = request.input('observacao');
         
 
-        await juizado.save();
+        await tribunal.save();
 
-        session.flash("notification", "Juizado alterada com sucesso!");
+        session.flash("notification", "Tribunal alterada com sucesso!");
       }
 
     } catch (error) {
@@ -91,7 +95,7 @@ export default class TarefaController {
       }
       session.flash("notification", msg);
     }
-    return response.redirect('/juizados');
+    return response.redirect('/tribunais');
 
     //return response.redirect("back");
   }

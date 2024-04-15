@@ -1,177 +1,91 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { schema } from "@ioc:Adonis/Core/Validator";
 import Empresa from "App/Models/Empresa";
-import Pessoa from "App/Models/Usuario";
-import Departamento from "App/Models/Departamento";
-import OrdemServico from "App/Models/OrdemServico";
+import Usuario from "App/Models/Usuario";
+import Processo from "App/Models/Processo";
+import Tribunal from "App/Models/Tribunal"
+import Estatus from "App/Models/Estatuses";
+
 import { DateTime } from "luxon";
 import moment from "moment";
 import SibApiV3Sdk  from "sib-api-v3-sdk";
 import { Request } from "@adonisjs/core/build/standalone";
+import Cliente from "App/Models/Cliente";
 
 
-export default class OrdemServicoController {
+export default class ProcessosController {
 
-  public async index({ view }: HttpContextContract) {
-    const empresas = await Empresa.all();
-    const departamentos = await Departamento.all();
-    const pessoas = await Pessoa.query()
-      .where({ ativo: true, desligado: false })
-      .orderBy("name");
+  public async index({ view, auth }: HttpContextContract) {
+    const idEmpresa = auth.user?.empresa_id;
 
-    const objOrdemServico = {
+    const tribunais = await Tribunal.query()
+    .where("empresa_id", "=", Number(idEmpresa))
+    .orderBy("nome", "asc");
+
+    const estatus = await Estatus.query()
+    .where("empresa_id", "=", Number(idEmpresa))
+    .orderBy("descricao", "asc");
+
+    const clientes = await Cliente.query()
+    .where("empresa_id", "=", Number(idEmpresa))
+    .orderBy("nome", "asc");
+
+    const objProcesso = {
       id: 0,
-      empOrigem: 0,
-      usuOrigem: 0,
-      empDestino: 0,
-      usuDestino: 0,
-      dataOrigem: DateTime.now(),
-      dataRealizado: null,
-      dataConclusao: null,
-      descricao: "",
-      prioridade: 2,
-      statusOrdemServico: "Analise",
-      statusProgresso: "",
-      valor: "0,00",
-      urlOrigem: "",
-      urlFinal: "",
-      urlOrigem2: "",
-      urlFinal2: "",
-      formaPagamento: "",
+      empresa_id: Number(idEmpresa),
+      numeroprocesso: "",
+      datacontratacao: DateTime.now(),
+      descricaoacao: "",
+      nivelprocesso: "",
+      nomejuiz: "",
+      primeiraaudiencia: DateTime.now(),
+      linkprocesso: "",
+      senhaprocesso: "",
+      vara: "",
+      obs: "",
+      cliente_id: 0,
+      tribunal_id: 0,
+      estatus_id: 0,
+      
     };
 
-    return view.render("ordemServico", {
-      objOrdemServico,
-      empresas,
-      pessoas,
-      departamentos,
+
+    return view.render("processos", {
+      tribunais,
+      estatus,
+      clientes,
+      objProcesso,
     });
   }
 
-  public async edit({ view, params }: HttpContextContract) {
-    const empresas = await Empresa.all();
-    const departamentos = await Departamento.all();
-    const pessoas = await Pessoa.query()
-      .where({ ativo: true, desligado: false })
-      .orderBy("name");
+  public async edit({ view, params, auth }: HttpContextContract) {
+    const objProcesso = await Processo.findOrFail(params.id)
+  
+   
 
-    const objOrdemServico = await OrdemServico.findOrFail(params.id);
-
-    const pessoa = await Pessoa.findOrFail(objOrdemServico.usuOrigem);
-    
-    console.log('OSid', objOrdemServico.id);
-    console.log('usuarioOrigem', objOrdemServico.usuOrigem);
-    console.log('idPessoa', pessoa.id);
-    console.log('idCargo', pessoa.cargo);
-    console.log('Valor ', objOrdemServico.valor);
-
-    let disabledField = (objOrdemServico.statusOrdemServico === 'Aprovado' && pessoa.cargo !== 1) ? 'disabled' : '';
-    let disabledForm = ((objOrdemServico.statusOrdemServico === 'Reprovado' || objOrdemServico.statusOrdemServico === 'Concluido') && pessoa.cargo !== 1) ? 'disabled' : '';
-
-    return view.render("ordemServico", {
-      objOrdemServico,
-      empresas,
-      pessoas,
-      departamentos,
-      disabledField,
-      disabledForm,
-      pessoa
+    return view.render("processos", {
+      objProcesso,
+      
     });
   }
 
-  public async finalize({ view, params }: HttpContextContract) {
-    const empresas = await Empresa.all();
-    const departamentos = await Departamento.all();
-    const pessoas = await Pessoa.query()
-      .where({ ativo: true, desligado: false })
-      .orderBy("name");
 
-    const objOrdemServico = await OrdemServico.findOrFail(params.id);
-
-    objOrdemServico.statusOrdemServico = "Concluido";
-    objOrdemServico.dataConclusao = DateTime.now();
-
-    return view.render("ordemServico", {
-      objOrdemServico,
-      empresas,
-      pessoas,
-      departamentos,
-    });
-  }
 
   public async create({ request, response, session }: HttpContextContract) {
     try {
       const validationSchema = schema.create({
-        prioridade: schema.number(),
-        empOrigem: schema.number(),
-        empDestino: schema.number(),
-        usuOrigem: schema.number(),
-        usuDestino: schema.number(),
-        depDestino: schema.number(),
-        descricao: schema.string({ trim: true }),
-        dataOrigem: schema.date(),
-        statusOrdemServico: schema.string({ trim: true }),
+        numeroprocesso: schema.string(),
+        
       });
 
       const validateData = await request.validate({ schema: validationSchema });
 
-      let imagemAbertura: string = "";
-      let imagemConclusao: string = "";
-      let imagem2Abertura: string = "";
-      let imagem2Conclusao: string = "";
-
-      const fileAbertura = request.file("imagemAbertura");
-      if (fileAbertura) {
-        const nomeImagem = this.normalizaNomeImagem(fileAbertura.clientName);
-        imagemAbertura = `/assets/img_ordemServicos/${nomeImagem}`;
-        await fileAbertura.move("public/assets/img_ordemServicos", {
-          name: nomeImagem,
-          overwrite: true,
-        });
-      }
-
-      const fileConclusao = request.file("imagemConclusao");
-      if (fileConclusao) {
-        const nomeImagem = this.normalizaNomeImagem(fileConclusao.clientName);
-        imagemConclusao = `/assets/img_ordemServicos/${nomeImagem}`;
-        await fileConclusao.move("public/assets/img_ordemServicos", {
-          name: nomeImagem,
-          overwrite: true,
-        });
-      }
-
-      const file2Abertura = request.file("imagem2Abertura");
-      if (file2Abertura) {
-        const nomeImagem = this.normalizaNomeImagem(file2Abertura.clientName);
-        imagem2Abertura = `/assets/img_ordemServicos/${nomeImagem}`;
-        await file2Abertura.move("public/assets/img_ordemServicos", {
-          name: nomeImagem,
-          overwrite: true,
-        });
-      }
-
-      const file2Conclusao = request.file("imagem2Conclusao");
-      if (file2Conclusao) {
-        const nomeImagem = this.normalizaNomeImagem(file2Conclusao.clientName);
-        imagem2Conclusao = `/assets/img_ordemServicos/${nomeImagem}`;
-        await file2Conclusao.move("public/assets/img_ordemServicos", {
-          name: nomeImagem,
-          overwrite: true,
-        });
-      }
 
       if (request.input("id") === "0") {
 
-        await OrdemServico.create({
-          prioridade: validateData.prioridade,
-          empOrigem: validateData.empOrigem,
-          empDestino: validateData.empDestino,
-          usuOrigem: validateData.usuOrigem,
-          usuDestino: validateData.usuDestino,
-          depDestino: validateData.depDestino,
-          descricao: validateData.descricao,
-
-
+        await Processo.create({
+          numeroprocesso: validateData.numeroprocesso,
+parei aqui
           formaPagamento: request.input("formaPagamento"),
           valor: request
             .input("valor"),
@@ -201,11 +115,11 @@ export default class OrdemServicoController {
         const objEmpresa = await Empresa.findOrFail(validateData.empDestino);
         let empresa = objEmpresa.razaoSocial;
 
-        const objPessoa = await Pessoa.findOrFail(validateData.usuDestino);
+        const objPessoa = await Usuario.findOrFail(validateData.usuDestino);
         let usuarioDestino = objPessoa.name;
         let emailUsuario = objPessoa.email;
 
-        const objPessoaDest = await Pessoa.findOrFail(validateData.usuOrigem);
+        const objPessoaDest = await Usuario.findOrFail(validateData.usuOrigem);
         let usuarioOrigem = objPessoaDest.name;
 
         let descOrcamento = validateData.descricao;
@@ -592,6 +506,26 @@ export default class OrdemServicoController {
     return response.redirect("back");
   }
 
+  public async finalize({ view, params }: HttpContextContract) {
+    const empresas = await Empresa.all();
+    const departamentos = await Departamento.all();
+    const pessoas = await Usuario.query()
+      .where({ ativo: true, desligado: false })
+      .orderBy("name");
+
+    const objOrdemServico = await OrdemServico.findOrFail(params.id);
+
+    objOrdemServico.statusOrdemServico = "Concluido";
+    objOrdemServico.dataConclusao = DateTime.now();
+
+    return view.render("ordemServico", {
+      objOrdemServico,
+      empresas,
+      pessoas,
+      departamentos,
+    });
+  }
+
   public async cancela({ response, session, params }: HttpContextContract) {
     const ordemServico = await OrdemServico.findOrFail(params.id);
 
@@ -609,7 +543,7 @@ export default class OrdemServicoController {
   public async lista({ request, view }: HttpContextContract) {
     const empresas = await Empresa.all();
     const departamentos = await Departamento.all();
-    const pessoas = await Pessoa.all();
+    const pessoas = await Usuario.all();
     const page = request.input("page", 1);
     const limit = 50;
 
@@ -644,7 +578,7 @@ export default class OrdemServicoController {
   public async filtro({ request, view }: HttpContextContract) {
     const empresas = await Empresa.all();
     const departamentos = await Departamento.all();
-    const pessoas = await Pessoa.all();
+    const pessoas = await Usuario.all();
     const page = request.input("page", 1);
     const limit = 50;
 

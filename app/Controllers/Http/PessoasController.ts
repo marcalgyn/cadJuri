@@ -3,22 +3,25 @@ import { rules, schema } from "@ioc:Adonis/Core/Validator";
 import Usuario from "App/Models/Usuario";
 
 export default class PessoasController {
-  public async index({ request, view }: HttpContextContract) {
+  public async index({ request, view, auth }: HttpContextContract) {
+    const idEmpresa = auth.user?.empresa_id;
+
     const objUsuario = {
       id: 0,
       nome: "",
       email: "",
-      telefone: "62 ",
+      telefone: "",
       login:"",
       password: "",
+      password_confirmation: "",
       ativo: 1,
       nivel: 0,
-      empresa_id: 0,
     };
 
     const page = request.input("page", 1);
     const limit = 10;
     const usuarios = await Usuario.query()
+    .where('empresa_id', '=', Number(idEmpresa))
       .orderBy("ativo", "asc")
       .orderBy("nivel", "desc")
       .orderBy("nome", "asc")
@@ -26,11 +29,11 @@ export default class PessoasController {
 
     usuarios.baseUrl("/pessoas");
 
-    return view.render("pessoas", { objPessoa: objUsuario, usuarios });
+    return view.render("pessoas", { objUsuario, usuarios, idEmpresa });
   }
 
-  public async edit({ view, params, request }: HttpContextContract) {
-    const objPessoa = await Usuario.findOrFail(params.id);
+  public async edit({ view, params, request, auth }: HttpContextContract) {
+    const objUsuario = await Usuario.findOrFail(params.id);
 
     const page = request.input("page", 1);
     const limit = 10;
@@ -40,10 +43,11 @@ export default class PessoasController {
 
     usuarios.baseUrl("/pessoas");
 
-    objPessoa.telefone === null ? (objPessoa.telefone = "") : null;
-    objPessoa.password = "";
+    objUsuario.telefone === null ? (objUsuario.telefone = "") : null;
+    objUsuario.password = String(auth.user?.password);
 
-    return view.render("pessoas", { objPessoa, pessoas: usuarios });
+
+    return view.render("pessoas", { objUsuario, usuarios });
   }
 
   public async create({ request, response, session, auth }: HttpContextContract) {
@@ -85,7 +89,6 @@ export default class PessoasController {
         const usuario = await Usuario.findOrFail(request.input("id"));
 
         if (!(!!request.input("inativo"))){
-          console.log("Ativo")
           usuario.nome = request.input("nome");
           usuario.email = request.input("email");
           usuario.telefone = request.input("telefone");

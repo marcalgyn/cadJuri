@@ -22,13 +22,19 @@ export default class Tarefa extends BaseModel {
   public nivelprocesso: string;
 
   @column()
-  public primeiraaudiencia: string;
+  public primeiraaudiencia: DateTime;
 
   @column()
   public linkprocesso: string;
 
   @column()
+  public nomejuiz: string;
+
+  @column()
   public senhaprocesso: string;
+
+  @column()
+  public vara: string;
 
   @column()
   public obs: string;

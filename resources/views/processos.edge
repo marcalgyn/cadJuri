@@ -1,0 +1,206 @@
+@layout('layouts/app')
+
+@section('content')
+    <div class="main">
+        <div class="details">
+            <div class="columns">
+              <div class="column is-fullwidth">
+                <div class="box p-0">
+
+                  @if(flashMessages.has('notification'))
+                  <div class="notification is-success is-light notificacao">
+                    <button class="delete"></button>
+                    {{ flashMessages.get('notification') }}
+                  </div>
+                  @endif
+                  <div class="box {{disabledForm}}">
+                      <form action="/processos" method="post" enctype="multipart/form-data">
+                        {{ csrfField() }}
+                        <input type="hidden" name="id" value={{ objProcesso.id }}>
+
+                        <div class="card has-background-light">
+                          <header class="card-header has-background-link cab">
+                            <p class="title is-5 p-2 has-text-white">
+                              Cadastro de Processo
+                            </p>
+                          </header>
+
+                          <div class="card-content">
+                            <div class="field">
+                              <label class="label">Escritório:   </label>
+                              <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+                            </div>
+
+                              <div class="card-content is-three-fifths">
+                                <div class="row">
+                                  
+                                  <div class="field col-md-6">
+                                    <label class="label">Cliente</label>
+                                    <div class="select is-fullwidth">
+                                      <select name="cliente" required>
+                                        <option value="">Selecione um Cliente</option>
+                                        @each(cliente in clientes)
+                                        <option value="{{ cliente.id }}" {{cliente.id === objProcesso.cliente_id ? 'selected' : '' }}>
+                                        {{cliente.nome}} - {{cliente.cpfcnpj}}</option>
+                                        @endeach
+                                      </select>
+                                    </div>
+                                  </div>
+
+                                  <div class="field col-md-6">
+                                    <label class="label">Tribunal</label>
+                                    <div class="select is-fullwidth">
+                                      <select name="tribunal" id="tribunal" required>
+                                        <option value="">Selecione um Tribunal</option>
+                                        @each(tribunal in tribunais)
+                                        <option value="{{ tribunal.id }}" {{tribunal.id === objProcesso.tribunal_id ? 'selected' : '' }}>
+                                        {{tribunal.nome}} - {{tribunal.endereco}}</option>
+                                        @endeach
+                                      </select>
+                                    </div>
+                                  </div>
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="field col-md-3">
+                                      <label class="label"> Numero Processo </label>
+                                      <div class="control is-expanded ">
+                                        <input class="input is-uppercase mb-1 has-text-right" name="numeroprocesso" id="numeroprocesso"
+                                          placeholder="Numero do Processo" value="{{objProcesso.numeroprocesso}}">
+                                      </div>
+                                    </div>
+
+                                    <div class="field col-md-4">
+                                      <div class="control is-expanded ">
+                                        <label class="label"> Descrição Processo </label>
+                                        <input class="input is-uppercase mb-1 has-text-left" name="descricaoacao" id="descricaoacao"
+                                          placeholder="Descrição Ação" value="{{objProcesso.descricaoacao}}">
+                                      </div>
+                                    </div>
+
+                                    <div class="field col-md-2">
+                                      <div class="control is-expanded ">
+                                        <label class="label"> Nivel Processo </label>
+                                        <input class="input is-uppercase mb-1 has-text-left" name="nivelprocesso" id="nivelprocesso"
+                                          placeholder="Nivel do Processo" value="{{objProcesso.nivelprocesso}}">
+                                      </div>
+                                    </div>
+
+                                    <div class="field col-md-3">
+                                      <div class="control is-expanded ">
+                                        <label class="label"> Nome Juiz </label>
+                                        <input class="input is-uppercase mb-1 has-text-left" name="nomejuiz" id="nomejuiz"
+                                          placeholder="Nome Juiz" value="{{objProcesso.nomejuiz}}">
+                                      </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                  <div class="field col-md-3">
+                                    <label class="label">Estatus</label>
+                                    <div class="select is-fullwidth">
+                                      <select name="estatus" required>
+                                        <option value="">Estatus do Processo</option>
+                                        @each(estatus in estatus)
+                                        <option value="{{ estatus.id }}" {{ estatus.id === objProcesso.estatus_id ? 'selected' : '' }}>
+                                        {{estatus.descricao }}</option>
+                                        @endeach
+                                      </select>
+                                    </div>
+                                  </div>
+                                  
+                                  <div class="field col-md-3">
+                                    <div class="control is-expanded ">
+                                      <label class="label"> Link Processo </label>
+                                      <input class="input is-uppercase mb-1 has-text-left" name="linkprocesso" id="linkprocesso"
+                                        placeholder="Link processo" value="{{objProcesso.linkprocesso}}">
+                                    </div>
+                                  </div>
+
+                                  <div class="field col-md-3">
+                                    <div class="control is-expanded ">
+                                      <label class="label"> Senha Processo </label>
+                                      <input class="input is-uppercase mb-1 has-text-left" name="senhaprocesso" id="senhaprocesso"
+                                        placeholder="Senha processo" value="{{objProcesso.senhaprocesso}}">
+                                    </div>
+                                  </div>
+
+                                </div>                          
+                                
+                                <div class="row">
+                                    <div class="field col-md-3">
+                                      <label class="label">Primeira Audiencia</label>
+                                      <div class="control is-expanded">
+                                        <input type="date" name="primeiraaudiencia" class="input" id="primeiraaudiencia"
+                                          value="{{ objProcesso.primeiraaudiencia !== null ? objProcesso.primeiraaudiencia.toFormat('yyyy-MM-dd') : '' }}">
+                                      </div>
+                                    </div>
+
+                                    <div class="field col-md-3">
+                                      <label class="label">Vara</label>
+                                      <div class="control is-expanded">
+                                        <input type="text" name="vara" class="input" id="vara"
+                                          value="{{ objProcesso.vara }}">
+                                      </div>
+                                    </div>
+
+                                    <div class="field col-md-3">
+                                      <label class="label">Data Contratação</label>
+                                      <div class="control is-expanded">
+                                        <input type="date" name="datacontratacao" class="input" id="datacontratacao"
+                                          value="{{ objProcesso.datacontratacao !== null ? objProcesso.datacontratacao.toFormat('yyyy-MM-dd') : '' }}">
+                                      </div>
+                                    </div>
+                                </div>
+
+
+                                <br>
+                                <div class="field ">
+                                  <label class="label">Observação do Processo</label>
+                                  <div class="control is-expanded ">
+                                    <textarea class="textarea is-uppercase" name="obs"
+                                      placeholder="Detalhes..." required>{{objProcesso.obs}}</textarea>
+                                  </div>
+                                </div>
+
+                                <br/>
+
+                            <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+                            <div class="field is-grouped">
+                              
+                              <div class="control">
+                                <button type="submit" class="button is-link">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-check"></i>
+                                  </span>
+                                  <span>Salvar</span>
+                                </button>
+                              </div>
+                              
+                              <div class="control">
+                                <button type="button" class="button is-warning" onclick="window.location.href='{{ `/ordensServicos` }}'">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-window-restore"></i>
+                                  </span>
+                                  <span>Cancelar</span>
+                                </button>
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+                      </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+@endsection

@@ -9,7 +9,7 @@ export default class Tribunals extends BaseModel {
   public id: number;
 
   @column()
-  public Empresa_id: number;
+  public empresa_id: number;
 
   @column()
   public nome: string;
@@ -19,6 +19,9 @@ export default class Tribunals extends BaseModel {
 
   @column()
   public endereco: string;
+
+  @column()
+  public telefone: string;
 
   @column()
   public email: string;

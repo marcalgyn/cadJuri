@@ -11,8 +11,11 @@ export default class extends BaseSchema {
       table.string('descricaoacao').nullable;
       table.string('nivelprocesso').nullable;
       table.string('primeiraaudiencia').nullable;
+      table.string('nomejuiz').nullable;
       table.string('linkprocesso').nullable;
       table.string('senhaprocesso').nullable;
+      table.string('vara').nullable;
+
       table.string('obs').nullable;
       table
         .integer('empresa_id')
