@@ -5,7 +5,7 @@ import Cliente from "./Cliente";
 import Tribunal from "./Tribunal";
 import Estatus from "./Estatuses";
 
-export default class Tarefa extends BaseModel {
+export default class Processo extends BaseModel {
   @column({ isPrimary: true })
   public id: number;
 

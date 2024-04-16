@@ -1,44 +1,47 @@
 import { schema } from "@ioc:Adonis/Core/Validator";
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import ClienteSacado from "App/Models/ClienteSacado";
+import Cliente from "App/Models/Cliente";
 import { DateTime } from "luxon";
 import Titulo from "App/Models/Titulo";
-import Departamento from "App/Models/Departamento";
-import ClienteSacador from "App/Models/Cliente";
+
 
 export default class TitulosController {
-  public async index({ view }: HttpContextContract) {
+  public async index({ view, auth }: HttpContextContract) {
+    const Idempresa = auth.user?.empresa_id;
+
     const objTitulo = {
       id: 0,
-      sacadoId: 0,
-      sacadorId: 0,
-      titulo: "",
-      tipoDocumento: 0,
-      parcela: 1,
+      nomeacao: "",
+      processo: 0,
+      valortotal: 0,
       dataEmissao: DateTime.now(),
       dataVencimento: DateTime.now(),
-      nContrato: "",
-      valorTitulo: 0,
-      dataPagamento: DateTime.now(),
-      taxaJuros: 0,
-      taxaFloat: 0,
-      iof: 0,
-      taxaEmissao: 0,
-      multa: 0,
-      descricao: "",
+      parcela: 0,
+      totalparcela: 0,
+      datapagamento: "",
+      valorpago: 0,
+      estatus: "",
+      justificativa: "",
+      dataprevista: "",
+      obs: "",
+      empresa_id: Number(Idempresa),
+      cliente_id: 0,
+      
     };
 
-    const sacadores = await ClienteSacador.query().orderBy(
-      "nomeFantasia",
+    const clientes = await Cliente.query()
+    .where('empresa_id', '=', Number(Idempresa))
+    .orderBy(
+      "nome",
       "asc"
     );
-    const sacados = await ClienteSacado.query().orderBy("nome", "asc");
+    
+    return view.render("titulos", { objTitulo, clientes });
 
-    return view.render("titulos", { objTitulo, sacados, sacadores });
   }
 
   public async loadRates({ view, params }: HttpContextContract) {
-    let sacado = await ClienteSacado.findOrFail(params.id);
+    let sacado = await Cliente.findOrFail(params.id);
     const objTitulo = {
       id: 0,
       sacadoId: sacado.id,
@@ -62,7 +65,7 @@ export default class TitulosController {
       "nomeFantasia",
       "asc"
     );
-    const sacados = await ClienteSacado.query().orderBy("nome", "asc");
+    const sacados = await Cliente.query().orderBy("nome", "asc");
 
     return view.render("titulos", { objTitulo, sacados, sacadores });
   }
@@ -198,7 +201,7 @@ export default class TitulosController {
 
   public async edit({ view, params }: HttpContextContract) {
     let objTitulo = await Titulo.findOrFail(params.id);
-    const sacados = await ClienteSacado.query().orderBy("nome", "asc");
+    const sacados = await Cliente.query().orderBy("nome", "asc");
     const sacadores = await ClienteSacador.query().orderBy(
       "nomeFantasia",
       "asc"
@@ -208,7 +211,7 @@ export default class TitulosController {
   }
 
   public async lista({ request, view }: HttpContextContract) {
-    const sacados = await ClienteSacado.query().orderBy("nome", "asc");
+    const sacados = await Cliente.query().orderBy("nome", "asc");
     const sacadores = await ClienteSacador.query().orderBy(
       "nomeFantasia",
       "asc"
@@ -305,7 +308,7 @@ export default class TitulosController {
   }
 
   public async filtro({ request, view }: HttpContextContract) {
-    const sacados = await ClienteSacado.all();
+    const sacados = await Cliente.all();
     const sacadores = await ClienteSacador.all();
     const departamentos = await Departamento.all();
 

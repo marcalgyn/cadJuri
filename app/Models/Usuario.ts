@@ -42,12 +42,9 @@ export default class Usuario extends BaseModel {
 
   @beforeSave()
   public static async hashPassword(usuario: Usuario) {
-    console.log('Senha Antes', usuario);
-    
+        
     if (usuario.$dirty.password) {
       usuario.password = await Hash.make(usuario.password);
-      console.log('Senha dirty ', usuario.$dirty.password);
-      console.log('Senha depois ', usuario.password);
     }
   }
 

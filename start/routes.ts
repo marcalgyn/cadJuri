@@ -114,6 +114,7 @@ Route.group(() => {
   .prefix("/sacadores")
   .middleware("auth");
 
+*/
 
 Route.group(() => {
   Route.get("/lista", "TitulosController.lista");
@@ -129,7 +130,7 @@ Route.group(() => {
   .prefix("/titulos")
   .middleware("auth");
 
-  */
+
 Route.group(() => {
   Route.get("/", "DashboardController.index");
 })

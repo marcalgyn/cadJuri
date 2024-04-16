@@ -27,7 +27,9 @@
 
                           <div class="card-content">
                             <div class="field">
-                              <label class="label">Escritório:   </label>
+                              @each (empresa in nomeEmpresa)
+                              <label class="label">Escritório: {{ empresa.fantasia }}  </label>
+                              @endeach
                               <hr style="height:2px;border-width:0;color:gray;background-color:gray">
                             </div>
 
@@ -37,7 +39,7 @@
                                   <div class="field col-md-6">
                                     <label class="label">Cliente</label>
                                     <div class="select is-fullwidth">
-                                      <select name="cliente" required>
+                                      <select name="cliente_id" id="cliente_id"required>
                                         <option value="">Selecione um Cliente</option>
                                         @each(cliente in clientes)
                                         <option value="{{ cliente.id }}" {{cliente.id === objProcesso.cliente_id ? 'selected' : '' }}>
@@ -50,7 +52,7 @@
                                   <div class="field col-md-6">
                                     <label class="label">Tribunal</label>
                                     <div class="select is-fullwidth">
-                                      <select name="tribunal" id="tribunal" required>
+                                      <select name="tribunal_id" id="tribunal_id" required>
                                         <option value="">Selecione um Tribunal</option>
                                         @each(tribunal in tribunais)
                                         <option value="{{ tribunal.id }}" {{tribunal.id === objProcesso.tribunal_id ? 'selected' : '' }}>
@@ -101,7 +103,7 @@
                                   <div class="field col-md-3">
                                     <label class="label">Estatus</label>
                                     <div class="select is-fullwidth">
-                                      <select name="estatus" required>
+                                      <select name="estatus_id" id="estatus_id" required>
                                         <option value="">Estatus do Processo</option>
                                         @each(estatus in estatus)
                                         <option value="{{ estatus.id }}" {{ estatus.id === objProcesso.estatus_id ? 'selected' : '' }}>
@@ -160,7 +162,7 @@
                                 <div class="field ">
                                   <label class="label">Observação do Processo</label>
                                   <div class="control is-expanded ">
-                                    <textarea class="textarea is-uppercase" name="obs"
+                                    <textarea class="textarea is-uppercase" name="obs" id="obs"
                                       placeholder="Detalhes..." required>{{objProcesso.obs}}</textarea>
                                   </div>
                                 </div>
@@ -180,7 +182,7 @@
                               </div>
                               
                               <div class="control">
-                                <button type="button" class="button is-warning" onclick="window.location.href='{{ `/ordensServicos` }}'">
+                                <button type="button" class="button is-warning" onclick="window.location.href='{{ `/processos` }}'">
                                   <span class="icon is-small">
                                     <i class="fas fa-window-restore"></i>
                                   </span>

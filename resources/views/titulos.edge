@@ -18,8 +18,8 @@
               <input type="hidden" name="id" value={{ objTitulo.id }}>
 
               <div class="card has-background-light">
-                <header class="card-header has-background-success">
-                  <p class="title is-4 p-3 has-text-white">
+                <header class="card-header has-background-success cab">
+                  <p class="title is-5 p-2 has-text-white">
                     Cadastro de Titulos
                   </p>
                 </header>
@@ -108,7 +108,7 @@
                       <label class="label">Valor do Titulo</label>
                       <div class="control is-expanded">
                         <input type="text" name="valorTitulo"
-                        value="{{ objTitulo.valorTitulo.toFixed(2) }}"
+                        value="{{ objTitulo.valortotal.toFixed(2) }}"
                         class="input has-text-right"
                         id="money1" style="text-align: right;" placeholder="0.000.00"
                         onkeypress="$(this).mask('##0.00', {reverse: true})" required>
@@ -149,72 +149,6 @@
 
                   </div>
 
-                  <div class="card has-background-light mt-3">
-                    <header class="card-header has-background-success">
-                      <p class="title is-4 p-3 has-text-white">
-                        Taxas e Limites
-                      </p>
-                    </header>
-                    <div class="card-content">
-                      <div class="columns">
-                        <div class="column">
-                          <label class="label">Taxa Juros / Mês - %</label>
-                          <div class="control is-expanded">
-                            <input id="taxaJuros" type="text" name="taxaJuros" value="{{ objTitulo.taxaJuros.toFixed(2) }}"
-                            style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})"
-                              class="input {{ flashMessages.has('errors.taxaJuros') ? 'is-danger' : '' }}">
-                            @if(flashMessages.has('errors.taxaJuros'))
-                            <p class="help is-danger">
-                              {{ flashMessages.get('errors.taxaJuros') }}
-                            </p>
-                            @endif
-                          </div>
-                        </div>
-                        <div class="column">
-                          <label class="label">Taxa Flutuante - R$</label>
-                          <div class="control is-expanded">
-                            <input type="text" name="taxaFloat" value="{{ objTitulo.taxaFloat.toFixed(2) }}" class="input"
-                            style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})">
-                            @if(flashMessages.has('errors.taxaFloat'))
-                            <p class="help is-danger">
-                              {{ flashMessages.get('errors.taxaFloat') }}
-                            </p>
-                            @endif
-                          </div>
-                        </div>
-                        <div class="column">
-                          <label class="label">IOF - %</label>
-                          <div class="control is-expanded">
-                            <input id="iof" type="iof" name="iof"
-                              class="input {{ flashMessages.has('errors.iof') ? 'is-danger' : '' }}" placeholder="IOF"
-                              value="{{ objTitulo.iof.toFixed(2) }}"
-                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})" >
-                          </div>
-                        </div>
-                        <div class="column">
-                          <label class="label">Taxa Emissão - R$</label>
-                          <div class="control is-expanded">
-                            <input id="taxaEmissao" type="taxaEmissao" name="taxaEmissao"
-                              class="input {{ flashMessages.has('errors.taxaEmissao') ? 'is-danger' : '' }}"
-                              value="{{ objTitulo.taxaEmissao.toFixed(2) }}"
-                              style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})" >
-                          </div>
-                        </div>
-                        <div class="column">
-                          <label class="label">Multa - %</label>
-                          <div class="control is-expanded">
-                            <input type="text" name="multa" value="{{ objTitulo.multa.toFixed(2) }}" class="input"
-                            style="text-align: right;" placeholder="0.00" onkeypress="$(this).mask('##0.00', {reverse: true})" >
-                            @if(flashMessages.has('errors.multa'))
-                            <p class="help is-danger">
-                              {{ flashMessages.get('errors.multa') }}
-                            </p>
-                            @endif
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                   <br>
                   <div class="columns">
                     <div class="column">

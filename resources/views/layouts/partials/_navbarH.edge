@@ -57,39 +57,21 @@
 
                     <!-- menu de Controle Financeiro -->
                     <li>
-                       {{-- @if(auth.user.modulo === 3 || auth.user.modulo === 5 || auth.user.modulo === 6 || auth.user.modulo === 99) --}}
+                        @if(auth.user.nivel == 0 )
                             <a href="#">
                                 <span class="titulo">FINANCEIRO</span>
                                 <span class="icon"> <ion-icon name="arrow-down-sharp"> </ion-icon></span>
                             </a>
-                       {{-- @endif --}}
+                        @endif
 
                         <ul>
-                          <li>
-                            @if((auth.user.cargo === 0))
-                                <a href="/sacadores">
-                                    <span class="icon"><ion-icon name="person-add-sharp"></ion-icon></span>
-                                    <span class="titulo">Cadastro de Sacador</span>
-                                </a>
-                            @endif
-                           </li>
-
-                           <li>
-                                @if((auth.user.cargo === 0 ))
-                                <a href="/sacados">
-                                    <span class="icon"><ion-icon name="people-sharp"></ion-icon></span>
-                                    <span class="titulo">Cadastro de Sacado</span>
-                                </a>
-                                @endif
-                           </li>
-
                             <li>
-                             {{--   @if((auth.user.cargo === 1 || auth.user.cargo === 2))--}}
+                              @if((auth.user.nivel == 0))
                                 <a href="/titulos">
                                     <span class="icon"><ion-icon name="wallet"></ion-icon></span>
                                     <span class="titulo">Cadastro de Titulos</span>
                                 </a>
-                                {{-- @endif --}}
+                               @endif
                             </li>
 
                             <li>
@@ -103,7 +85,7 @@
                                 </a>
                                 <ul>
                                     <li>
-                                        @if((auth.user.cargo === 1 || auth.user.cargo === 2))
+                                        @if((auth.user.nivel == 0))
                                         <a href="/titulos/lista">
                                             <span class="icon"><ion-icon name="albums"></ion-icon></span>
                                             <span class="titulo">Titulos</span>
