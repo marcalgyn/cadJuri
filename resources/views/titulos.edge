@@ -27,31 +27,19 @@
                   <div class="columns">
 
                     <div class="column is-5">
-                      <label class="label">Sacado - Titulo Sacado</label>
+                      <label class="label">Selecione Cliente</label>
                       <div class="select is-fullwidth">
-                        <select name="sacadoId" required onchange="carregarTaxas(this.value)" {{ objTitulo.id !==0
+                        <select class="is-uppercase" name="cliente_id" required {{ objTitulo.id !==0
                           ? 'disabled' : '' }}>
-                          <option value="">Selecione um Sacado - Titulo Sacado</option>
-                          @each(sacado in sacados)
-                          <option value="{{ sacado.id }}" {{sacado.id===objTitulo.sacadoId ? 'selected' : '' }}>{{
-                            sacado.nome }}</option>
+                          <option value="">Selecione um Cliente</option>
+                          @each(cliente in clientes)
+                          <option value="{{ cliente.id }}" {{cliente.id === objTitulo.cliente_id ? 'selected' : '' }}>
+                          {{ cliente.nome }} - {{cliente.cpfcnpj}}</option>
                           @endeach
                         </select>
                       </div>
                     </div>
 
-                    <div class="column is-5">
-                      <label class="label">Empresa - Cliente Sacador</label>
-                      <div class="select is-fullwidth">
-                        <select name="sacadorId" required>
-                          <option value="">Selecione uma Empresa - Cliente Sacador</option>
-                          @each(sacador in sacadores)
-                          <option value="{{ sacador.id }}" {{sacador.id===objTitulo.sacadorId ? 'selected' : '' }}>{{
-                            sacador.nomeFantasia }}</option>
-                          @endeach
-                        </select>
-                      </div>
-                    </div>
 
                     <div class="column is-2">
                       <label class="label">Tipo de Documento</label>
@@ -62,24 +50,17 @@
                           <option value="1" {{ objTitulo.tipoDocumento===1 ? 'selected' : '' }}> Boleto </option>
                           <option value="2" {{ objTitulo.tipoDocumento===2 ? 'selected' : '' }}> Promissoria </option>
                           <option value="3" {{ objTitulo.tipoDocumento===3 ? 'selected' : '' }}> Cheque </option>
+                          <option value="4" {{ objTitulo.tipoDocumento===4 ? 'selected' : '' }}> Pix </option>
+                          <option value="5" {{ objTitulo.tipoDocumento===5 ? 'selected' : '' }}> Transferencia </option>
+                          <option value="6" {{ objTitulo.tipoDocumento===6 ? 'selected' : '' }}> Dinheiro </option>
+                          <option value="7" {{ objTitulo.tipoDocumento===7 ? 'selected' : '' }}> Cartão Credito </option>
+                          <option value="8" {{ objTitulo.tipoDocumento===8 ? 'selected' : '' }}> Cartão Debito </option>
+                          <option value="9" {{ objTitulo.tipoDocumento===9 ? 'selected' : '' }}> Outros </option>
                         </select>
                       </div>
                     </div>
                   </div>
                   <div class="columns">
-                    <div class="column is-2">
-                      <label class="label">Número do Titulo</label>
-                      <div class="control is-expanded">
-                        <input id="titulo" type="text" name="titulo" placeholder="Informe o n titulo"
-                          value="{{ objTitulo.titulo }}" class="input" required>
-                        @if(flashMessages.has('errors.titulo'))
-                        <p class="help is-danger">
-                          {{ flashMessages.get('errors.titulo') }}
-                        </p>
-                        @endif
-                      </div>
-                    </div>
-
                     <div class="column is-2">
                       <label class="label">Parcela</label>
                       <div class="control is-expanded">
@@ -94,12 +75,25 @@
                     </div>
 
                     <div class="column is-2">
+                      <label class="label">Total Parcelas</label>
+                      <div class="control is-expanded">
+                        <input id="totalparcela" type="text" name="totalparcela" placeholder="Total Parcela"
+                          value="{{ objTitulo.totalparcela }}" class="input" required>
+                        @if(flashMessages.has('errors.totalparcela'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.totalparcela') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="column is-2">
                       <label class="label">Número Contrato</label>
                       <div class="control is-expanded">
-                        <input type="text" name="nContrato" value="{{ objTitulo.nContrato }}" class="input" required>
-                        @if(flashMessages.has('errors.nContrato'))
+                        <input type="text" name="processo" value="{{ objTitulo.processo }}" class="input" required>
+                        @if(flashMessages.has('errors.processo'))
                         <p class="help is-danger">
-                          {{ flashMessages.get('errors.nContrato') }}
+                          {{ flashMessages.get('errors.processo') }}
                         </p>
                         @endif
                       </div>
@@ -107,14 +101,14 @@
                     <div class="column is-2">
                       <label class="label">Valor do Titulo</label>
                       <div class="control is-expanded">
-                        <input type="text" name="valorTitulo"
-                        value="{{ objTitulo.valortotal.toFixed(2) }}"
+                        <input type="text" name="valortitulo"
+                        value="{{ objTitulo.valortitulo }}"
                         class="input has-text-right"
                         id="money1" style="text-align: right;" placeholder="0.000.00"
                         onkeypress="$(this).mask('##0.00', {reverse: true})" required>
-                        @if(flashMessages.has('errors.valorTitulo'))
+                        @if(flashMessages.has('errors.valortitulo'))
                         <p class="help is-danger">
-                          {{ flashMessages.get('errors.valorTitulo') }}
+                          {{ flashMessages.get('errors.valortitulo') }}
                         </p>
                         @endif
                       </div>
@@ -146,17 +140,76 @@
                         @endif
                       </div>
                     </div>
-
                   </div>
 
-                  <br>
+                  <div class="columns">
+
+                    <div class="column is-2">
+                      <label class="label">Valor Pago</label>
+                      <div class="control is-expanded">
+                        <input type="text" name="valorpago"
+                        value="{{ objTitulo.valorpago }}"
+                        class="input has-text-right"
+                        id="money1" style="text-align: right;" placeholder="0.000.00"
+                        onkeypress="$(this).mask('##0.00', {reverse: true})" >
+                        @if(flashMessages.has('errors.valorpago'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.valorpago') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="column is-2">
+                      <label class="label">Data Pagamento</label>
+                      <div class="control is-expanded">
+                        <input type="date" name="dataPagamento"
+                          value="{{ objTitulo.dataPagamento !== null ? objTitulo.dataPagamento.toFormat('yyyy-MM-dd') : ''}}"
+                          class="input">
+                        @if(flashMessages.has('errors.dataPagamento'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.dataPagamento') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="column is-2">
+                      <label class="label">Data Prevista</label>
+                      <div class="control is-expanded">
+                        <input type="date" name="dataPrevista"
+                          value="{{ objTitulo.dataPrevista !== null ? objTitulo.dataPrevista.toFormat('yyyy-MM-dd') : ''}}"
+                          class="input">
+                        @if(flashMessages.has('errors.dataPrevista'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.dataPrevista') }}
+                        </p>
+                        @endif
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="columns">
+                    <div class="column">
+                      <div class="field">
+                        <label class="label">Detalhe de Pagamento</label>
+                        <div class="control is-expanded ">
+                          <textarea class="textarea is-uppercase" name="obs" rows="2"
+                            placeholder="Detalhes...">{{objTitulo.justificativa}}</textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <br />
                   <div class="columns">
                     <div class="column">
                       <div class="field">
                         <label class="label">Descrição</label>
                         <div class="control is-expanded ">
-                          <textarea class="textarea is-uppercase" name="descricao" rows="2"
-                            placeholder="Detalhes...">{{objTitulo.descricao}}</textarea>
+                          <textarea class="textarea is-uppercase" name="obs" rows="2"
+                            placeholder="Detalhes...">{{objTitulo.obs}}</textarea>
                         </div>
                       </div>
                     </div>
@@ -180,14 +233,16 @@
                     <!-- Aparecer somente se tiver marcado SIM -->
                     <div class="column is-2 mt-2">
                       <input type="number" min="1" max="100" class="input" id="qtdParcelas" name="qtdParcelas"
-                        placeholder="Qtd. Parcelas" disabled=true>
+                        placeholder="Qtd. Parcelas" value="1" disabled=true>
                     </div>
 
                     <div class="column is-3 mt-2">
                       <div class="select is-fullwidth">
                         <select disabled=true id="tipoParcela" name="tipoParcela">
-                          <option value="30"> Mensal </option>
+                          <option value="7"> Semanal </option>
                           <option value="15"> Quinzenal </option>
+                          <option value="30"> Mensal </option>
+                          <option value="90"> Trimestral </option>
                         </select>
                       </div>
                     </div>
@@ -195,7 +250,6 @@
 
                   <hr class="hr-style" />
                   <div class="field is-grouped">
-
                     <div class="control">
                       <button type="submit" class="button is-link">
                         <span class="icon is-small">
@@ -237,17 +291,6 @@
   </div>
 </div>
 
-<script type="text/javascript">
-  function carregarTaxas(value){
-    window.location.href=`/titulos/${value}/load-rates`;
-  }
-
-  var childNodes = document.getElementById("disable-div").getElementsByTagName('*');
-  for (var node of childNodes) {
-    node.disabled = true;
-  }
-
-</script>
 
 <script type="text/javascript">
 /*Formatação Moeda - classe moeda*/

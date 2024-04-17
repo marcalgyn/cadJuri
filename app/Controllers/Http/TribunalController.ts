@@ -73,7 +73,7 @@ export default class TribunalController {
 
         const tribunal = await Tribunais.findOrFail(request.input("id"));
 
-        tribunal.nome = request.input("nomejuizado");
+        tribunal.nome = request.input("nome");
         tribunal.comarca = request.input('comarca');
         tribunal.endereco = request.input('endereco');
         tribunal.telefone = request.input('telefone');

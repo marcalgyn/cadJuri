@@ -39,7 +39,7 @@
                                   <div class="field col-md-6">
                                     <label class="label">Cliente</label>
                                     <div class="select is-fullwidth">
-                                      <select name="cliente_id" id="cliente_id"required>
+                                      <select name="cliente_id" id="cliente_id" style="text-transform:uppercase" required>
                                         <option value="">Selecione um Cliente</option>
                                         @each(cliente in clientes)
                                         <option value="{{ cliente.id }}" {{cliente.id === objProcesso.cliente_id ? 'selected' : '' }}>
@@ -52,7 +52,7 @@
                                   <div class="field col-md-6">
                                     <label class="label">Tribunal</label>
                                     <div class="select is-fullwidth">
-                                      <select name="tribunal_id" id="tribunal_id" required>
+                                      <select name="tribunal_id" id="tribunal_id" style="text-transform:uppercase" required>
                                         <option value="">Selecione um Tribunal</option>
                                         @each(tribunal in tribunais)
                                         <option value="{{ tribunal.id }}" {{tribunal.id === objProcesso.tribunal_id ? 'selected' : '' }}>
@@ -103,7 +103,7 @@
                                   <div class="field col-md-3">
                                     <label class="label">Estatus</label>
                                     <div class="select is-fullwidth">
-                                      <select name="estatus_id" id="estatus_id" required>
+                                      <select name="estatus_id" id="estatus_id" style="text-transform:uppercase" required>
                                         <option value="">Estatus do Processo</option>
                                         @each(estatus in estatus)
                                         <option value="{{ estatus.id }}" {{ estatus.id === objProcesso.estatus_id ? 'selected' : '' }}>
@@ -143,7 +143,7 @@
                                     <div class="field col-md-3">
                                       <label class="label">Vara</label>
                                       <div class="control is-expanded">
-                                        <input type="text" name="vara" class="input" id="vara"
+                                        <input type="text" name="vara" class="input is-uppercase" id="vara"
                                           value="{{ objProcesso.vara }}">
                                       </div>
                                     </div>

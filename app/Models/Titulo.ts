@@ -15,15 +15,18 @@ export default class Titulo extends BaseModel {
 
   @column()
   public processo: number;
+  
+  @column()
+  public tipodocumento : string;
 
   @column()
-  public valortotal: number;
+  public valortitulo: number;
 
   @column.dateTime()
-  public dataEmissao: DateTime;
+  public dataemissao: DateTime;
 
   @column.dateTime()
-  public dataVencimento: DateTime;
+  public datavencimento: DateTime;
 
   @column()
   public parcela : number;
@@ -32,7 +35,7 @@ export default class Titulo extends BaseModel {
   public totalparcela: number;
   
   @column.dateTime()
-  public dataPagamento: DateTime;
+  public datapagamento: DateTime;
 
   @column()
   public valorpago: number;
@@ -48,6 +51,12 @@ export default class Titulo extends BaseModel {
 
   @column()
   public obs: string;
+
+  @column()
+  public cliente_id: number;
+
+  @column()
+  public empresa_id: number;
 
   @belongsTo(() => Empresa)
   public empresa: BelongsTo<typeof Empresa>

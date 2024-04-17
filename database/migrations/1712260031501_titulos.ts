@@ -7,8 +7,9 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id');
       table.string('nomeacao').nullable;
+      table.string('tipodocumento').nullable;
       table.string('processo').nullable;
-      table.decimal('valortotal').nullable;
+      table.decimal('valortitulo').nullable;
       table.dateTime('dataemissao').nullable;
       table.dateTime('datavencimento').nullable;
       table.integer('parcela').nullable;

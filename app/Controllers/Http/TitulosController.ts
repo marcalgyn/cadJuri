@@ -11,18 +11,19 @@ export default class TitulosController {
 
     const objTitulo = {
       id: 0,
-      nomeacao: "",
+      nomeacao: '',
       processo: 0,
-      valortotal: 0,
+      valortitulo: "",
       dataEmissao: DateTime.now(),
       dataVencimento: DateTime.now(),
-      parcela: 0,
-      totalparcela: 0,
-      datapagamento: "",
-      valorpago: 0,
+      dataPagamento: null,
+      dataPrevista: null,
+      parcela: 1,
+      totalparcela: 1,
+      valorpago: "",
+
       estatus: "",
       justificativa: "",
-      dataprevista: "",
       obs: "",
       empresa_id: Number(Idempresa),
       cliente_id: 0,
@@ -70,87 +71,68 @@ export default class TitulosController {
     return view.render("titulos", { objTitulo, sacados, sacadores });
   }
 
-  public async create({ request, response, session }: HttpContextContract) {
+  public async create({ request, response, session, auth }: HttpContextContract) {
     let qtdParcelas: number = Number(request.input("qtdParcelas"));
     let tipoParcela = request.input("tipoParcela");
     let nParcela: number = Number(request.input("parcela"));
     let dataDeVencimento = request.input("dataVencimento");
+    let parcelado = 0; //Venda multipla varias parcelas
 
     if (qtdParcelas === undefined || qtdParcelas === null) {
       qtdParcelas = 1;
-      tipoParcela = 30;
+      tipoParcela = 0;
+    }
+
+    if (Number.isNaN(qtdParcelas)) {
+      qtdParcelas = 1;
+      tipoParcela = 0;
+      parcelado = 1; //parcela unica
     }
 
     const validationSchema = schema.create({
       dataEmissao: schema.date(),
-      nContrato: schema.string({ trim: true }),
-      titulo: schema.string({ trim: true }),
-      parcela: schema.number(),
     });
-
+    
     const validateData = await request.validate({
       schema: validationSchema,
       messages: {
         "dataEmissao.required": "Informe a data de emissão",
-        "nContrato.required": "Informe o número do contrato",
-        "titulo.required": "Informe o número do título",
-        "parcela.required": "Informe o número de parcelas",
       },
     });
-
-
-    const clienteSacador = await ClienteSacador.findOrFail(request.input("sacadorId"));
-    const vlrTitulo = Number(request.input("valorTitulo"));
-
-    if ((vlrTitulo * qtdParcelas) > clienteSacador.limiteGeralCredito){
-      session.flash("notification", "Limite Sacador insuficiente para geração de títulos!");
-      return response.redirect("back");
-    }
-
+    Verificar aqui p salvar e depois alterar
     try {
-      clienteSacador.limiteGeralCredito
       if (request.input("id") === "0") {
-        for (let index: number = 1; index <= qtdParcelas; index++) {
+        for (let index: number = parcelado; index <= qtdParcelas; index++) {
           await Titulo.create({
-            sacadorId: request.input("sacadorId"),
-            sacadoId: request.input("sacadoId"),
-            titulo: request.input("titulo"),
-            tipoDocumento: request.input("tipoDocumento"),
+            nomeacao: '',
+            estatus: 'A',
+            cliente_id : request.input('cliente_id'),
+            empresa_id: auth.user?.empresa_id,
+            tipodocumento: request.input("tipoDocumento"),
             parcela: nParcela,
-            descricao: request.input("descricao"),
-            dataEmissao: validateData.dataEmissao,
-            dataVencimento: this.addDaysToDate(
+            totalparcela: request.input("totalparcela"),
+            processo : request.input('processo'),
+            valorpago: request.input('valorpago'),
+            datapagamento: request.input('dataPagamento'),
+            dataprevista: request.input('dataPrevista'),
+            justificativa: request.input('justificativa'),
+            valortitulo: request
+            .input("valortitulo")
+            .toLocaleString("pt-BR", { maximumSignificantDigits: 2 }),
+
+            dataemissao: validateData.dataEmissao,
+            datavencimento: this.addDaysToDate(
               dataDeVencimento,
               tipoParcela * index
             ),
-            nContrato: validateData.nContrato,
-            valorTitulo: request
-              .input("valorTitulo")
-              .toLocaleString("pt-BR", { maximumSignificantDigits: 2 }),
-            taxaJuros: request
-              .input("taxaJuros")
-              .toLocaleString("pt-BR", { maximumSignificantDigits: 2 }),
-            taxaFloat: request
-              .input("taxaFloat")
-              .toLocaleString("pt-BR", { maximumSignificantDigits: 2 }),
-            iof: request
-              .input("iof")
-              .toLocaleString("pt-BR", { maximumSignificantDigits: 2 }),
-            multa: request
-              .input("multa")
-              .toLocaleString("pt-BR", { maximumSignificantDigits: 2 }),
-            taxaEmissao: request
-              .input("taxaEmissao")
-              .toLocaleString("pt-BR", { maximumSignificantDigits: 2 }),
+
+            obs: request.input('obs'),
           });
           nParcela++;
-          const valorTitulo = request
-            .input("valorTitulo")
-            .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
-          this.atualizarLimiteGeralSacador(clienteSacador, valorTitulo, true);
         }
         session.flash("notification", "Título criado com sucesso!");
       } else {
+
         const titulo = await Titulo.findOrFail(request.input("id"));
         titulo.sacadorId = request.input("sacadorId");
         titulo.sacadoId = request.input("sacadoId");
@@ -191,7 +173,7 @@ export default class TitulosController {
         session.flash("notification", "Título alterado com sucesso!");
       }
     } catch (error) {
-      console.log("Erro ao alterar", error);
+      console.log("Erro na operação", error);
       let msg: string = "";
       session.flash("notification", msg);
     }
