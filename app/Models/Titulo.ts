@@ -41,6 +41,9 @@ export default class Titulo extends BaseModel {
   public valorpago: number;
 
   @column()
+  public saldo : number;
+
+  @column()
   public estatus: string;
 
   @column()

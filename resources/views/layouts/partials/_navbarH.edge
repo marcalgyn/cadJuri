@@ -5,6 +5,11 @@
             <a href="/" class="logo">
                 <img src="/logo2.png" alt="logo" style="max-height:80px" class="py-1 px-1" />
             </a>
+            
+            @each (empresa in empresas)
+            <!-- LIMITAR O TAMANHO DO CAMPO A 16 CARACTERES -->
+                <label> {{ empresa.fantasia }}</label>
+            @endeach
 
        <div class="menuToggle"></div>
         <nav >
@@ -110,7 +115,7 @@
 
                                     <a href="#">
                                         <span class="icon"><ion-icon name="document-attach-outline"></ion-icon></span>
-                                        <span class="titulo">Lista Orçamentos!</span>
+                                        <span class="titulo">Clientes</span>
                                     </a>
 
                                 </li>
@@ -118,7 +123,7 @@
                                 <li>
                                     <a href="#">
                                         <span class="icon"><ion-icon name="document-attach-outline"></ion-icon></span>
-                                        <span class="titulo">Tarefas</span>
+                                        <span class="titulo">Processos</span>
                                     </a>
 
                                 </li>
@@ -126,7 +131,7 @@
                                 <li>
                                     <a href="#">
                                         <span class="icon"><ion-icon name="server-outline"></ion-icon></span>
-                                        <span class="titulo">Patrimonios</span>
+                                        <span class="titulo">Tribunais</span>
                                     </a>
                                 </li>
 
@@ -142,7 +147,7 @@
                         </a>
                         <ul>
                               <li>
-                                <a href="/patrimonios">
+                                <a href="#">
                                     <span class="icon"><ion-icon name="qr-code-outline"></ion-icon></span>
                                     <span class="titulo">Perfil Empresa</span>
                                 </a>

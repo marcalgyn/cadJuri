@@ -44,18 +44,18 @@
                     <div class="column is-2">
                       <label class="label">Tipo de Documento</label>
                       <div class="select is-fullwidth">
-                        <select name="tipoDocumento" required>
+                        <select name="tipoDocumento" required >
                           <option value=""> Tipo Documento
                           </option>
-                          <option value="1" {{ objTitulo.tipoDocumento===1 ? 'selected' : '' }}> Boleto </option>
-                          <option value="2" {{ objTitulo.tipoDocumento===2 ? 'selected' : '' }}> Promissoria </option>
-                          <option value="3" {{ objTitulo.tipoDocumento===3 ? 'selected' : '' }}> Cheque </option>
-                          <option value="4" {{ objTitulo.tipoDocumento===4 ? 'selected' : '' }}> Pix </option>
-                          <option value="5" {{ objTitulo.tipoDocumento===5 ? 'selected' : '' }}> Transferencia </option>
-                          <option value="6" {{ objTitulo.tipoDocumento===6 ? 'selected' : '' }}> Dinheiro </option>
-                          <option value="7" {{ objTitulo.tipoDocumento===7 ? 'selected' : '' }}> Cartão Credito </option>
-                          <option value="8" {{ objTitulo.tipoDocumento===8 ? 'selected' : '' }}> Cartão Debito </option>
-                          <option value="9" {{ objTitulo.tipoDocumento===9 ? 'selected' : '' }}> Outros </option>
+                          <option value="1" {{ objTitulo.tipodocumento== 1 ? 'selected' : '' }}> Boleto </option>
+                          <option value="2" {{ objTitulo.tipodocumento== 2 ? 'selected' : '' }}> Promissoria </option>
+                          <option value="3" {{ objTitulo.tipodocumento== 3 ? 'selected' : '' }}> Cheque </option>
+                          <option value="4" {{ objTitulo.tipodocumento===4 ? 'selected' : '' }}> Pix </option>
+                          <option value="5" {{ objTitulo.tipodocumento===5 ? 'selected' : '' }}> Transferencia </option>
+                          <option value="6" {{ objTitulo.tipodocumento===6 ? 'selected' : '' }}> Dinheiro </option>
+                          <option value="7" {{ objTitulo.tipodocumento===7 ? 'selected' : '' }}> Cartão Credito </option>
+                          <option value="8" {{ objTitulo.tipodocumento===8 ? 'selected' : '' }}> Cartão Debito </option>
+                          <option value="9" {{ objTitulo.tipodocumento===9 ? 'selected' : '' }}> Outros </option>
                         </select>
                       </div>
                     </div>
@@ -117,11 +117,11 @@
                       <label class="label">Data Emissão</label>
                       <div class="control is-expanded">
                         <input type="date" name="dataEmissao"
-                          value="{{ objTitulo.dataEmissao !== null ? objTitulo.dataEmissao.toFormat('yyyy-MM-dd') : ''}}"
+                          value="{{ objTitulo.dataemissao !== null ? objTitulo.dataemissao.toFormat('yyyy-MM-dd') : ''}}"
                           class="input" required>
-                        @if(flashMessages.has('errors.dataEmissao'))
+                        @if(flashMessages.has('errors.dataemissao'))
                         <p class="help is-danger">
-                          {{ flashMessages.get('errors.dataEmissao') }}
+                          {{ flashMessages.get('errors.dataemissao') }}
                         </p>
                         @endif
                       </div>
@@ -130,12 +130,12 @@
                     <div class="column is-2">
                       <label class="label">Data Vencimento</label>
                       <div class="control is-expanded">
-                        <input type="date" name="dataVencimento"
-                          value="{{ objTitulo.dataVencimento !== null ? objTitulo.dataVencimento.toFormat('yyyy-MM-dd') : '' }}"
+                        <input type="date" name="datavencimento"
+                          value="{{ objTitulo.datavencimento !== null ? objTitulo.datavencimento.toFormat('yyyy-MM-dd') : '' }}"
                           class="input" required>
-                        @if(flashMessages.has('errors.dataVencimento'))
+                        @if(flashMessages.has('errors.datavencimento'))
                         <p class="help is-danger">
-                          {{ flashMessages.get('errors.dataVencimento') }}
+                          {{ flashMessages.get('errors.datavencimento') }}
                         </p>
                         @endif
                       </div>
@@ -164,11 +164,11 @@
                       <label class="label">Data Pagamento</label>
                       <div class="control is-expanded">
                         <input type="date" name="dataPagamento"
-                          value="{{ objTitulo.dataPagamento !== null ? objTitulo.dataPagamento.toFormat('yyyy-MM-dd') : ''}}"
+                          value="{{ objTitulo.datapagamento !== null ? objTitulo.datapagamento.toFormat('yyyy-MM-dd') : ''}}"
                           class="input">
-                        @if(flashMessages.has('errors.dataPagamento'))
+                        @if(flashMessages.has('errors.datapagamento'))
                         <p class="help is-danger">
-                          {{ flashMessages.get('errors.dataPagamento') }}
+                          {{ flashMessages.get('errors.datapagamento') }}
                         </p>
                         @endif
                       </div>
@@ -178,11 +178,11 @@
                       <label class="label">Data Prevista</label>
                       <div class="control is-expanded">
                         <input type="date" name="dataPrevista"
-                          value="{{ objTitulo.dataPrevista !== null ? objTitulo.dataPrevista.toFormat('yyyy-MM-dd') : ''}}"
+                          value="{{ objTitulo.dataprevista !== null ? objTitulo.dataprevista.toFormat('yyyy-MM-dd') : ''}}"
                           class="input">
-                        @if(flashMessages.has('errors.dataPrevista'))
+                        @if(flashMessages.has('errors.dataprevista'))
                         <p class="help is-danger">
-                          {{ flashMessages.get('errors.dataPrevista') }}
+                          {{ flashMessages.get('errors.dataprevista') }}
                         </p>
                         @endif
                       </div>
@@ -194,7 +194,7 @@
                       <div class="field">
                         <label class="label">Detalhe de Pagamento</label>
                         <div class="control is-expanded ">
-                          <textarea class="textarea is-uppercase" name="obs" rows="2"
+                          <textarea class="textarea is-uppercase" name="justificativa" rows="2"
                             placeholder="Detalhes...">{{objTitulo.justificativa}}</textarea>
                         </div>
                       </div>
@@ -215,10 +215,10 @@
                     </div>
                   </div>
                   <div class="columns">
-                    <div class="column is-2">
+                    <div class="column is-2" >
                       <label class="label">Gerar Parcelas ?</label>
-                      <div class="control is-expanded" id={{ objTitulo.id !==0 ? 'disable-div' : '' }}>
-                        <label class="radio">
+                      <div class="control is-expanded" id={{ objTitulo.id !== 0 ? 'disable-div' : '' }} >
+                        <label class="radio" >
                           <input type="radio" name="gParcela" value="false" onclick="desabilitarGerarParcelas(true)">
                           Sim
                         </label>
@@ -228,6 +228,7 @@
                           Não
                         </label>
                       </div>
+                      
                     </div>
 
                     <!-- Aparecer somente se tiver marcado SIM -->

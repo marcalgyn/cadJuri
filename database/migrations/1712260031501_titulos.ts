@@ -16,9 +16,10 @@ export default class extends BaseSchema {
       table.integer('totalparcela').nullable;
       table.datetime('datapagamento').nullable;
       table.decimal('valorpago').nullable;
+      table.decimal('saldo').nullable;
       table.string('estatus').nullable;
       table.string('justificativa').nullable;
-      table.datetime('dataPrevista').nullable;
+      table.datetime('dataprevista').nullable;
       table.string('obs').nullable;
       table
         .integer('empresa_id')

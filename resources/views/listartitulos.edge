@@ -20,8 +20,8 @@
               {{ csrfField() }}
 
               <div class="card has-background-light is-7">
-                <header class="card-header has-background-success">
-                  <p class="title p-3 has-text-white ">
+                <header class="card-header has-background-success cab">
+                  <p class="title is-5 p-2 has-text-white">
                     Listagem de Títulos
                   </p>
                 </header>
@@ -29,9 +29,9 @@
                   <div class="field-body">
                     <div class="field">
                       <div class="field">
-                          <label class="label is-size-7">Nome Sacado</label>
+                          <label class="label is-size-7">Nome Cliente</label>
                           <div class="control is-expanded">
-                            <input type="text" name="nomeSacado" id="nomeSacado" class="input is-size-7 is-uppercase">
+                            <input type="text" name="nome" id="nome" class="input is-size-7 is-uppercase">
                           </div>
                       </div>
                     </div>
@@ -82,16 +82,13 @@
               <thead>
                 <tr>
                   <th>
-                    Sacador
-                  </th>
-                  <th>
-                    Sacado
+                    Cliente
                   </th>
                   <th class="has-text-centered">
-                    Documento
+                    Contrato
                   </th>
                   <th class="has-text-centered">
-                    Título
+                    Parcela(s)
                   </th>
                   <th class="has-text-centered">
                     Data Vencimento
@@ -106,6 +103,9 @@
                     Valor Pago
                   </th>
                   <th class="has-text-centered">
+                    Valor Pentende
+                  </th>
+                  <th class="has-text-centered">
                     Ações
                   </th>
                 </tr>
@@ -113,36 +113,37 @@
               <tbody>
                 @each(titulo in titulos.rows)
                 <tr>
-                  <td is-hidden-mobile">
-                    {{ titulo.$extras.nome_fantasia }}
-                  </td>
-                  <td is-hidden-mobile">
+                  <td class="is-hidden-mobile is-uppercase">
                     {{ titulo.$extras.nome }}
                   </td>
+                  
                   <td class="has-text-centered is-hidden-mobile">
-                    {{ titulo.tipoDocumento }}
+                    {{ titulo.processo }}
                   </td>
                   <td class="has-text-centered is-hidden-mobile">
-                    {{ titulo.titulo }}/{{titulo.parcela}}
+                    {{ titulo.parcela }}/{{titulo.totalparcela}}
                   </td>
                   <td class="has-text-centered ">
-                    {{{ formatDate(titulo.dataVencimento) }}}
+                    {{{ formatDate(titulo.datavencimento) }}}
                   </td>
                   <td class="has-text-right">
-                    {{{ formatCurrency(titulo.valorTitulo) }}}
+                    {{{ formatCurrency(titulo.valortitulo) }}}
                   </td>
                   <td class="has-text-centered ">
-                    {{{ formatDate(titulo.dataPagamento) }}}
+                    {{{ formatDate(titulo.datapagamento) }}}
                   </td>
                   <td class="has-text-centered ">
-                    {{{ formatCurrency(titulo.valorPago) }}}
+                    {{{ formatCurrency(titulo.valorpago) }}}
+                  </td>
+                  <td class="has-text-centered ">
+                    {{{ formatCurrency(titulo.saldo) }}}
                   </td>
 
                   <td class="has-text-centered">
                     <div class="buttons is-centered">
 
                       <!-- Botão Editar Título -->
-                      @if(!titulo.dataPagamento)
+                      @if(!titulo.datapagamento)
                       <button type="button" class="button is-success is-size-7"
                         onclick="window.location.href='{{ `/titulos/${titulo.id}` }}'">
                         <span class="icon is-small">
@@ -153,7 +154,7 @@
                       @endif
 
                       <!-- Botão Editar Título -->
-                      @if(titulo.dataPagamento)
+                      @if(titulo.datapagamento)
                       <button type="button" class="button is-info is-size-7"
                         onclick="window.location.href='{{ `/titulos/${titulo.id}` }}'">
                         <span class="icon is-small">
@@ -164,7 +165,7 @@
                       @endif
 
                       <!-- Botão Baixar Título -->
-                      @if(!titulo.dataPagamento)
+                      @if(!titulo.datapagamento)
                       <button class="button js-modal-trigger is-link is-size-7"
                         data-target="modal-baixar-titulo-{{titulo.id}}">
                         <span class="icon is-small">
@@ -172,19 +173,22 @@
                         </span>
                         <span>Baixar</span>
                       </button>
+
                       {{-- MODAL BAIXAR TITULO --}}
                       <div id="modal-baixar-titulo-{{titulo.id}}" class="modal">
-                        <div class="modal-background"></div>
+                        <div class="modal-background">
+
+                        </div>
                         <div class="modal-card">
-                          <header class="modal-card-head has-background-link">
+                          <header class="modal-card-head has-background-link is-4 cab">
                             <p class="modal-card-title has-text-weight-bold has-text-white">Baixa de Título</p>
                             <button class="delete" aria-label="close"></button>
                           </header>
                           <section class="modal-card-body">
-                            Nome do Sacado: <strong> {{ titulo.$extras.nome }} </strong><br>
-                            Número do Título: <strong> {{ titulo.titulo }} </strong><br>
-                            Data de Vencimento: <strong> {{{ formatDate(titulo.dataVencimento) }}} </strong><br>
-                            Valor do Título: <strong> {{{ formatCurrency(titulo.valorTitulo) }}} </strong>
+                            Nome do Sacado: <strong class="is-uppercase"> {{ titulo.$extras.nome }} </strong><br>
+                            Número da Parcela: <strong> {{ titulo.parcela }} / {{ titulo.totalparcela }}</strong><br>
+                            Data de Vencimento: <strong> {{{ formatDate(titulo.datavencimento) }}} </strong><br>
+                            Valor do Título: <strong> {{{ formatCurrency(titulo.valortitulo) }}} </strong>
                             <hr class="hr-style">
 
                             <form id="formBaixa" action="{{ `/titulos/${titulo.id}/baixar?_method=PATCH` }}"
@@ -196,16 +200,8 @@
                                 <div class="column">
                                   <label class="label">Valor Total</label>
                                   <div class="control is-expanded">
-                                    <input type="text" name="valorPago" value="{{ titulo.valorTitulo + titulo.acrescimoPago }}" class="input"
-                                      required>
-                                  </div>
-                                </div>
-
-                                <div class="column">
-                                  <label class="label">Acréscimo</label>
-                                  <div class="control is-expanded">
-                                    <input type="text" name="acrescimoPago" value="{{ titulo.acrescimoPago }}" class="input"
-                                      required>
+                                    <input type="text"  name="valorPago" value="{{ titulo.valortitulo }}" 
+                                    class="input is-size-2" required onchange="this.value = this.value.replace(/,/g, '.')">
                                   </div>
                                 </div>
 
@@ -213,7 +209,7 @@
                                   <label class="label">Data do Pagamento</label>
                                   <div class="control is-expanded">
                                     <input type="date" name="dataPagamento" value="{{dataHoje.toFormat('yyyy-MM-dd')}}"
-                                      class="input" required>
+                                      class="input is-size-2" required>
                                   </div>
                                 </div>
                               </div>
@@ -315,19 +311,20 @@
                         </span>
                         <span>Excluir</span>
                       </button>
+
                       {{-- MODAL EXCLUIR TITULO --}}
                       <div id="modal-excluir-titulo-{{titulo.id}}" class="modal">
                         <div class="modal-background"></div>
                         <div class="modal-card">
-                          <header class="modal-card-head has-background-danger">
+                          <header class="modal-card-head has-background-danger is-4 cab">
                             <p class="modal-card-title has-text-weight-bold">Exclusão de Título</p>
                             <button class="delete" aria-label="close"></button>
                           </header>
                           <section class="modal-card-body">
-                            Nome do Sacado: <strong> {{ titulo.$extras.nome }} </strong><br>
-                            Número do Título: <strong> {{ titulo.titulo }} </strong><br>
-                            Data de Vencimento: <strong> {{{ formatDate(titulo.dataVencimento) }}} </strong><br>
-                            Valor do Título: <strong> {{{ formatCurrency(titulo.valorTitulo) }}} </strong>
+                            Nome do Sacado: <strong class="is-uppercase"> {{ titulo.$extras.nome }} </strong><br>
+                            Número da Parcela: <strong> {{ titulo.parcela }} / {{ titulo.totalparcela }}</strong><br>
+                            Data de Vencimento: <strong> {{{ formatDate(titulo.datavencimento) }}} </strong><br>
+                            Valor do Título: <strong> {{{ formatCurrency(titulo.valortitulo) }}} </strong>
                             <hr>
                             <span class="has-text-weight-bold is-size-6"> Você realmente deseja excluir o título
                               selecionado? </span>

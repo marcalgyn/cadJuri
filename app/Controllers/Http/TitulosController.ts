@@ -13,14 +13,15 @@ export default class TitulosController {
       id: 0,
       nomeacao: '',
       processo: 0,
-      valortitulo: "",
-      dataEmissao: DateTime.now(),
-      dataVencimento: DateTime.now(),
-      dataPagamento: null,
-      dataPrevista: null,
+      valortitulo: 0,
+      dataemissao: DateTime.now(),
+      datavencimento: DateTime.now(),
+      datapagamento: null,
+      dataprevista: null,
       parcela: 1,
       totalparcela: 1,
-      valorpago: "",
+      valorpago: 0,
+      saldo: 0,
 
       estatus: "",
       justificativa: "",
@@ -47,13 +48,13 @@ export default class TitulosController {
       id: 0,
       sacadoId: sacado.id,
       titulo: "",
-      tipoDocumento: 0,
+      tipodocumento: 0,
       parcela: 1,
       dataEmissao: DateTime.now(),
       dataVencimento: DateTime.now(),
       nContrato: "",
       valorTitulo: 0,
-      dataPagamento: DateTime.now(),
+      datapagamento: DateTime.now(),
       taxaJuros: sacado.taxaJuros,
       taxaFloat: sacado.taxaFloat,
       iof: sacado.iof,
@@ -77,6 +78,14 @@ export default class TitulosController {
     let nParcela: number = Number(request.input("parcela"));
     let dataDeVencimento = request.input("dataVencimento");
     let parcelado = 0; //Venda multipla varias parcelas
+    let valorTitulo = request
+    .input("valortitulo")
+    .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
+    
+    let saldo = valorTitulo;
+
+    let valorPago : number = Number(request.input('valorpago'));
+    let estatus = "";
 
     if (qtdParcelas === undefined || qtdParcelas === null) {
       qtdParcelas = 1;
@@ -99,20 +108,53 @@ export default class TitulosController {
         "dataEmissao.required": "Informe a data de emissão",
       },
     });
-    Verificar aqui p salvar e depois alterar
+    
+    if (valorPago > 0 ){
+      valorTitulo = valorTitulo - valorPago;
+      saldo = valorTitulo;
+      estatus = 'Pago'
+      
+      if (valorTitulo = 0 ) {
+        saldo = valorTitulo;
+        estatus = 'Pago'
+      } else {
+        if (valorPago < request.input("valortitulo")) {
+          saldo = request.input("valortitulo") - valorPago;
+          estatus = 'Parcial';
+        } else {
+          valorTitulo = request
+          .input("valortitulo")
+          .toLocaleString("pt-BR", { maximumSignificantDigits: 2 }) - valorPago;
+          
+        }
+      } 
+
+      if (valorTitulo < 0) {
+        saldo = valorTitulo;
+        estatus = 'Credito';
+        session.flash("notification", "Valor Pago é maior que o valor do Titulo!");
+      }
+    
+    } else {
+      valorPago = 0;
+      saldo = valorTitulo;
+      estatus = "Aberto";
+    }
+
     try {
       if (request.input("id") === "0") {
         for (let index: number = parcelado; index <= qtdParcelas; index++) {
           await Titulo.create({
             nomeacao: '',
-            estatus: 'A',
+            estatus: estatus,
             cliente_id : request.input('cliente_id'),
             empresa_id: auth.user?.empresa_id,
             tipodocumento: request.input("tipoDocumento"),
             parcela: nParcela,
             totalparcela: request.input("totalparcela"),
             processo : request.input('processo'),
-            valorpago: request.input('valorpago'),
+            valorpago: valorPago,
+            saldo: saldo,
             datapagamento: request.input('dataPagamento'),
             dataprevista: request.input('dataPrevista'),
             justificativa: request.input('justificativa'),
@@ -125,7 +167,6 @@ export default class TitulosController {
               dataDeVencimento,
               tipoParcela * index
             ),
-
             obs: request.input('obs'),
           });
           nParcela++;
@@ -134,41 +175,28 @@ export default class TitulosController {
       } else {
 
         const titulo = await Titulo.findOrFail(request.input("id"));
-        titulo.sacadorId = request.input("sacadorId");
-        titulo.sacadoId = request.input("sacadoId");
-        titulo.titulo = request.input("titulo");
-        titulo.tipoDocumento = request.input("tipoDocumento");
-        titulo.parcela = request.input("parcela");
-        titulo.descricao = request.input("descricao");
-        titulo.dataEmissao = validateData.dataEmissao;
-        titulo.dataVencimento = request.input("dataVencimento");
-        titulo.nContrato = validateData.nContrato;
-        titulo.valorTitulo = request
-          .input("valorTitulo")
-          .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
-        titulo.taxaJuros = request
-          .input("taxaJuros")
-          .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
-        titulo.taxaFloat = request
-          .input("taxaFloat")
-          .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
-        titulo.iof = request
-          .input("iof")
-          .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
-        titulo.multa = request
-          .input("multa")
-          .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
-        titulo.taxaEmissao = request
-          .input("taxaEmissao")
-          .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
 
+        titulo.cliente_id = request.input("cliente_id");
+        titulo.empresa_id = request.input("sacadoId");
+        titulo.estatus = estatus;
+        titulo.tipodocumento = request.input("tipoDocumento");
+        titulo.parcela = request.input("parcela");
+        titulo.totalparcela = request.input("totalparcela");
+        titulo.processo = request.input("processo");
+        titulo.valorpago = valorPago;
+        titulo.saldo = saldo;
+        titulo.datapagamento = request.input("dataPagamento");
+        titulo.dataprevista = request.input("dataPrevista");
+        titulo.justificativa = request.input("justificativa");
+        titulo.valortitulo = request
+        .input("valortitulo")
+        .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
+
+        titulo.dataemissao = request.input('dataEmissao');
+        titulo.datavencimento = request.input('dataVencimento');
+        titulo.obs = request.input('obs');
         titulo.save();
 
-        this.atualizarLimiteGeralSacador(
-          clienteSacador,
-          titulo.valorTitulo,
-          true
-        );
 
         session.flash("notification", "Título alterado com sucesso!");
       }
@@ -183,22 +211,13 @@ export default class TitulosController {
 
   public async edit({ view, params }: HttpContextContract) {
     let objTitulo = await Titulo.findOrFail(params.id);
-    const sacados = await Cliente.query().orderBy("nome", "asc");
-    const sacadores = await ClienteSacador.query().orderBy(
-      "nomeFantasia",
-      "asc"
-    );
+    const clientes = await Cliente.query().orderBy("nome", "asc");
+    return view.render("titulos", { objTitulo, clientes });
 
-    return view.render("titulos", { objTitulo, sacados, sacadores });
   }
 
   public async lista({ request, view }: HttpContextContract) {
-    const sacados = await Cliente.query().orderBy("nome", "asc");
-    const sacadores = await ClienteSacador.query().orderBy(
-      "nomeFantasia",
-      "asc"
-    );
-    const departamentos = await Departamento.all();
+    const clientes = await Cliente.query().orderBy("nome", "asc");
 
     const page = request.input("page", 1);
     const limit = 10;
@@ -206,28 +225,21 @@ export default class TitulosController {
 
     const titulos = await Titulo.query()
       .select("titulos.*")
-      .select("sacados.nome")
-      .select("sacados.nome")
-      .select("sacadores.nome_fantasia")
-      .join("sacados", "sacados.id", "=", "titulos.sacado_id")
-      .join("sacadores", "sacadores.id", "=", "titulos.sacador_id")
-      .orderBy("titulo", "asc")
-      .orderBy("data_vencimento", "asc")
+      .select("clientes.nome")
+      .join("clientes", "clientes.id", "=", "titulos.cliente_id")
+      .orderBy("dataemissao", "asc")
+      .orderBy("datavencimento", "asc")
       .paginate(page, limit);
 
     titulos.forEach(titulo => {
-      const diasAtraso: number = Number(titulo.dataVencimento.diffNow('days').days);
-      if (diasAtraso < 0) {
-        titulo.acrescimoPago += this.calJurosTitulo(titulo, Math.abs(Math.trunc(diasAtraso)));
-      }
+      const diasAtraso: number = Number(titulo.datavencimento.diffNow('days').days);
+      console.log("Dias de aatraso: ", diasAtraso);
     });
 
     titulos.baseUrl("lista");
     return view.render("listartitulos", {
       titulos,
-      sacados,
-      sacadores,
-      departamentos,
+      clientes,
       dataHoje,
     });
   }
@@ -240,16 +252,16 @@ export default class TitulosController {
   }: HttpContextContract) {
     const titulo = await Titulo.findOrFail(params.id);
 
-    const clienteSacador = await ClienteSacador.findOrFail(titulo.sacadoId);
+    const cliente = await Cliente.findOrFail(titulo.cliente_id);
 
-    titulo.valorPago = request
+    titulo.saldo = request
       .input("valorPago")
       .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
-    titulo.dataPagamento = request.input("dataPagamento");
+    titulo.datapagamento = request.input("dataPagamento");
 
     await titulo.save();
 
-    this.atualizarLimiteGeralSacador(clienteSacador, titulo.valorTitulo, false);
+    //this.atualizarLimiteGeralSacador(cliente, titulo.valorTitulo, false);
 
     session.flash("notification", "Título baixado com sucesso!!");
 
@@ -269,7 +281,7 @@ export default class TitulosController {
     titulo.valorPago = request
       .input("valorPago")
       .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
-    titulo.dataPagamento = request.input("dataPagamento");
+    titulo.datapagamento = request.input("dataPagamento");
 
     await titulo.save();
 
@@ -290,28 +302,24 @@ export default class TitulosController {
   }
 
   public async filtro({ request, view }: HttpContextContract) {
-    const sacados = await Cliente.all();
-    const sacadores = await ClienteSacador.all();
-    const departamentos = await Departamento.all();
-
+    const clientes = await Cliente.all();
+    
     const page = request.input("page", 1);
     const limit = 10;
     const dataHoje = DateTime.now();
 
     const cpf = request.input("cpf");
-    const nomeSacado = request.input("nomeSacado");
+    const nome = request.input("nome");
     const dataVencimento = request.input("dataVencimento");
 
-    const titulos = await Titulo.query()
+    const objTitulos = await Titulo.query()
       .select("titulos.*")
-      .select("sacados.nome")
-      .select("sacadores.nome_fantasia")
-      .select("sacados.cpf")
-      .join("sacados", "sacados.id", "=", "titulos.sacado_id")
-      .join("sacadores", "sacadores.id", "=", "titulos.sacador_id")
+      .select("clientes.nome")
+      .select("clientes.cpfcnpj")
+      .join("clientes", "clientes.id", "=", "titulos.cliente_id")
       .where((query) => {
-        if (nomeSacado !== null) {
-          query.andWhereILike("nome", "%" + nomeSacado + "%");
+        if (nome !== null) {
+          query.andWhereILike("nome", "%" + nome + "%");
         }
 
         if (dataVencimento !== null) {
@@ -321,20 +329,18 @@ export default class TitulosController {
           ]);
         }
         if (cpf !== null) {
-          query.andWhereILike("cpf", "%" + cpf + "%");
+          query.andWhereILike("cpfcnpj", "%" + cpf + "%");
         }
       })
-      .orderBy("titulo", "asc")
-      .orderBy("data_vencimento", "asc")
+      .orderBy("dataemissao", "asc")
+      .orderBy("datavencimento", "asc")
       .paginate(page, limit);
 
-    titulos.baseUrl("lista");
+    objTitulos.baseUrl("lista");
 
     return view.render("listartitulos", {
-      titulos,
-      sacados,
-      sacadores,
-      departamentos,
+      objTitulos,
+      clientes,
       dataHoje,
     });
   }
