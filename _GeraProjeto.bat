@@ -1,5 +1,5 @@
 cd\
-cd projetos\ordemix
+cd projetos\cadJuri
 node ace build --production
 
 pause

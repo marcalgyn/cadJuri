@@ -4,96 +4,103 @@ import Empresa from "App/Models/Empresa";
 
 
 export default class EmpresasController {
-  public async index({ view }: HttpContextContract) {
-    
-
+  public async index({ view, auth }: HttpContextContract) {
     const objEmpresa = {
       id: 0,
-      cnpj: "",
-      razaoSocial: "",
+      cpfcnpj: "",
+      razaosocial: "",
+      fantasia: "",
       email: "",
+      registro: "",
       cep: "",
       logradouro: "",
       bairro: "",
       cidade: "",
-      uf: "",
-      complemento: "",
+      estado: "",
       telefone: "",
+      cor : "",
+      logo: "",
     };
-    const empresas = await Empresa.query().orderBy("razaoSocial", "asc");
+    
+    //const empresas = await Empresa.query().orderBy("razaoSocial", "asc");
+    const empresas = await Empresa.query()
+    .select('empresas.*')
+        .where('empresas.id', '=', Number(auth.user?.empresa_id))
+        .orderBy("razaoSocial", "asc") ;
 
-    return view.render("empresa", { objEmpresa, empresas, grupos });
+    return view.render("empresa", { objEmpresa, empresas });
+
   }
 
   public async edit({ view, params, request }: HttpContextContract) {
     const objEmpresa = await Empresa.findOrFail(params.id);
-    const grupos = await Grupo.all();
-
     console.log("Editar");
 
     const page = request.input("page", 1);
     const limit = 10;
     const empresas = await Empresa.query()
-      .orderBy("razaoSocial", "asc")
+      .orderBy("razaosocial", "asc")
       .paginate(page, limit);
 
     empresas.baseUrl("/empresas");
 
-    return view.render("empresa", { objEmpresa, empresas, grupos });
+    return view.render("empresa", { objEmpresa, empresas});
+
   }
 
-  public async create({ request, response, session }: HttpContextContract) {
+  public async create({ request, response, session, auth }: HttpContextContract) {
     const validationSchema = schema.create({
-      cnpj: schema.string({ trim: true }, [rules.maxLength(18)]),
-      razaoSocial: schema.string({ trim: true }, [rules.maxLength(255)]),
+      cpfcnpj: schema.string({ trim: true }, [rules.maxLength(18)]),
+      razaosocial: schema.string({ trim: true }, [rules.maxLength(255)]),
       email: schema.string({ trim: true }, [rules.maxLength(255)]),
       cep: schema.string({ trim: true }, [rules.maxLength(10)]),
       logradouro: schema.string({ trim: true }, [rules.maxLength(255)]),
       bairro: schema.string({ trim: true }, [rules.maxLength(100)]),
       cidade: schema.string({ trim: true }, [rules.maxLength(100)]),
-      uf: schema.string({ trim: true }, [rules.maxLength(2)]),
+      estado: schema.string({ trim: true }, [rules.maxLength(2)]),
     });
 
 
     const validateData = await request.validate({
       schema: validationSchema,
       messages: {
-        "cnpj.required": "Informe o CNPJ da Empresa",
-        "razaoSocial.required": "Informe a Razão Social da Empresa",
+        "cpfcnpj.required": "Informe o CPF/CNPJ da Empresa",
+        "razaosocial.required": "Informe a Razão Social da Empresa",
         "email.required": "Informe um email da empresa",
         "cep.required": "Informe o Cep",
       },
     });
 
     try {
-      if (request.input("id") === "0") {
+      if (request.input("id") === "0" && auth.user?.nivel === "9")  {
         await Empresa.create({
-          grupo_id: request.input("grupo"),
-          cnpj: validateData.cnpj,
-          razaoSocial: validateData.razaoSocial,
+          cpfcnpj: validateData.cpfcnpj,
+          razaosocial: validateData.razaosocial,
+          fantasia: request.input('fantasia'),
+          registro: request.input('registro'),
           email: validateData.email,
           cep: validateData.cep,
           logradouro: validateData.logradouro,
           bairro: validateData.bairro,
           cidade: validateData.cidade,
-          uf: validateData.uf,
-          complemento: request.input("complemento"),
+          estado: validateData.estado,
           telefone: request.input("telefone"),
+          cor: request.input('cor'),
+          logo: request.input('logo'),
 
         });
         session.flash("notification", "Empresa Cadastrada com sucesso!");
       } else {
         const empresa = await Empresa.findOrFail(request.input("id"));
-        empresa.grupo_id = request.input("grupo");
-        empresa.cnpj = request.input("cnpj");
-        empresa.razaoSocial = request.input("razaoSocial");
+        empresa.cpfcnpj = request.input("cpfcnpj");
+        empresa.razaosocial = request.input("razaosocial");
+        empresa.fantasia = request.input("fantasia");
         empresa.email = request.input("email");
         empresa.cep = request.input("cep");
         empresa.logradouro = request.input("logradouro");
         empresa.bairro = request.input("bairro");
         empresa.cidade = request.input("cidade");
-        empresa.uf = request.input("uf");
-        empresa.complemento = request.input("complemento");
+        empresa.estado = request.input("estado");
         empresa.telefone = request.input("telefone");
         await empresa.save();
         session.flash("notification", "Empresa alterada com sucesso!");
@@ -101,7 +108,7 @@ export default class EmpresasController {
     } catch (error) {
       let msg: string = "";
       if (error.code === "ER_DUP_ENTRY") {
-        msg = `Empresa com o CNPJ ${validateData.cnpj} já foi cadastrada.`;
+        msg = `Empresa com o CNPJ ${validateData.cpfcnpj} já foi cadastrada.`;
       }
       session.flash("notification-danger", msg);
     }

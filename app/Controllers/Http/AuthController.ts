@@ -72,7 +72,7 @@ export default class AuthController {
     } catch (error) {
       session.flash(
         "notification",
-        "Não foi possível verificar suas credenciais: " + error
+        "Usuario ou senha inválido! "
       );
       return response.redirect("back");
       

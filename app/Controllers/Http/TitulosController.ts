@@ -3,6 +3,7 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Cliente from "App/Models/Cliente";
 import { DateTime } from "luxon";
 import Titulo from "App/Models/Titulo";
+import Empresa from "App/Models/Empresa";
 
 
 export default class TitulosController {
@@ -37,11 +38,16 @@ export default class TitulosController {
       "nome",
       "asc"
     );
+
+    const empresas = await Empresa.query()
+    .select('empresas.fantasia')
+    .select('empresas.logo')
+    .where('empresas.id', '=', Number(auth.user?.empresa_id));
     
-    return view.render("titulos", { objTitulo, clientes });
+    return view.render("titulos", { objTitulo, clientes, empresas });
 
   }
-
+/**
   public async loadRates({ view, params }: HttpContextContract) {
     let sacado = await Cliente.findOrFail(params.id);
     const objTitulo = {
@@ -71,6 +77,7 @@ export default class TitulosController {
 
     return view.render("titulos", { objTitulo, sacados, sacadores });
   }
+*/
 
   public async create({ request, response, session, auth }: HttpContextContract) {
     let qtdParcelas: number = Number(request.input("qtdParcelas"));
@@ -216,7 +223,7 @@ export default class TitulosController {
 
   }
 
-  public async lista({ request, view }: HttpContextContract) {
+  public async lista({ request, view, auth }: HttpContextContract) {
     const clientes = await Cliente.query().orderBy("nome", "asc");
 
     const page = request.input("page", 1);
@@ -231,16 +238,22 @@ export default class TitulosController {
       .orderBy("datavencimento", "asc")
       .paginate(page, limit);
 
-    titulos.forEach(titulo => {
+    /** titulos.forEach(titulo => {
       const diasAtraso: number = Number(titulo.datavencimento.diffNow('days').days);
       console.log("Dias de aatraso: ", diasAtraso);
     });
+    */
+    const empresas = await Empresa.query()
+    .select('empresas.fantasia')
+    .select('empresas.logo')
+    .where('empresas.id', '=', Number(auth.user?.empresa_id));
 
     titulos.baseUrl("lista");
     return view.render("listartitulos", {
       titulos,
       clientes,
       dataHoje,
+      empresas,
     });
   }
 
@@ -252,7 +265,7 @@ export default class TitulosController {
   }: HttpContextContract) {
     const titulo = await Titulo.findOrFail(params.id);
 
-    const cliente = await Cliente.findOrFail(titulo.cliente_id);
+    //const cliente = await Cliente.findOrFail(titulo.cliente_id);
 
     titulo.saldo = request
       .input("valorPago")
@@ -276,17 +289,16 @@ export default class TitulosController {
   }: HttpContextContract) {
     const titulo = await Titulo.findOrFail(params.id);
 
-    const clienteSacador = await ClienteSacador.findOrFail(titulo.sacadoId);
+    //const cliente = await Cliente.findOrFail(titulo.cliente_id);
 
-    titulo.valorPago = request
+    titulo.saldo = request
       .input("valorPago")
       .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
     titulo.datapagamento = request.input("dataPagamento");
 
     await titulo.save();
 
-    this.atualizarLimiteGeralSacador(clienteSacador, titulo.valorTitulo, true);
-
+    
     session.flash("notification", "Título estornado com sucesso!!");
 
     return response.redirect("/titulos/lista");
@@ -357,34 +369,14 @@ export default class TitulosController {
 
   /**
    * Retorna o valor da multa de atraso
-   */
+   
   public calJurosTitulo(titulo: Titulo, diasAtraso: number): number {
     const txJuros = (titulo.taxaJuros / 100) / 30 * diasAtraso;
     const multa = (titulo.multa / 100) * titulo.valorTitulo;
     const acrescimo = +(txJuros + titulo.taxaFloat + multa).toFixed(2);
     return acrescimo;
   }
+*/
 
-  /* Atualiza o Limite Geral do Sacador */
-  private async atualizarLimiteGeralSacador(
-    sacador: ClienteSacador,
-    valor: number,
-    baixar: boolean
-  ): Promise<void> {
-    let limiteGeral: number = 0;
-    let limiteUtilizado: number = 0;
 
-    if (baixar) {
-      limiteGeral = sacador.limiteGeralCredito - Number(valor);
-      limiteUtilizado = sacador.limiteUtilizado + Number(valor);
-    } else {
-      limiteGeral = sacador.limiteGeralCredito + Number(valor);
-      limiteUtilizado = sacador.limiteUtilizado - Number(valor);
-    }
-
-    sacador.limiteGeralCredito = limiteGeral;
-    sacador.limiteUtilizado = limiteUtilizado;
-
-    await sacador.save();
-  }
 }

@@ -4,13 +4,14 @@
 
     <div class="area-login-background d-none d-md-block"></div>
     <div class="area-form">
-        <div class="w-75 text-center" >
-          <img src="./logo2.png" alt=""/>
+        <div class="w-75 text-center " >
+          <img src="./logo2.png" alt="" width="250px";/>
           <div class="content-box">
             <h6 class="login subtitle has-text-centered"  >Acesso ao Sistema</h6>
             @if(flashMessages.has('notification'))
-              <div class="notification is-danger is-light">
+              <div class="notification is-danger is-light " >
                 {{ flashMessages.get('notification') }}
+                <button type="button"  class="delete" > </button>
               </div>
             @endif
 
@@ -42,7 +43,7 @@
 
               <div class="control d-flex gap-3">
                 <button type="submit" class="button is-success is-fullwidth is-info is-outlined">Login</button>
-                <a href="/register" class="button is-success is-fullwidth is-info is-outlined">Registrar</a>
+                <!-- a href="/register" class="button is-success is-fullwidth is-info is-outlined">Registrar</a -->
               </div>
             </form>
 

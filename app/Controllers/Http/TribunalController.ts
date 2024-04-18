@@ -3,7 +3,7 @@ import { rules } from '@ioc:Adonis/Core/Validator';
 import { schema } from "@ioc:Adonis/Core/Validator";
 import Empresa from "App/Models/Empresa";
 import Tribunais from "App/Models/Tribunal";
-import Pessoa from "App/Models/Usuario";
+
 
 
 
@@ -27,8 +27,13 @@ export default class TribunalController {
     .where('empresa_id', '=', Number(idEmpresa))
     .orderBy("nome", "asc");
 
+    const empresas = await Empresa.query()
+    .select('empresas.fantasia')
+    .select('empresas.logo')
+    .where('empresas.id', '=', Number(auth.user?.empresa_id));
+
     
-    return view.render("tribunal", { objTribunal, tribunais, idEmpresa });
+    return view.render("tribunal", { objTribunal, tribunais, idEmpresa, empresas });
   }
 
   public async edit({ view, params }: HttpContextContract) {
@@ -100,11 +105,10 @@ export default class TribunalController {
     //return response.redirect("back");
   }
 
-  /*** EDITAR A PARTIR  */
+  /*** EDITAR A PARTIR  
   public async lista({ request, view }: HttpContextContract) {
 
     const empresas = await Empresa.all();
-    const departamentos = await Departamento.all();
     const pessoas = await Pessoa.all();
     const page = request.input("page", 1);
     const limit = 50;
@@ -132,96 +136,9 @@ export default class TribunalController {
 
   }
 
-  public async filtro({ request, view }: HttpContextContract) {
-    const empresas = await Empresa.all();
-    const departamentos = await Departamento.all();
-    const pessoas = await Pessoa.all();
-    const page = request.input("page", 1);
-    const limit = 50;
-    
+  */
 
-    const empDestino = request.input("empDestino");
-    const usuDestino = request.input("usuDestino");
-    const dataInicial = request.input("dataInicial");
-    const dataFinal = request.input("dataFinal");
-    const depDestino = request.input("depTarefa");
-
-
-    const consPessoas = await Pessoa.query()
-    .where("pessoas.id", "=", usuDestino)
-    .select("pessoas.name");
-
-    const consEmpresas = await Empresa.query()
-    .where('empresas.id', '=', empDestino)
-    .select('empresas.razao_social');
-
-
-    const tarefas = await Tarefa.query()
-      .join("empresas", "empresas.id", "=", "tarefas.emp_destino")
-      .join("pessoas", "pessoas.id", "=", "tarefas.usu_destino")
-      .join("departamentos", "departamentos.id", "=", "tarefas.dep_destino")
-      .where((query) => {
-        if (empDestino !== null) {
-          query.andWhere("empDestino", empDestino);
-        }
-
-        if (usuDestino !== null) {
-          query.andWhere("usuDestino", usuDestino);
-        }
-
-        if (dataInicial !== null && dataFinal !== null) {
-          query.andWhereBetween("dataConclusao", [
-            dataInicial + " 00:00:00",
-            dataFinal + " 23:59:59",
-          ]);
-        }
-
-        if (depDestino !== null) {
-          query.andWhere("depDestino", depDestino)
-        }
-      })
-      .andWhere("tarefas.status_tarefa", "Completo")
-      .select("tarefas.*")
-      .select("empresas.razao_social")
-      .select("departamentos.nome")
-      .select("pessoas.name")
-      .orderBy("data_conclusao")
-      .paginate(page, limit);
-
-    //Verifica antes se tem dados soma o total
-    var totalTarefas = 0;
-    var nomePessoa = 'Todos';
-    var nomeEmpresa = 'Todas';
-
-    if (typeof tarefas != 'undefined') {
-        for (const chave in Object.values(tarefas)) {
-          if (tarefas.hasOwnProperty(chave)){
-             totalTarefas = totalTarefas + tarefas[chave].valor;
-          } 
-        }
-    };
-    
-    if (typeof consPessoas != 'undefined' && consPessoas.length == 1 ) {
-     var nomePessoa = consPessoas[0].name;
-    }
-
-    if (typeof consEmpresas != 'undefined' && consEmpresas.length == 1 ) {
-       nomeEmpresa = consEmpresas[0].razaoSocial;
-    }
-
-    tarefas.baseUrl("lista");
-    
-
-    return view.render("listatarefa", {
-      tarefas,
-      pessoas,
-      empresas,
-      departamentos,
-      totalTarefas,
-      nomePessoa,
-      nomeEmpresa,
-    });
-  }
+  
 
 
 }

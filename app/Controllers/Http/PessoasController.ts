@@ -1,6 +1,7 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { rules, schema } from "@ioc:Adonis/Core/Validator";
 import Usuario from "App/Models/Usuario";
+import Empresa from "App/Models/Empresa";
 
 export default class PessoasController {
   public async index({ request, view, auth }: HttpContextContract) {
@@ -26,10 +27,15 @@ export default class PessoasController {
       .orderBy("nivel", "desc")
       .orderBy("nome", "asc")
       .paginate(page, limit);
+    
+      const empresas = await Empresa.query()
+      .select('empresas.fantasia')
+      .select('empresas.logo')
+      .where('empresas.id', '=', Number(auth.user?.empresa_id));
 
     usuarios.baseUrl("/pessoas");
 
-    return view.render("pessoas", { objUsuario, usuarios, idEmpresa });
+    return view.render("pessoas", { objUsuario, usuarios, idEmpresa, empresas });
   }
 
   public async edit({ view, params, request, auth }: HttpContextContract) {

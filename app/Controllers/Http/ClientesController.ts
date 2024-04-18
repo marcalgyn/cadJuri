@@ -2,6 +2,7 @@ import { rules } from '@ioc:Adonis/Core/Validator';
 import { schema } from '@ioc:Adonis/Core/Validator';
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Clientes from "App/Models/Cliente";
+import Empresa from 'App/Models/Empresa';
 
 
 
@@ -27,9 +28,14 @@ export default class ClientesController {
     const clientes = await Clientes.query()
     .where('empresa_id', '=', Number(idEmpresa))
     .orderBy("nome", "asc");
+
+    const empresas = await Empresa.query()
+    .select('empresas.fantasia')
+    .select('empresas.logo')
+    .where('empresas.id', '=', Number(auth.user?.empresa_id));
     
 
-    return view.render("cliente", { objCliente, clientes, idEmpresa });
+    return view.render("cliente", { objCliente, clientes, idEmpresa, empresas });
   }
 
   public async create({ request, response, session, auth }: HttpContextContract) {

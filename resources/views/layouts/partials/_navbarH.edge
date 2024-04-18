@@ -2,14 +2,15 @@
 
     <cabecalho class="active">
         
-            <a href="/" class="logo">
-                <img src="/logo2.png" alt="logo" style="max-height:80px" class="py-1 px-1" />
-            </a>
-            
-            @each (empresa in empresas)
+        @each (empresa in empresas) 
+    
+        <a href="/" class="logo" style="max-width: 85px">
+            <img src="{{empresa.logo !== '' ? empresa.logo : '/web.png'}} " alt="logo" style="max-height:80px" class="py-0 px-0" />
+        </a>
+        
             <!-- LIMITAR O TAMANHO DO CAMPO A 16 CARACTERES -->
-                <label> {{ empresa.fantasia }}</label>
-            @endeach
+            <label style="width:160px;text-align:center"> {{ empresa.fantasia }}</label>
+        @endeach    
 
        <div class="menuToggle"></div>
         <nav >

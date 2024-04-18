@@ -60,7 +60,7 @@
                               <div class="select is-expanded">
                                 <select id="cargo" name="cargo" required>
                                   <option value="0" {{ pessoa.cargo===0 ? 'selected' : '' }}> Diretor </option>
-                                  <option value="2" {{ pessoa.cargo===1 ? 'selected' : '' }}> Colaborador </option>
+                                  <option value="1" {{ pessoa.cargo===1 ? 'selected' : '' }}> Colaborador </option>
                                 </select>
                               </div>
                             </td>
@@ -94,12 +94,6 @@
 
       </div>
     
-      @each (empresa in empresas)
-        <label> Empresa Logada: {{ empresa.fantasia }} </label>
-      @endeach
-
-
-
    
 </div>
 

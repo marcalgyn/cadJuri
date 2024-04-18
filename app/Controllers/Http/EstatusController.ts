@@ -1,6 +1,6 @@
 import { schema } from "@ioc:Adonis/Core/Validator";
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-
+import Empresa from "App/Models/Empresa";
 import Estatus from "App/Models/Estatuses";
 
 
@@ -24,10 +24,13 @@ export default class GrupoController {
         
         estatus.baseUrl("/estatus");
 
-        console.log(objEstatus);
+        const empresas = await Empresa.query()
+        .select('empresas.fantasia')
+        .select('empresas.logo')
+        .where('empresas.id', '=', Number(auth.user?.empresa_id));
 
         
-        return view.render("estatus", { objEstatus, estatus } );
+        return view.render("estatus", { objEstatus, estatus, empresas } );
     }
 
     public async edit({view, params, request, auth} : HttpContextContract) {
@@ -91,11 +94,11 @@ export default class GrupoController {
     }
 
     public async delete ({response, session,params} : HttpContextContract ) {
-        const grupo = await Grupo.findOrFail(params.id);
+        const estatus = await Estatus.findOrFail(params.id);
 
-        await grupo.delete();
+        await estatus.delete();
         
-        session.flash("notification", "Grupo excluído com sucesso!");
+        session.flash("notification", "Estatus excluído com sucesso!");
 
         return response.redirect("back");
     }

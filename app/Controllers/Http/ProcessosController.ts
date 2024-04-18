@@ -6,10 +6,9 @@ import Processo from "App/Models/Processo";
 import Tribunal from "App/Models/Tribunal"
 import Estatus from "App/Models/Estatuses";
 
+
 import { DateTime } from "luxon";
 import moment from "moment";
-import SibApiV3Sdk  from "sib-api-v3-sdk";
-import { Request } from "@adonisjs/core/build/standalone";
 import Cliente from "App/Models/Cliente";
 
 
@@ -34,6 +33,11 @@ export default class ProcessosController {
     const clientes = await Cliente.query()
     .where("empresa_id", "=", Number(idEmpresa))
     .orderBy("nome", "asc");
+
+    const empresas = await Empresa.query()
+    .select('empresas.fantasia')
+    .select('empresas.logo')
+    .where('empresas.id', '=', Number(auth.user?.empresa_id));
 
     const objProcesso = {
 
@@ -61,15 +65,14 @@ export default class ProcessosController {
       estatus,
       clientes,
       objProcesso,
-      nomeEmpresa
+      nomeEmpresa,
+      empresas
     });
   }
 
-  public async edit({ view, params, auth }: HttpContextContract) {
+  public async edit({ view, params }: HttpContextContract) {
     const objProcesso = await Processo.findOrFail(params.id)
   
-   
-
     return view.render("processos", {
       objProcesso,
       
@@ -145,43 +148,30 @@ export default class ProcessosController {
     return response.redirect("back");
   }
 
-  public async finalize({ view, params }: HttpContextContract) {
+  public async finalize({ view }: HttpContextContract) {
     const empresas = await Empresa.all();
-    const departamentos = await Departamento.all();
     const pessoas = await Usuario.query()
       .where({ ativo: true, desligado: false })
       .orderBy("name");
 
-    const objOrdemServico = await OrdemServico.findOrFail(params.id);
-
-    objOrdemServico.statusOrdemServico = "Concluido";
-    objOrdemServico.dataConclusao = DateTime.now();
 
     return view.render("ordemServico", {
-      objOrdemServico,
+
       empresas,
       pessoas,
-      departamentos,
+
     });
   }
 
-  public async cancela({ response, session, params }: HttpContextContract) {
-    const ordemServico = await OrdemServico.findOrFail(params.id);
-
-    ordemServico.statusOrdemServico = "Reprovado";
-    ordemServico.dataConclusao = DateTime.now();
-    await ordemServico.save();
-
-    // await ordemServico.delete();
-
-    session.flash("notification", "Orçamento Cancelado com sucesso!");
-
+  public async cancela({ response }: HttpContextContract) {
+    
     return response.redirect("back");
   }
-
+/** 
   public async lista({ request, view }: HttpContextContract) {
-    const empresas = await Empresa.all();
-    const departamentos = await Departamento.all();
+    
+     const empresas = await Empresa.all();
+    
     const pessoas = await Usuario.all();
     const page = request.input("page", 1);
     const limit = 50;
@@ -212,11 +202,14 @@ export default class ProcessosController {
       departamentos,
       pessoas,
     });
-  }
 
-  public async filtro({ request, view }: HttpContextContract) {
+    
+  }
+*/
+/**  
+public async filtro({ request, view }: HttpContextContract) {
+
     const empresas = await Empresa.all();
-    const departamentos = await Departamento.all();
     const pessoas = await Usuario.all();
     const page = request.input("page", 1);
     const limit = 50;
@@ -272,12 +265,10 @@ export default class ProcessosController {
       empresas,
       departamentos,
     });
+    
   }
-
-  public async listaOrcamento({request, view} : HttpContextContract){
- 
-
-  }
+*/
+  
 
   /**
    * Retorna um DateTime Luxon
