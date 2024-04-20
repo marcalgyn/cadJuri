@@ -133,6 +133,7 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get("/", "DashboardController.index");
+  
 })
   .prefix("/dashboard")
   .middleware("auth");

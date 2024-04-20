@@ -234,8 +234,9 @@ export default class TitulosController {
       .select("titulos.*")
       .select("clientes.nome")
       .join("clientes", "clientes.id", "=", "titulos.cliente_id")
-      .orderBy("dataemissao", "asc")
       .orderBy("datavencimento", "asc")
+      .orderBy("valorpago", "asc")
+      
       .paginate(page, limit);
 
     /** titulos.forEach(titulo => {

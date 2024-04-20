@@ -79,7 +79,7 @@ export default class PessoasController {
           },
         });
 
-        console.log("Validate Usuario", validateData);
+        console.log("Validação de dados do Usuario", validateData);
 
 
         await Usuario.create({
@@ -87,7 +87,8 @@ export default class PessoasController {
           email: validateData.email,
           telefone: validateData.telefone,
           password: validateData.password,
-          ativo: (request.input("ativo") === null ? true : false),
+          ativo: (request.input("ativo") === null ? true : true),
+          empresa_id: auth.user?.empresa_id,
         });
         session.flash("notification", "Usuário adicionado com sucesso!");
 

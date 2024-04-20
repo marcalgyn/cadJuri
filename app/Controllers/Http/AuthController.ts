@@ -30,7 +30,7 @@ export default class AuthController {
       schema: validationSchema,
     });
 
-    console.log('Registrou ', validateData);
+    console.log('Registrou Usuario: ', validateData);
 
     const objPessoa = await Usuario.create(validateData);
 
@@ -45,20 +45,15 @@ export default class AuthController {
   }: HttpContextContract) {
 
     const { email,  password} = request.all();
-
-    //console.log(request.all());
-    
-      
+    console.log(request.all());
 
     try {
       
       await auth.attempt(email, password);
       const isAtivo: boolean = auth.user?.$original.ativo;
-      console.log('Ativo: ');
-     
       
       if (isAtivo) {
-        console.log("Acesso liberado");
+        console.log("Acesso Ativo Liberado...");
         return response.redirect("/home");
         
       } else {
@@ -75,7 +70,6 @@ export default class AuthController {
         "Usuario ou senha inválido! "
       );
       return response.redirect("back");
-      
 
     }
   }
