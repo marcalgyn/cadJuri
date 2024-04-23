@@ -2,25 +2,66 @@
 
 @section('content')
 
-<div class="columns">
-  <div class="column is-3 is-offset-5">
+<div class="columns text-center">
+  <div class="column is-4">
     <img src="./logo2.png" alt=""/>
     <div class="content-box">
-      <h6 class="login subtitle has-text-centered">Registrar Novo Usuário</h6>
+      <h6 class="login subtitle has-text-centered">Registro de Nova empresa!</h6>
+      
+      @if(flashMessages.has('notification'))
+          <div class="notification is-danger is-light " >
+            {{ flashMessages.get('notification') }}
+            <button type="button"  class="delete" > </button>
+          </div>
+      @endif
+      ******************** ajustar layout da tela ******************
+
       <form action="/register" method="post">
         {{ csrfField() }}
-        <input type="hidden" name="ativo" id="ativo" value="1" >
-        <input name="empresa_id" id="empresa_id" value="1" hidden>
+        <input name="ativo" id="ativo" value="1" hidden>
+        <input name="nivel" id="nivel" value="0" hidden>
+        <!-- input name="empresa_id" id="empresa_id" value="1" hidden -->
         
+        
+        <div class="column">
+            <div class="row">
+              <div class="field-body mb-4">
+                  <div class="field">
+                      <label class="login label">CNPJ</label>
+                      <div class="control">
+                        <input
+                          type="text"
+                          class="input {{ flashMessages.get('errors.cpfcnpj') ? 'is-danger' : '' }}"
+                          name="cpfcnpj"
+                          value="{{ flashMessages.get('cpfcnpj') || '' }}" required
+                          >
+                      </div>
+                  </div>
 
-        <div class="field">
+                  <div class="field">
+                      <label class="login label">Razão Social</label>
+                      <div class="control">
+                        <input
+                          type="text"
+                          class="input {{ flashMessages.get('errors.razaosocial') ? 'is-danger' : '' }}"
+                          name="razaosocial"
+                          value="{{ flashMessages.get('razaosocial') || '' }}" required
+                          >
+                      </div>
+                  </div>
+               </div>
+            </div>
+
+        </div>
+
+          <div class="field">
           <label class="login label">Nome</label>
           <div class="control">
             <input
               type="text"
               class="input {{ flashMessages.get('errors.nome') ? 'is-danger' : '' }}"
               name="nome"
-              value="{{ flashMessages.get('nome') || '' }}"
+              value="{{ flashMessages.get('nome') || '' }}" required
               >
           </div>
 
@@ -38,7 +79,7 @@
               type="email"
               class="input {{ flashMessages.get('errors.email') ? 'is-danger' : '' }}"
               name="email"
-              value="{{ flashMessages.get('email') || '' }}"
+              value="{{ flashMessages.get('email') || '' }}" required
               >
           </div>
 
@@ -55,7 +96,7 @@
             <input
               type="password"
               class="input {{ flashMessages.get('errors.password') ? 'is-danger' : '' }}"
-              name="password"
+              name="password" required
               >
           </div>
 
@@ -72,7 +113,7 @@
             <input
               type="password"
               class="input {{ flashMessages.get('errors.password_confirmation') ? 'is-danger' : '' }}"
-              name="password_confirmation"
+              name="password_confirmation" required
               >
           </div>
 

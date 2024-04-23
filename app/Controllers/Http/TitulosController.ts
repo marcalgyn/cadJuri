@@ -234,6 +234,7 @@ export default class TitulosController {
       .select("titulos.*")
       .select("clientes.nome")
       .join("clientes", "clientes.id", "=", "titulos.cliente_id")
+      .where("titulos.empresa_id", '=', Number(auth.user?.empresa_id))
       .orderBy("datavencimento", "asc")
       .orderBy("valorpago", "asc")
       

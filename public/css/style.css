@@ -17,15 +17,16 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 
-  background: linear-gradient(rgb(153, 179, 153, 0.2), rgba(0, 0, 0, 1.0)), url(/img/principal.jpg);
+ /* background: linear-gradient(rgb(153, 179, 153, 0.2), rgba(0, 0, 0, 1.0)), url(/img/principal.jpg);
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
+  */
   
 }
 
 .login {
-    color: #ffff !important;
+    color: #000108 !important;
     font-family: Helvetica, Arial, sans-serif
 }
 

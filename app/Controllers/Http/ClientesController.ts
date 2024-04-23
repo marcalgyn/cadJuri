@@ -39,6 +39,7 @@ export default class ClientesController {
   }
 
   public async create({ request, response, session, auth }: HttpContextContract) {
+    
     const validationSchema = schema.create({
       cpfcnpj: schema.string({ trim: true }, [rules.maxLength(14)]),
       nome: schema.string({ trim: true }, [rules.maxLength(180)]),
@@ -57,9 +58,7 @@ export default class ClientesController {
 
     try {
       if (request.input("id") === "0") {
-        
-        
-
+    
         await Clientes.create({
           cpfcnpj: validateData.cpfcnpj,
           nome: validateData.nome,
