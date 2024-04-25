@@ -58,7 +58,6 @@ export default class GrupoController {
             if (request.input("id") === "0") {
                 const validationSchema = schema.create({
                     descricao : schema.string(),
-                    observacao: schema.string(),
                 })
                 const validateData = await request.validate({
                     schema: validationSchema,
@@ -68,15 +67,15 @@ export default class GrupoController {
                 });
 
                 await Estatus.create({
-                    descricao: validateData.descricao,
-                    observacao: validateData.observacao,
+                    descricao: validateData.descricao === null ? '' : validateData.descricao.toUpperCase(),
+                    observacao: request.input('observacao'),
                     empresa_id: Number(idEmpresa)
                 });
                 session.flash("notification", "Estatus adicionado com sucesso!")
             } else {
                 const estatus = await Estatus.findOrFail(request.input("id"));
-                estatus.descricao = request.input("descricao");
-                estatus.observacao = request.input("observacao");
+                estatus.descricao = request.input("descricao") === null ? '' : request.input("descricao").toUpperCase();
+                estatus.observacao = request.input("observacao") === null ? '' : request.input("observacao");
                 await estatus.save();
                 session.flash("notification", "Estatus Alterado com sucesso!")
             }

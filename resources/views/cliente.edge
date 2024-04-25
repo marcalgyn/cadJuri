@@ -25,10 +25,11 @@
                     <form action="/clientes" method="post">
                       {{ csrfField() }}
                       <input type="hidden" name="id" id="id" value={{ objCliente.id }}>
+                      <input type="hidden" name="logo" id="logo" value={{ logo }}>
 
                       <div class="card has-background-light">
                         <header class="card-header has-background-link cab">
-                          <p class="title is-6 p-0 has-text-white">
+                          <p class="title is-6 p-2 has-text-white">
                             Cadastro de Clientes
                           </p>
                         </header>
@@ -147,7 +148,7 @@
                           <div class="column ">
                             <div class="row">
                               <div class="field-body mb-12"> 
-                                
+
                                   <div class="form-group col-md-4">
                                     <input name="cidade" type="text" class="input" id="cidade"
                                         value="{{objCliente.cidade}}" placeholder="Cidade" required
@@ -181,7 +182,7 @@
                                 <span>Salvar</span>
                               </button>
                             </div>
-
+                         
                             <div class="control">
                               <button type="button" class="button is-warning" onclick="window.location.href='{{ `/clientes` }}'">
                                 <span class="icon is-small">
@@ -190,6 +191,7 @@
                                 <span>Cancelar</span>
                               </button>
                             </div>
+
                           </div>
 
                         </div>
@@ -210,20 +212,35 @@
                         </p>
                       @endif
                     </form>
+                    
+
                   </div>
 
 
                   <div class="box">
-                    <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
+                    <div class="field is-grouped">
+                      <div class="control ">
+                          <input class="input col-md-12"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
+                      </div>
                     
-                    <table class="table is-fullwidth is-striped is-hoverable" id="lista">
+                      <div class="control">
+                        <button onclick="relatorioListaCliente()" class="button is-success " id="btnPDF">
+                          Gerar PDF &nbsp;    
+                          <i class="fa-solid fa-floppy-disk text-white">
+                        </i></button>
+                      </div>
+                    </div>
+
+                    <table class="table is-fullwidth is-striped is-hoverable" id="listas"  >
                       <thead>
                         <tr>
                           <div>
                             <th class="is-hidden-mobile">CPF/CNPJ</th>
                           </div>
                           <th>Nome</th>
+                          <th>Telefone</th>
                           <th class="is-hidden-mobile">e-mail</th>
+                          <th> Cidade-UF </th>
                           <th class="has-text-centered">Ações</th>
                         </tr>
                       </thead>
@@ -234,7 +251,10 @@
                             <td class="is-hidden-mobile">{{ cliente.cpfcnpj }}</td>
                           </div>
                           <td style="text-transform: uppercase" >{{ cliente.nome }}</td>
+                          <td>  {{cliente.telefone }} </td>
                           <td class="is-hidden-mobile">{{ cliente.email }}</td>
+                          <td >{{cliente.cidade}}-{{cliente.estado}}</td>
+
                           <td class="has-text-centered">
                             <form action="{{ `/clientes/${cliente.id}?_method=DELETE` }}" method="post">
                               {{ csrfField() }}
@@ -271,13 +291,16 @@
         </div>
     </div>
 
+
+    
 <script>
+
 
 document.getElementById('filtro-nome').addEventListener('keyup', pesquisaTabela());
 
 function pesquisaTabela() {
   var filter, table, tr, td, i;
-  table = document.getElementById("lista");
+  table = document.getElementById("listas");
   return function() {
     tr = table.querySelectorAll("tbody tr");
     filter = this.value.toUpperCase();
@@ -287,7 +310,99 @@ function pesquisaTabela() {
     }
   }
 }
+</script>
 
+<script type="text/javascript">
+
+function relatorioListaCliente() {
+  var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
+  
+  const doc = new jsPDF('l', 'pt', 'a4');
+  const novaData = new Date();
+  var numeroPagina = doc.internal.getNumberOfPages();
+  doc.setTextColor(100);
+  /* Anexa Imagem*/
+  const img = new Image();
+  img.src =  document.getElementById('logo').value !== '' ? document.getElementById('logo').value : '/web.png';
+  
+
+  doc.addImage(img, 'jpeg', 10, 8, 80, 40);
+  
+  /*Titulo Relatorio*/
+  doc.setFontSize(14);
+  doc.text('Relatório de Clientes', 300, 30);
+  
+
+  /*Data Impressao*/
+  doc.setFontSize(10);
+  //doc.text('Data Emissão: ', 10, 60);
+  posicaoH = posicaoH + 60
+  doc.text('Data Emissão: ', 10, posicaoH);
+  doc.text(novaData.toLocaleString('pt-BR', {timezone: 'UTC'}), 80, posicaoH);
+  posicaoH = posicaoH + 14;
+  //doc.text('Empresa: ' + document.getElementById('nomeEmpresa').value, 10, posicaoH);
+
+  posicaoH = posicaoH + 12;
+  //doc.text('Usuario: ' + document.getElementById('usuario').value, 10, posicaoH);
+
+  /*Cria numeração da pagina*/
+
+
+  for (i=0; i < numeroPagina; i++) {
+    doc.setPage(i);
+    let paginaAtual = doc.internal.getCurrentPageInfo().numeroPagina;
+    doc.setFontSize(10);
+
+    //doc.text('Pagina: ' + numeroPagina, 750, 60);
+    doc.text('Pagina: ' + numeroPagina, 750, posicaoH);
+
+    /** Rodape do Relatorio **/
+    doc.text('Pagina ' + numeroPagina, doc.internal.pageSize.width / 2, 287, {
+    align: 'center' });
+
+  }
+  
+  
+  //doc.line(10, 70, 820, 70);
+  posicaoH = posicaoH + 10;
+  doc.line(10, posicaoH, 820, posicaoH);
+  
+  /**Criação Listagem de Tabelas startY: 71**/
+  posicaoH = posicaoH + 1;
+
+    doc.autoTable({html: '#listas', startY: posicaoH, theme: 'striped',
+      margin: Margin = 10,
+      
+
+      columnStyles: {
+        0: {
+          halign: 'left',
+          tableWidth:100,
+        },
+        1: {
+          halign: 'left',
+          tableWidth:90,
+        },
+        2: {
+          halign: 'left',
+          tableWidth:150,
+        },
+        3: {
+          halign: 'left',
+          tableWidth:100,
+        },
+        4: {
+          hidden: false,
+        }
+       
+      },
+    });
+      
+  doc.save('RelatorioClientes.pdf');
+  
+
+};
 
 </script>
+
 @endsection

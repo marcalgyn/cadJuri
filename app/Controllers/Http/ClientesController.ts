@@ -18,7 +18,7 @@ export default class ClientesController {
       estadocivil: "",
       naturalidade: "",
       telefone: "",
-      email: "sem@email",
+      email: "",
       cep: "",
       logradouro: "",
       bairro: "",
@@ -33,9 +33,11 @@ export default class ClientesController {
     .select('empresas.fantasia')
     .select('empresas.logo')
     .where('empresas.id', '=', Number(auth.user?.empresa_id));
-    
 
-    return view.render("cliente", { objCliente, clientes, idEmpresa, empresas });
+    const logo = empresas[0].logo;
+       
+
+    return view.render("cliente", { objCliente, clientes, idEmpresa, empresas, logo  });
   }
 
   public async create({ request, response, session, auth }: HttpContextContract) {
@@ -54,24 +56,22 @@ export default class ClientesController {
       },
     });
     
-    console.log("Empresa: ", auth.user?.empresa_id);
-
     try {
       if (request.input("id") === "0") {
     
         await Clientes.create({
           cpfcnpj: validateData.cpfcnpj,
-          nome: validateData.nome,
-          registro: request.input("registro") === 'null' ? '' : request.input("registro"),
-          estadocivil: request.input("estadocivil") === 'null' ? '' : request.input("estadocivil"),
-          naturalidade: request.input("naturalidade") === 'null' ? '' : request.input("naturalidade") ,
+          nome:  validateData.nome.toUpperCase(),
+          registro: request.input("registro") === null ? '' : request.input("registro"),
+          estadocivil: request.input("estadocivil") === null ? '' : request.input("estadocivil").toUpperCase(),
+          naturalidade: request.input("naturalidade") === null ? '' : request.input("naturalidade").toUpperCase(),
           telefone: request.input("telefone"),
-          email: request.input("email") === 'null' ? ' ' : request.input("email"),
-          cep: request.input("cep") === 'null' ? '' : request.input("cep"),
-          logradouro: request.input("logradouro"),
-          bairro: request.input("bairro") === 'null' ? '' : request.input("bairro"),
-          cidade: request.input("cidade") === 'null' ? '' : request.input("cidade"),
-          estado: request.input("estado") === 'null' ? 'GO' : request.input("uf"),
+          email: request.input("email") === null ? ' ' : request.input("email").toLowerCase(),
+          cep: request.input("cep") === null ? '' : request.input("cep"),
+          logradouro: request.input("logradouro").toUpperCase(),
+          bairro: request.input("bairro") === null ? '' : request.input("bairro").toUpperCase(),
+          cidade: request.input("cidade") === null ? '' : request.input("cidade").toUpperCase(),
+          estado: request.input("estado") === null ? 'GO' : request.input("uf").toUpperCase(),
           empresa_id: auth.user?.empresa_id,
         });
 
@@ -87,17 +87,17 @@ export default class ClientesController {
         );
 
         cliente.cpfcnpj = request.input("cpfcnpj");
-        cliente.nome = request.input("nome"),
-        cliente.email = request.input("email") === 'null' ? ' ' : request.input("email") ,
+        cliente.nome = request.input("nome").toUpperCase(),
+        cliente.email = request.input("email") === null ? '' : request.input("email").toLowerCase(),
         cliente.telefone = request.input("telefone"),
         cliente.registro = request.input("registro"),
         cliente.estadocivil = request.input("estadocivil"),
-        cliente.naturalidade = request.input("naturalidade"),
+        cliente.naturalidade = request.input("naturalidade") === null ? '' : request.input("naturalidade").toUpperCase(),
         cliente.cep = request.input("cep") === 'null' ? '' : request.input("cep");
-        cliente.logradouro = request.input("logradouro") === 'null' ? '' : request.input("logradouro") ;
-        cliente.bairro = request.input("bairro") === 'null' ? '': request.input("bairro");
-        cliente.cidade = request.input("cidade") === 'null' ? '' : request.input("cidade");
-        cliente.estado = request.input("estado") === 'null' ? 'GO' : request.input("uf");
+        cliente.logradouro = request.input("logradouro") === null ? '' : request.input("logradouro").toUpperCase() ;
+        cliente.bairro = request.input("bairro") === null ? '': request.input("bairro").toUpperCase();
+        cliente.cidade = request.input("cidade") === null ? '' : request.input("cidade").toUpperCase();
+        cliente.estado = request.input("estado") === null ? 'GO' : request.input("uf").toUpperCase();
 
         await cliente.save();
         session.flash("notification", "Cliente alterado com sucesso!");

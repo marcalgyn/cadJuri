@@ -16,6 +16,8 @@
 body {
   min-height: 100vh;
   overflow-x: hidden;
+  
+
 
  /* background: linear-gradient(rgb(153, 179, 153, 0.2), rgba(0, 0, 0, 1.0)), url(/img/principal.jpg);
   background-repeat: no-repeat;
@@ -352,7 +354,7 @@ cabecalho ul li ul li ul {
   align-items: center;
   min-height: 100vh;
   background: var(--white);
-  padding-top: 1%;
+  padding-top: 0;
   transition: 0.5s;
 }
 
@@ -764,5 +766,5 @@ cabecalho ul li ul li ul {
 
 .cab
 {
-  height: 30px !important;
+  height: 40px !important;
 }

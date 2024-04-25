@@ -83,8 +83,8 @@ export default class PessoasController {
 
 
         await Usuario.create({
-          nome: validateData.nome,
-          email: validateData.email,
+          nome: validateData.nome === null ? '' : validateData.nome.toUpperCase(),
+          email: validateData.email === null ? '' : validateData.email.toLowerCase(),
           telefone: validateData.telefone,
           password: validateData.password,
           ativo: (request.input("ativo") === null ? true : true),
@@ -96,8 +96,8 @@ export default class PessoasController {
         const usuario = await Usuario.findOrFail(request.input("id"));
 
         if (!(!!request.input("inativo"))){
-          usuario.nome = request.input("nome");
-          usuario.email = request.input("email");
+          usuario.nome = request.input("nome") === null ? '' : request.input("nome").toUpperCase();
+          usuario.email = request.input("email") === null ? '' : request.input("email").toLowerCase();
           usuario.telefone = request.input("telefone");
           usuario.password = request.input("password");
           usuario.ativo = !!request.input("ativo");
@@ -105,8 +105,8 @@ export default class PessoasController {
           usuario.empresa_id = Number(auth.user?.empresa_id);
 
         } else {
-          usuario.nome = request.input("nome");
-          usuario.email = request.input("email");
+          usuario.nome = request.input("nome") === null ? '' : request.input("nome").toUpperCase();
+          usuario.email = request.input("email") === null ? '' : request.input("email").toLowerCase();
           usuario.telefone = request.input("telefone");
           usuario.password = "999999";
           usuario.ativo = false;

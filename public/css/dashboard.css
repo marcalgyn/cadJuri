@@ -1,5 +1,6 @@
 body {
-    background-color:  #eaeef3;
+    background-color:  #fff;
+    
 }
 
 .menu-header {
@@ -97,6 +98,8 @@ body {
 .bg-dark {
     background-color: #1c5c93!important;
 }
+
+
 
 
 /** MENU NAV**/

@@ -48,27 +48,25 @@ export default class TribunalController {
     try {
       const validationSchema = schema.create({
         nome: schema.string({trim: true}, [rules.maxLength(255)]),
-        comarca: schema.string({trim: true}),
 
       });
 
       const validateData = await request.validate({ schema: validationSchema,
         messages: {
           "nome.required": "Informe o Tribunal",
-          "comarca.required": "Informe a comarca",
         }, });
 
       console.log(validateData);
 
       if (request.input("id") === "0") {
         await Tribunais.create({
-          nome: validateData.nome,
-          comarca: validateData.comarca,
-          endereco: request.input('endereco') === 'null' ? '' : request.input('endereco'),
-          telefone: request.input('telefone') === 'null' ? '' : request.input('telefone'),
-          email: request.input('email') === 'null' ? '' : request.input('email'),
-          vara: request.input('vara') === 'null' ? '' : request.input('vara'),
-          obs : request.input('observacao') === 'null' ? '' : request.input('observacao'),
+          nome: validateData.nome === null ? '' : validateData.nome.toUpperCase(),
+          comarca: request.input('comarca') === null ? '' : request.input('comarca').toUpperCase(),
+          endereco: request.input('endereco') === null ? '' : request.input('endereco').toUpperCase(),
+          telefone: request.input('telefone') === null ? '' : request.input('telefone').toUpperCase(),
+          email: request.input('email') === null ? '' : request.input('email').toLowerCase(),
+          vara: request.input('vara') === null ? '' : request.input('vara').toUpperCase(),
+          obs : request.input('observacao') === null ? '' : request.input('observacao').toUpperCase(),
           empresa_id: auth.user?.empresa_id,
         });
 
@@ -78,13 +76,13 @@ export default class TribunalController {
 
         const tribunal = await Tribunais.findOrFail(request.input("id"));
 
-        tribunal.nome = request.input("nome");
-        tribunal.comarca = request.input('comarca');
-        tribunal.endereco = request.input('endereco');
+        tribunal.nome = request.input("nome") === null ? '' : request.input("nome").toUpperCase();
+        tribunal.comarca = request.input('comarca') === null ? '' : request.input('comarca').toUpperCase();
+        tribunal.endereco = request.input('endereco') === null ? '' : request.input('endereco').toUpperCase();
         tribunal.telefone = request.input('telefone');
-        tribunal.email = request.input('email');
-        tribunal.vara = request.input('vara');
-        tribunal.obs = request.input('observacao');
+        tribunal.email = request.input('email') ===null ? '' : request.input('email').toLowerCase;
+        tribunal.vara = request.input('vara') === null ? '' : request.input('vara').toUpperCase();
+        tribunal.obs = request.input('observacao') === null ? '' : request.input('observacao').toUpperCase();
         
 
         await tribunal.save();

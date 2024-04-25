@@ -61,7 +61,7 @@ export default class AuthController {
         
           await Usuario.create({
             nome: validateData.nome,
-            email: validateData.email,
+            email: validateData.email.toLowerCase(),
             ativo: validateData.ativo,
             nivel: validateData.nivel,
             password: validateData.password,
@@ -72,7 +72,7 @@ export default class AuthController {
           return view.render("welcome", {});
 
         } catch (error) {
-          const empresa = await Empresas.query()
+            await Empresas.query()
             .delete('empresas')
             .where('empresas.id', '=', emp);
 
@@ -112,7 +112,9 @@ export default class AuthController {
       const isAtivo: boolean = auth.user?.$original.ativo;
       
       if (isAtivo) {
-        console.log("Acesso Ativo Liberado...");
+        
+        console.log("Acessou o sistema CadJuri...");
+
         return response.redirect("/home");
         
       } else {

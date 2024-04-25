@@ -75,15 +75,15 @@ export default class EmpresasController {
       if (request.input("id") === "0" && auth.user?.nivel === "9")  {
         await Empresa.create({
           cpfcnpj: validateData.cpfcnpj,
-          razaosocial: validateData.razaosocial,
-          fantasia: request.input('fantasia'),
+          razaosocial: validateData.razaosocial === null ? '' : validateData.razaosocial.toUpperCase(),
+          fantasia: request.input('fantasia') === null ? '' : request.input('fantasia').toUpperCase(),
           registro: request.input('registro'),
-          email: validateData.email,
+          email: validateData.email === null ? '' : validateData.email.toLowerCase(),
           cep: validateData.cep,
-          logradouro: validateData.logradouro,
-          bairro: validateData.bairro,
-          cidade: validateData.cidade,
-          estado: validateData.estado,
+          logradouro: validateData.logradouro === null ? '' : validateData.logradouro.toUpperCase(),
+          bairro: validateData.bairro === null ? '' : validateData.bairro.toUpperCase(),
+          cidade: validateData.cidade ===null ? '' : validateData.cidade.toUpperCase(),
+          estado: validateData.estado === null ? '' : validateData.estado.toUpperCase(),
           telefone: request.input("telefone"),
           cor: request.input('cor'),
           logo: request.input('logo'),
@@ -93,14 +93,14 @@ export default class EmpresasController {
       } else {
         const empresa = await Empresa.findOrFail(request.input("id"));
         empresa.cpfcnpj = request.input("cpfcnpj");
-        empresa.razaosocial = request.input("razaosocial");
-        empresa.fantasia = request.input("fantasia");
-        empresa.email = request.input("email");
+        empresa.razaosocial = request.input("razaosocial") === null ? '' : request.input("razaosocial").toUpperCase();
+        empresa.fantasia = request.input("fantasia") === null ? '' : request.input("fantasia").toUpperCase();
+        empresa.email = request.input("email") === null ? '' : request.input("email").toLowerCase();
         empresa.cep = request.input("cep");
-        empresa.logradouro = request.input("logradouro");
-        empresa.bairro = request.input("bairro");
-        empresa.cidade = request.input("cidade");
-        empresa.estado = request.input("estado");
+        empresa.logradouro = request.input("logradouro") === null ? '' : request.input("logradouro").toUpperCase();
+        empresa.bairro = request.input("bairro") === null ? '' : request.input("bairro").toUpperCase();
+        empresa.cidade = request.input("cidade") === null ? '' : request.input("cidade").toUpperCase();
+        empresa.estado = request.input("estado") === null ? '' : request.input("estado").toUpperCase();
         empresa.telefone = request.input("telefone");
         await empresa.save();
         session.flash("notification", "Empresa alterada com sucesso!");

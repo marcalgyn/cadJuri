@@ -164,7 +164,7 @@ export default class TitulosController {
             saldo: saldo,
             datapagamento: request.input('dataPagamento'),
             dataprevista: request.input('dataPrevista'),
-            justificativa: request.input('justificativa'),
+            justificativa: request.input('justificativa') === null ? '' : request.input('justificativa'),
             valortitulo: request
             .input("valortitulo")
             .toLocaleString("pt-BR", { maximumSignificantDigits: 2 }),
@@ -174,7 +174,7 @@ export default class TitulosController {
               dataDeVencimento,
               tipoParcela * index
             ),
-            obs: request.input('obs'),
+            obs: request.input('obs') === null ? '' : request.input('obs'),
           });
           nParcela++;
         }
@@ -194,14 +194,14 @@ export default class TitulosController {
         titulo.saldo = saldo;
         titulo.datapagamento = request.input("dataPagamento");
         titulo.dataprevista = request.input("dataPrevista");
-        titulo.justificativa = request.input("justificativa");
+        titulo.justificativa = request.input("justificativa") === null ? '' : request.input("justificativa");
         titulo.valortitulo = request
         .input("valortitulo")
         .toLocaleString("pt-BR", { maximumSignificantDigits: 2 });
 
         titulo.dataemissao = request.input('dataEmissao');
         titulo.datavencimento = request.input('dataVencimento');
-        titulo.obs = request.input('obs');
+        titulo.obs = request.input('obs') === null ? '' : request.input('obs');
         titulo.save();
 
 
@@ -216,9 +216,13 @@ export default class TitulosController {
     return response.redirect("/titulos");
   }
 
-  public async edit({ view, params }: HttpContextContract) {
+  public async edit({ view, params, auth }: HttpContextContract) {
     let objTitulo = await Titulo.findOrFail(params.id);
-    const clientes = await Cliente.query().orderBy("nome", "asc");
+    
+    const clientes = await Cliente.query()
+    .where('clientes.empresa_id', '=', Number(auth.user?.empresa_id) )
+    .orderBy("nome", "asc");
+
     return view.render("titulos", { objTitulo, clientes });
 
   }
@@ -227,7 +231,7 @@ export default class TitulosController {
     const clientes = await Cliente.query().orderBy("nome", "asc");
 
     const page = request.input("page", 1);
-    const limit = 10;
+    const limit = 50;
     const dataHoje = DateTime.now();
 
     const titulos = await Titulo.query()
@@ -237,7 +241,6 @@ export default class TitulosController {
       .where("titulos.empresa_id", '=', Number(auth.user?.empresa_id))
       .orderBy("datavencimento", "asc")
       .orderBy("valorpago", "asc")
-      
       .paginate(page, limit);
 
     /** titulos.forEach(titulo => {
@@ -319,14 +322,14 @@ export default class TitulosController {
     const clientes = await Cliente.all();
     
     const page = request.input("page", 1);
-    const limit = 10;
+    const limit = 50;
     const dataHoje = DateTime.now();
 
     const cpf = request.input("cpf");
     const nome = request.input("nome");
     const dataVencimento = request.input("dataVencimento");
 
-    const objTitulos = await Titulo.query()
+    const titulos = await Titulo.query()
       .select("titulos.*")
       .select("clientes.nome")
       .select("clientes.cpfcnpj")
@@ -350,10 +353,10 @@ export default class TitulosController {
       .orderBy("datavencimento", "asc")
       .paginate(page, limit);
 
-    objTitulos.baseUrl("lista");
+    titulos.baseUrl("lista");
 
     return view.render("listartitulos", {
-      objTitulos,
+      titulos,
       clientes,
       dataHoje,
     });

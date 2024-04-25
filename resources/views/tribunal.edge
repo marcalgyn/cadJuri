@@ -21,7 +21,7 @@
 
                         <div class="card has-background-light">
                           <header class="card-header has-background-link cab">
-                            <p class="title is-6 p-0 has-text-white">
+                            <p class="title is-6 p-2 has-text-white">
                               Cadastro de Tribunal
                             </p>
                           </header>
@@ -37,7 +37,8 @@
                                   class="input {{ flashMessages.has('errors.nome') ? 'is-danger' : '' }}"
                                   placeholder="Informe o Nome do Tribunal"
                                   value="{{ objTribunal.nome }}"
-                                  style="text-transform:uppercase" 
+                                  style="text-transform:uppercase"
+                                  required 
                                 >
                               </div>
                             </div>
@@ -54,6 +55,8 @@
                                         name="comarca"
                                         class="input" placeholder="Comarca"
                                         value="{{ objTribunal.comarca }}"
+                                        style="text-transform:uppercase"
+                                        
                                       >
                                     </div>
                                   </div>

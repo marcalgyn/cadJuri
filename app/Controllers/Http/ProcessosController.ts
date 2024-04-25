@@ -95,13 +95,13 @@ export default class ProcessosController {
           datacontratacao: request.input('datacontratacao') !== undefined && request.input('datacontratacao') !== null
           ? request.input('datacontratacao') : null,
 
-          descricaoacao: request.input('descricaoacao'),
-          nivelprocesso: request.input('nivelprocesso'),
+          descricaoacao: request.input('descricaoacao') === null ? '' : request.input('descricaoacao').toUpperCase(),
+          nivelprocesso: request.input('nivelprocesso') === null ? '' : request.input('nivelprocesso').toUpperCase(),
           primeiraaudiencia: request.input('primeiraaudiencia') !== undefined && request.input('primeiraaudiencia') !== null
           ? request.input('primeiraaudiencia') : null,
 
-          linkprocesso: request.input('linkprocesso'),
-          nomejuiz: request.input('nomejuiz'),
+          linkprocesso: request.input('linkprocesso') === null ? '' : request.input('linkprocesso').toLowerCase(),
+          nomejuiz: request.input('nomejuiz') === null ? '' : request.input('nomejuiz').toUpperCase(),
           senhaprocesso: request.input('senhaprocesso'),
           vara: request.input('vara'),
           obs: request.input('obs'),
@@ -120,12 +120,12 @@ export default class ProcessosController {
           processo.numeroprocesso = validateData.numeroprocesso,
           processo.datacontratacao= request.input('datacontratacao') !== undefined && request.input('datacontratacao') !== null
           ? this.convertStrToDateTime(request.input('datacontratacao')) : null,
-          processo.descricaoacao= request.input('descricaoacao'),
+          processo.descricaoacao= request.input('descricaoacao') === null ? '' :request.input('descricaoacao').toUpperCase(),
           processo.nivelprocesso= request.input('nivelprocesso'),
           processo.primeiraaudiencia= request.input('primeiraaudiencia') !== undefined && request.input('primeiraaudiencia') !== null
           ? this.convertStrToDateTime(request.input('primeiraaudiencia')) : null,
-          processo.linkprocesso= request.input('linkprocesso'),
-          processo.nomejuiz= request.input('nomejuiz'),
+          processo.linkprocesso= request.input('linkprocesso') === null ? '' : request.input('linkprocesso').toLowerCase(),
+          processo.nomejuiz= request.input('nomejuiz') === null ? '' : request.input('nomejuiz').toUpperCase(),
           processo.senhaprocesso= request.input('senhaprocesso'),
           processo.vara= request.input('vara'),
           processo.obs= request.input('obs'),

@@ -21,7 +21,7 @@
 
               <div class="card has-background-light is-7">
                 <header class="card-header has-background-success cab">
-                  <p class="title is-6 p-0 has-text-white">
+                  <p class="title is-6 p-2 has-text-white">
                     Listagem de Títulos
                   </p>
                 </header>
@@ -70,6 +70,12 @@
                         Cancelar
                       </button>
                     </div>
+                    <div class="control">
+                        <button onclick="relatorioTitulos()" class="button is-success is-size-7" id="btnPDF">
+                          Gerar PDF &nbsp;    
+                          <i class="fa-solid fa-floppy-disk text-white">
+                        </i></button>
+                    </div>
                   </div>
 
                 </div>
@@ -78,7 +84,9 @@
           </div>
 
           <div class="box">
-            <table class="table is-fullwidth is-striped is-hoverable is-size-7">
+            <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
+
+            <table class="table is-fullwidth is-striped is-hoverable is-size-7" id="lista">
               <thead>
                 <tr>
                   <th>
@@ -329,21 +337,21 @@
                             <span class="has-text-weight-bold is-size-6"> Você realmente deseja excluir o título
                               selecionado? </span>
                               <form id="formCancela" action="{{ `/titulos/${titulo.id}?_method=DELETE` }}" method="post">
-                                {{ csrfField() }}
-                                <br>
+                                  {{ csrfField() }}
+                                  <br>
                                 <button type="submit" class="button is-danger is-size-7">
-                                <span class="icon is-small">
-                                  <i class="fa fa-ban" aria-hidden="true"></i>
-                                </span>
-                                <span>Excluir Título</span>
-                              </button>
-                              <button type="reset" class="button is-warning is-size-7 cancel-modal">
-                                <span class="icon is-small">
-                                  <i class="fas fa-window-restore"></i>
-                                </span>
-                                <span>Cancelar</span>
-                              </button>
-                            </form>
+                                    <span class="icon is-small">
+                                      <i class="fa fa-ban" aria-hidden="true"></i>
+                                    </span>
+                                    <span>Excluir Título</span>
+                                </button>
+                                <button type="reset" class="button is-warning is-size-7 cancel-modal">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-window-restore"></i>
+                                  </span>
+                                  <span>Cancelar</span>
+                                </button>
+                              </form>
                           </section>
                         </div>
                       </div>
@@ -389,7 +397,7 @@
   </div>
 </div>
 
-{{-- MODAL EXCLUIR --}}
+{{-- MODAL EXCLUIR 
 <div class="modal">
   <div class="modal-background"></div>
 
@@ -402,8 +410,134 @@
 
   <button class="modal-close is-large" aria-label="close"></button>
 </div>
-{{-- FIM MODAL EXCLUIR --}}
+  FIM MODAL EXCLUIR --}}
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.2/jspdf.min.js" integrity="sha512-V+hL/3ApdUCHPWddxi3cOlryuqVfenO0k78Z8RobxNpHt/vidOWa894zvuroGebGoOr9g1hv9G7mrFZg87ZWcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.2.11/jspdf.plugin.autotable.min.js"></script>
+ 
+
+
+  <!-- CRIANDO RELATORIO -->
+<script type="text/javascript">
+
+  function relatorioTitulos() {
+    var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
+    
+    const doc = new jsPDF('l', 'pt', 'a4');
+    const novaData = new Date();
+    var numeroPagina = doc.internal.getNumberOfPages();
+    doc.setTextColor(100);
+    /* Anexa Imagem*/
+    const img = new Image();
+    img.src = '/logo.jpeg';
+    doc.addImage(img, 'jpeg', 10, 8, 80, 40);
+    
+    /*Titulo Relatorio*/
+    doc.setFontSize(14);
+    doc.text('Relatório de Titulos', 300, 30);
+    
+    
+
+    /*Data Impressao*/
+    doc.setFontSize(10);
+    //doc.text('Data Emissão: ', 10, 60);
+    posicaoH = posicaoH + 60;
+    doc.text('Data Emissão: ', 10, posicaoH);
+    
+    doc.text(novaData.toLocaleString('pt-BR', {timezone: 'UTC'}), 80, posicaoH);
+    
+    posicaoH = posicaoH + 14;
+    doc.text('Empresa:  ', 10, posicaoH); //+ document.getElementById('nomeEmpresa').value, 10, posicaoH);
+    alert('1');
+    posicaoH = posicaoH + 12;
+    doc.text('Usuario: ', 10, posicaoH); // + document.getElementById('usuario').value, 10, posicaoH);
+
+    /*Cria numeração da pagina*/
+   
+    for (i=0; i < numeroPagina; i++) {
+      doc.setPage(i);
+      let paginaAtual = doc.internal.getCurrentPageInfo().numeroPagina;
+      doc.setFontSize(10);
+
+      //doc.text('Pagina: ' + numeroPagina, 750, 60);
+      doc.text('Pagina: ' + numeroPagina, 750, posicaoH);
+
+      /** Rodape do Relatorio **/
+      doc.text('Pagina ' + numeroPagina, doc.internal.pageSize.width / 2, 287, {
+      align: 'center' });
+
+    }
+    alert('2');
+    
+    //doc.line(10, 70, 820, 70);
+    posicaoH = posicaoH + 10;
+    doc.line(10, posicaoH, 820, posicaoH);
+    
+    /**Criação Listagem de Tabelas startY: 71**/
+    posicaoH = posicaoH + 1
+      doc.autoTable({html: '#listas', startY: posicaoH, theme: 'striped',
+        margin: Margin = 10, 
+        columnStyles: {
+          0: {
+            halign: 'left',
+            tableWidth:10,
+          },
+          1: {
+            halign: 'center',
+            tableWidth:10,
+          },
+          2: {
+            halign: 'center',
+            tableWidth:10,
+          },
+          3: {
+            halign: 'center',
+            tableWidth:10,
+          },
+          4: {
+            halign: 'right',
+            tableWidth:10,
+          },
+          5: {
+            halign: 'center',
+            tableWidth:10,
+          },
+          6: {
+            halign: 'right',
+            tableWidth:10,
+          },
+          7: {
+            halign: 'right',
+            tableWidth:10,
+          },
+         
+        },
+      });
+      alert('9');
+    doc.save('ListaTitulos.pdf');
+
+  };
+
+</script>
+
+
+
+<script>
+  document.getElementById('filtro-nome').addEventListener('keyup', pesquisaTabela());
+  function pesquisaTabela() {
+    var filter, table, tr, td, i;
+    table = document.getElementById("listas");
+    return function() {
+      tr = table.querySelectorAll("tbody tr");
+      filter = this.value.toUpperCase();
+      for (i = 0; i < tr.length; i++) {
+        var match = tr[i].innerHTML.toUpperCase().indexOf(filter) > -1;
+        tr[i].style.display = match ? "table-row" : "none";
+        
+      }
+    }
+  }
+ </script>
 
 
 <script>

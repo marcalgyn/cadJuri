@@ -3,67 +3,67 @@
 @section('content')
 
     <!--div class="area-login-background d-none d-md-block"></div -->
+    <div class="form-group d-flex justify-content-center">
+        <div class="form-signin text-center">
+            <div class="text-center" >
+              <img src="./logo2.png" alt="" width="200px";/>
+              <div class="content-box">
+                <br/>
+                <h6 class="login subtitulo has-text-centered"  >Acesso ao Sistema</h6>
+                @if(flashMessages.has('notification'))
+                  <div class="notification is-danger is-light " >
+                    {{ flashMessages.get('notification') }}
+                    <button type="button"  class="delete" > </button>
+                  </div>
+                @endif
 
-    <div class="area-form">
-        <div class="text-center " >
-          <img src="./logo2.png" alt="" width="200px";/>
-          <div class="content-box">
-            <br/>
-            <h6 class="login subtitulo has-text-centered"  >Acesso ao Sistema</h6>
-            @if(flashMessages.has('notification'))
-              <div class="notification is-danger is-light " >
-                {{ flashMessages.get('notification') }}
-                <button type="button"  class="delete" > </button>
-              </div>
-            @endif
+                <form action="/login" method="post">
+                  {{ csrfField() }}
+                  <div class="field">
+                    <label class="label login text-dark text-start">Email</label>
+                    <div class="control">
+                      <input
+                        type="email"
+                        class="input is-lowercase form-control"
+                        name="email"
+                        value="{{ flashMessages.get('email') || '' }}"
+                        required>
+                    </div>
+                  </div>
 
-            <form action="/login" method="post">
-              {{ csrfField() }}
-              <div class="field">
-                <label class="label login text-dark text-start">Email</label>
-                <div class="control">
-                  <input
-                    type="email"
-                    class="input is-lowercase form-control"
-                    name="email"
-                    value="{{ flashMessages.get('email') || '' }}"
-                    required>
+                  <div class="field">
+                    <label class="label login text-dark text-start">Password</label>
+                    <div class="control">
+                      <input
+                        type="password"
+                        class="input"
+                        name="password"
+                        required
+                        >
+                    </div>
+                  </div>
+
+                  <div class="control d-flex gap-3">
+                    <button type="submit" class="button is-success is-fullwidth is-info is-outlined">Login</button>
+                    <a href="/register" class="button is-danger is-fullwidth is-info is-outlined">Registrar</a>
+                  </div>
+                </form>
+
+                <div style="text-align: end; margin-top: 25px;">
+                  <hr />
+                  <a href="https://www.instagram.com/marcalgyn" target="_blank">
+                    <img src="/insta.png" height="20" width="20" />
+                  </a>
+                  &nbsp;
+                  <a href="https://www.marcalgyn.com.br" target="_blank">
+                    <img src="/web.png" height="25" width="25" />
+                  </a>
+
                 </div>
               </div>
-
-              <div class="field">
-                <label class="label login text-dark text-start">Password</label>
-                <div class="control">
-                  <input
-                    type="password"
-                    class="input"
-                    name="password"
-                    required
-                    >
-                </div>
-              </div>
-
-              <div class="control d-flex gap-3">
-                <button type="submit" class="button is-success is-fullwidth is-info is-outlined">Login</button>
-                <a href="/register" class="button is-danger is-fullwidth is-info is-outlined">Registrar</a>
-              </div>
-            </form>
-
-            <div style="text-align: end; margin-top: 25px;">
-              <hr />
-              <a href="https://www.instagram.com/marcalgyn" target="_blank">
-                <img src="/insta.png" height="20" width="20" />
-              </a>
-              &nbsp;
-              <a href="https://www.marcalgyn.com.br" target="_blank">
-                <img src="/web.png" height="25" width="25" />
-              </a>
-
             </div>
-          </div>
         </div>
     </div>
-
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
