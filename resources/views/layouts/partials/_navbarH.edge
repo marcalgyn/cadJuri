@@ -65,7 +65,7 @@
 
                     <!-- menu de Controle Financeiro -->
                     <li>
-                        @if(auth.user.nivel == 0 )
+                        @if((auth.user.nivel == 0) || ((auth.user.nivel == 9)))
                             <a href="#">
                                 <span class="titulo">FINANCEIRO</span>
                                 <span class="icon"> <ion-icon name="arrow-down-sharp"> </ion-icon></span>
@@ -74,7 +74,7 @@
 
                         <ul>
                             <li>
-                              @if((auth.user.nivel == 0))
+                                @if((auth.user.nivel == 0) || ((auth.user.nivel == 9)))
                                 <a href="/titulos">
                                     <span class="icon"><ion-icon name="wallet"></ion-icon></span>
                                     <span class="titulo">Cadastro de Titulos</span>
@@ -93,7 +93,7 @@
                                 </a>
                                 <ul>
                                     <li>
-                                        @if((auth.user.nivel == 0))
+                                        @if((auth.user.nivel == 0) || ((auth.user.nivel == 9)))
                                         <a href="/titulos/lista">
                                             <span class="icon"><ion-icon name="albums"></ion-icon></span>
                                             <span class="titulo">Titulos</span>
@@ -150,14 +150,16 @@
                         </a>
                         <ul>
                               <li>
-                                <a href="#">
+                                @if((auth.user.nivel == 0) || ((auth.user.nivel == 9)))
+                                <a href="/empresas">
                                     <span class="icon"><ion-icon name="qr-code-outline"></ion-icon></span>
                                     <span class="titulo">Perfil Empresa</span>
                                 </a>
+                                @endif
                               </li>
 
                             <li>
-                                @if((auth.user.nivel == 0))
+                                @if((auth.user.nivel == 0) || ((auth.user.nivel == 9)))
                                 <a href="/pessoas">
                                     <span class="icon"><ion-icon name="person-add-outline"></ion-icon></span>
                                     <span class="titulo">Usuário</span>

@@ -5,6 +5,7 @@ import Empresa from "App/Models/Empresa";
 
 export default class EmpresasController {
   public async index({ view, auth }: HttpContextContract) {
+   /*
     const objEmpresa = {
       id: 0,
       cpfcnpj: "",
@@ -21,26 +22,34 @@ export default class EmpresasController {
       cor : "",
       logo: "",
     };
+    */
     
     //const empresas = await Empresa.query().orderBy("razaoSocial", "asc");
-    const empresas = await Empresa.query()
-    .select('empresas.*')
+    
+        const objEmpresa = await Empresa.query()
+        .select('empresas.*')
         .where('empresas.id', '=', Number(auth.user?.empresa_id))
         .orderBy("razaoSocial", "asc") ;
+        
+        
 
-    return view.render("empresa", { objEmpresa, empresas });
+
+    return view.render("empresa", { objEmpresa });
 
   }
 
   public async edit({ view, params, request }: HttpContextContract) {
     const objEmpresa = await Empresa.findOrFail(params.id);
+    
     console.log("Editar");
 
     const page = request.input("page", 1);
     const limit = 10;
     const empresas = await Empresa.query()
+      .where('empresa.id', '=', params.id)
       .orderBy("razaosocial", "asc")
       .paginate(page, limit);
+
 
     empresas.baseUrl("/empresas");
 
@@ -49,17 +58,15 @@ export default class EmpresasController {
   }
 
   public async create({ request, response, session, auth }: HttpContextContract) {
+    
+    let fileLogo : string = "";
+
     const validationSchema = schema.create({
       cpfcnpj: schema.string({ trim: true }, [rules.maxLength(18)]),
       razaosocial: schema.string({ trim: true }, [rules.maxLength(255)]),
       email: schema.string({ trim: true }, [rules.maxLength(255)]),
       cep: schema.string({ trim: true }, [rules.maxLength(10)]),
-      logradouro: schema.string({ trim: true }, [rules.maxLength(255)]),
-      bairro: schema.string({ trim: true }, [rules.maxLength(100)]),
-      cidade: schema.string({ trim: true }, [rules.maxLength(100)]),
-      estado: schema.string({ trim: true }, [rules.maxLength(2)]),
     });
-
 
     const validateData = await request.validate({
       schema: validationSchema,
@@ -69,7 +76,25 @@ export default class EmpresasController {
         "email.required": "Informe um email da empresa",
         "cep.required": "Informe o Cep",
       },
+      
     });
+        
+
+    const imagemLogo = request.file("file-Logo");
+
+    console.log('Endereco: ',  imagemLogo);
+
+    if (imagemLogo) {
+      const nomeImagem =  this.normalizaNomeImagem(imagemLogo.clientName, Number(auth.user?.empresa_id));
+      fileLogo = `/assets/public/${nomeImagem}`;
+      await imagemLogo.move("public/img/", {
+        name: nomeImagem,
+        overwrite: true,
+      });
+    }
+
+    console.log('endereço imagem: ', imagemLogo);
+
 
     try {
       if (request.input("id") === "0" && auth.user?.nivel === "9")  {
@@ -80,29 +105,36 @@ export default class EmpresasController {
           registro: request.input('registro'),
           email: validateData.email === null ? '' : validateData.email.toLowerCase(),
           cep: validateData.cep,
-          logradouro: validateData.logradouro === null ? '' : validateData.logradouro.toUpperCase(),
-          bairro: validateData.bairro === null ? '' : validateData.bairro.toUpperCase(),
-          cidade: validateData.cidade ===null ? '' : validateData.cidade.toUpperCase(),
-          estado: validateData.estado === null ? '' : validateData.estado.toUpperCase(),
+          logradouro: request.input('logradouro') === null ? '' :  request.input('logradouro').toUpperCase(),
+          bairro: request.input('bairro') === null ? '' : request.input('bairro').toUpperCase(),
+          cidade: request.input('cidade') ===null ? '' : request.input('cidade').toUpperCase(),
+          estado: request.input('estado') === null ? '' : request.input('estado').toUpperCase(),
           telefone: request.input("telefone"),
           cor: request.input('cor'),
-          logo: request.input('logo'),
+          logo: fileLogo,
 
         });
         session.flash("notification", "Empresa Cadastrada com sucesso!");
       } else {
         const empresa = await Empresa.findOrFail(request.input("id"));
-        empresa.cpfcnpj = request.input("cpfcnpj");
+        //empresa.cpfcnpj = request.input("cpfcnpj");
+        empresa.logo = fileLogo === null ? '' : fileLogo;
         empresa.razaosocial = request.input("razaosocial") === null ? '' : request.input("razaosocial").toUpperCase();
         empresa.fantasia = request.input("fantasia") === null ? '' : request.input("fantasia").toUpperCase();
         empresa.email = request.input("email") === null ? '' : request.input("email").toLowerCase();
-        empresa.cep = request.input("cep");
+        empresa.registro = request.input('registro') === null ? '' : request.input('registro');
+        empresa.cep = request.input("cep") === null ? '' : request.input("cep");
         empresa.logradouro = request.input("logradouro") === null ? '' : request.input("logradouro").toUpperCase();
         empresa.bairro = request.input("bairro") === null ? '' : request.input("bairro").toUpperCase();
         empresa.cidade = request.input("cidade") === null ? '' : request.input("cidade").toUpperCase();
         empresa.estado = request.input("estado") === null ? '' : request.input("estado").toUpperCase();
         empresa.telefone = request.input("telefone");
+        empresa.cor = '';
+
+        console.log('Alterado.');
+
         await empresa.save();
+
         session.flash("notification", "Empresa alterada com sucesso!");
       }
     } catch (error) {
@@ -114,6 +146,7 @@ export default class EmpresasController {
     }
 
     return response.redirect("back");
+
   }
 
   public async delete({ response, session, params }: HttpContextContract) {
@@ -125,4 +158,11 @@ export default class EmpresasController {
 
     return response.redirect("back");
   }
+
+  public normalizaNomeImagem(value: string, id: Number): string {
+    return (
+      value.normalize("logo"+ id).split(" ").join("")
+    );
+  }
+
 }

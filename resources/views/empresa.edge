@@ -1,0 +1,459 @@
+@layout('layouts/app')
+
+@section('content')
+    <div class="main">
+        <div class="details">
+            <div class="columns">
+              <div class="column is-full">
+                <div class="box p-0">
+                  @if(flashMessages.has('notification'))
+                    <div class="notification is-success is-light notificacao">
+                      <button class="delete"></button>
+                      {{ flashMessages.get('notification') }}
+                    </div>
+                  @endif
+
+                  @if(flashMessages.has('notification-danger'))
+                    <div class="notification is-danger is-light notificacao">
+                      <button class="delete"></button>
+                      {{ flashMessages.get('notification') }}
+                    </div>
+                  @endif
+
+
+                  <div class="box">
+                    <form action="/empresas" method="post" enctype="multipart/form-data">
+                      {{ csrfField() }}
+                      
+
+                      <div class="card has-background-light">
+                        <header class="card-header has-background-link cab">
+                          <p class="title is-6 p-2 has-text-white">
+                            Cadastro de Empresas
+                          </p>
+                        </header>
+                        
+                          <div class="card-content">
+                            @each(objEmpresa in objEmpresa)
+                            <input type="hidden" name="id" id="id" value={{ objEmpresa.id }}>
+                              <div class="column">
+                                  <div class="row">
+                                      <div class="field col-md-2">
+                                        <label class="label">CNPJ</label>
+                                        <div class="control is-expanded">
+                                          <input
+                                            id="cpfcnpj"
+                                            type="text"
+                                            name="cpfcnpj"
+                                            class="input {{ flashMessages.has('errors.cpfcnpj') ? 'is-danger' : '' }}" placeholder="CPF/CNPJ"
+                                            value="{{ objEmpresa.cpfcnpj }}"
+                                          readonly >
+                                        </div>
+                                      </div>
+
+                                      <div class="field col-md-4">
+                                          <label class="label">logo</label>
+                                          <div class="control is-expanded">
+                                            <input
+                                              class="input"
+                                              id="logo"
+                                              type="text"
+                                              name="logo"
+                                              value="{{ objEmpresa.logo }}"
+                                            >
+                                          </div>
+                                      </div>
+
+                                        <div class="col-md-1 field">
+                                          <div id="file-Logo" class="file is-warning">
+                                            <label class="file-label">
+                                              <input class="file-input" type="file" name="fileLogo">
+                                              <span class="file-cta">
+                                                <span class="file-icon">
+                                                  <i class="fas fa-upload"></i>
+                                                </span>
+                                                <span class="file-label">
+                                                  logo
+                                                </span>
+                                              </span>
+                                            </label>
+                                          </div>
+      
+                                          @if ( objEmpresa.logo )
+                                            <div class="gallery-container" > 
+                                                <a class="gallery-items">
+                                                  <img id="output" src={{ objEmpresa.logo }} alt='Clique aqui!' >
+                                                </a>
+                                            </div>
+                                          @else
+                                            <figure class="image mt-2" style="width: 256px;">
+                                              <img id="output" src={{ objEmpresa.logo }}>
+                                            </figure>
+                                          @endif
+                                        </div>
+
+                                  </div>
+
+                              </div>
+                              <div class="column ">
+                                <div class="row">
+                                    <div class="field col-md-6">
+                                      <label class="label">Razão Social</label>
+                                      <div class="control is-expanded">
+                                        <input
+                                          type="text"
+                                          id="razaosocial"
+                                          name="razaosocial"
+                                          class="input {{ flashMessages.has('errors.razaosocial') ? 'is-danger' : '' }}"
+                                          placeholder="Informe Razão Social"
+                                          value="{{ objEmpresa.razaosocial }}"
+                                          style="text-transform:uppercase" 
+                                        >
+                                      </div>
+                                    </div>
+
+                                    <div class="field col-md-6">
+                                      <label class="label">Fantasia</label>
+                                      <div class="control is-expanded">
+                                        <input
+                                          id="fantasia"
+                                          type="text"
+                                          name="fantasia"
+                                          class="input" placeholder="Nome fantasia"
+                                          value="{{ objEmpresa.fantasia }}"
+                                        >
+                                      </div>
+                                    </div>
+                                </div>
+                              </div>
+
+                              <div class="column ">
+                                <div class="row">
+                                  <div class="field-body">  
+                                    <div class="field col-md-2">
+                                      <label class="label">Registro</label>
+                                        <div class="control is-expanded">
+                                          <input type="text"
+                                                  name="registro"
+                                                  class="input {{ flashMessages.has('errors.registro') ? 'is-danger' : '' }}"
+                                                  placeholder="Registro"
+                                                  value="{{objEmpresa.registro }}"
+                                                  style="text-transform:uppercase" 
+                                          >
+                                        </div>
+                                    </div>
+
+                                    <div class="control col-md-2">
+                                      <label class="label">Telefone</label>
+                                      <div class="control is-expanded">
+                                          <input name="telefone" type="text" 
+                                          class="input {{ flashMessages.has('errors.telefone') ? 'is-danger' : '' }}" 
+                                              id="telefone" placeholder="telefone"
+                                              value="{{objEmpresa.telefone}}" >
+                                      </div>
+                                    </div>
+
+                                    <div class="field col-md-4">
+                                      <label class="label">E-mail</label>
+                                      <div class="control is-expanded">
+                                            <input id="email" type="email" name="email" class="input {{ flashMessages.has('errors.email') ? 'is-danger' : '' }}"
+                                              placeholder="email" value="{{ objEmpresa.email }}"
+                                              style="text-transform:downcase"
+                                            >
+                                        </div>
+                                    </div>
+
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="column">
+                                  <div class="row">
+                                    <div class="field-body mb-12">    
+                                          <div class="col-3 col-sm-1 field">
+                                            <button type="button" class="btn btn-primary"
+                                                onclick="pesquisacep(cep.value)">Buscar</button>
+                                          </div>
+
+                                          <div class="col-2 field">
+                                              <input name="cep" type="search" class="input" id="cep"
+                                                  value="{{objEmpresa.cep}}" placeholder="Cep" onblur="pesquisacep(cep.value)"
+                                                  required onkeypress="$(this).mask('00.000-000')">
+                                          </div>
+
+                                          <div class="field">
+                                              <input name="logradouro" type="text" class="input" id="logradouro"
+                                                  value="{{objEmpresa.logradouro}}" placeholder="Logradouro" required
+                                                  style="text-transform:uppercase">
+                                          </div>
+
+                                          <div class="form-group field">
+                                              <input type="text" name="bairro" type="text" class="input" id="bairro"
+                                                  placeholder="Bairro" value="{{objEmpresa.bairro}}"
+                                                  style="text-transform:uppercase">
+                                          </div>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="column ">
+                                <div class="row">
+                                  <div class="field-body mb-12"> 
+                                      <div class="form-group col-md-4">
+                                        <input name="cidade" type="text" class="input" id="cidade"
+                                            value="{{objEmpresa.cidade}}" placeholder="Cidade" required
+                                            style="text-transform:uppercase">
+                                      </div>
+                                    
+                                      <div class="form-group col-sm-1">
+                                          <input name="estado" type="text" maxlength="2" class="input" id="estado" placeholder="UF"
+                                              value="{{objEmpresa.estado}}" required
+                                              style="text-transform:uppercase">
+                                      </div>
+                                  </div>    
+                                </div>
+                              </div>
+                            @endeach 
+
+                              <div class="field is-grouped">
+                                <div class="control">
+                                  <button type="submit" class="button is-link">
+                                    <span class="icon is-small">
+                                      <i class="fas fa-check"></i>
+                                    </span>
+                                    <span>Salvar</span>
+                                  </button>
+                                </div>
+                            
+                                <div class="control">
+                                  <button type="button" class="button is-warning" onclick="window.location.href='{{ `/empresas` }}'">
+                                    <span class="icon is-small">
+                                      <i class="fas fa-window-restore"></i>
+                                    </span>
+                                    <span>Cancelar</span>
+                                  </button>
+                                </div>
+                              </div>
+                          </div>
+                        
+                      </div>
+                      @if(flashMessages.has('errors.cnpj'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.cnpj') }}
+                        </p>
+                      @endif
+                      @if(flashMessages.has('errors.razaoSocial'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.razaoSocial') }}
+                        </p>
+                      @endif
+                      @if(flashMessages.has('errors.email'))
+                        <p class="help is-danger">
+                          {{ flashMessages.get('errors.email') }}
+                        </p>
+                      @endif
+                    </form>
+                    
+
+                  </div>
+
+
+                  <div class="box">
+                    <div class="field is-grouped">
+                      <div class="control ">
+                          <input class="input col-md-12"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
+                      </div>
+                    
+                      <div class="control">
+                        <button onclick="relatorioListaEmpresa()" class="button is-success " id="btnPDF">
+                          Gerar PDF &nbsp;    
+                          <i class="fa-solid fa-floppy-disk text-white">
+                        </i></button>
+                      </div>
+                    </div>
+
+                    <table class="table is-fullwidth is-striped is-hoverable" id="listas"  >
+                      <thead>
+                        <tr>
+                          <div>
+                            <th class="is-hidden-mobile">CPF/CNPJ</th>
+                          </div>
+                          <th>Nome</th>
+                          <th>Telefone</th>
+                          <th class="is-hidden-mobile">e-mail</th>
+                          <th> Cidade-UF </th>
+                          <th class="has-text-centered">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @each(empresa in objEmpresa )
+                        <tr>
+                          <div>
+                            <td class="is-hidden-mobile">{{ empresa.cpfcnpj }}</td>
+                          </div>
+                          <td style="text-transform: uppercase" >{{ empresa.razaosocial }}</td>
+                          <td>  {{empresa.telefone }} </td>
+                          <td class="is-hidden-mobile">{{ empresa.email }}</td>
+                          <td >{{empresa.cidade}}-{{empresa.estado}}</td>
+
+                          <td class="has-text-centered">
+                            <form action="{{ `/empresas/${empresa.id}?_method=DELETE` }}" method="post">
+                              {{ csrfField() }}
+                              <button
+                                type="button"
+                                class="button is-small is-primary"
+                                onclick="window.location.href='{{ `/empresas/${empresa.id}` }}" >
+                                <span class="icon is-small">
+                                  <i class="fas fa-edit"></i>
+                                </span>
+                                <span>Editar</span>
+                              </button>
+                            </form>
+                          </td>
+                        </tr>
+                        @else
+                          <tr>
+                            <td colspan="2" class="has-text-centered">Nenhuma Empresa Cadastrada</td>
+                          </tr>
+                        @endeach
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+<script>
+
+
+document.getElementById('filtro-nome').addEventListener('keyup', pesquisaTabela());
+
+function pesquisaTabela() {
+  var filter, table, tr, td, i;
+  table = document.getElementById("listas");
+  return function() {
+    tr = table.querySelectorAll("tbody tr");
+    filter = this.value.toUpperCase();
+    for (i = 0; i < tr.length; i++) {
+      var match = tr[i].innerHTML.toUpperCase().indexOf(filter) > -1;
+      tr[i].style.display = match ? "table-row" : "none";
+    }
+  }
+}
+</script>
+
+<script type="text/javascript">
+
+function relatorioListaEmpresa() {
+  var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
+  
+  const doc = new jsPDF('l', 'pt', 'a4');
+  const novaData = new Date();
+  var numeroPagina = doc.internal.getNumberOfPages();
+  doc.setTextColor(100);
+  /* Anexa Imagem*/
+  const img = new Image();
+  img.src =  document.getElementById('logo').value !== '' ? document.getElementById('logo').value : '/web.png';
+  
+
+  doc.addImage(img, 'jpeg', 10, 8, 80, 40);
+  
+  /*Titulo Relatorio*/
+  doc.setFontSize(14);
+  doc.text('Relatório de Empresas', 300, 30);
+  
+
+  /*Data Impressao*/
+  doc.setFontSize(10);
+  //doc.text('Data Emissão: ', 10, 60);
+  posicaoH = posicaoH + 60
+  doc.text('Data Emissão: ', 10, posicaoH);
+  doc.text(novaData.toLocaleString('pt-BR', {timezone: 'UTC'}), 80, posicaoH);
+  posicaoH = posicaoH + 14;
+  //doc.text('Empresa: ' + document.getElementById('nomeEmpresa').value, 10, posicaoH);
+
+  posicaoH = posicaoH + 12;
+  //doc.text('Usuario: ' + document.getElementById('usuario').value, 10, posicaoH);
+
+  /*Cria numeração da pagina*/
+
+
+  for (i=0; i < numeroPagina; i++) {
+    doc.setPage(i);
+    let paginaAtual = doc.internal.getCurrentPageInfo().numeroPagina;
+    doc.setFontSize(10);
+
+    //doc.text('Pagina: ' + numeroPagina, 750, 60);
+    doc.text('Pagina: ' + numeroPagina, 750, posicaoH);
+
+    /** Rodape do Relatorio **/
+    doc.text('Pagina ' + numeroPagina, doc.internal.pageSize.width / 2, 287, {
+    align: 'center' });
+
+  }
+  
+  
+  //doc.line(10, 70, 820, 70);
+  posicaoH = posicaoH + 10;
+  doc.line(10, posicaoH, 820, posicaoH);
+  
+  /**Criação Listagem de Tabelas startY: 71**/
+  posicaoH = posicaoH + 1;
+
+    doc.autoTable({html: '#listas', startY: posicaoH, theme: 'striped',
+      margin: Margin = 10,
+      
+
+      columnStyles: {
+        0: {
+          halign: 'left',
+          tableWidth:100,
+        },
+        1: {
+          halign: 'left',
+          tableWidth:90,
+        },
+        2: {
+          halign: 'left',
+          tableWidth:150,
+        },
+        3: {
+          halign: 'left',
+          tableWidth:100,
+        },
+        4: {
+          hidden: false,
+        }
+       
+      },
+    });
+      
+  doc.save('RelatorioEmpresas.pdf');
+  
+
+};
+</script>
+
+
+<script>
+    /***** Script do upload da imagem de abertura da ordemServico *********/
+    const fileInput = document.querySelector('#file-Logo input[type=file]');
+    fileInput.onchange = () => {
+      if (fileInput.files.length > 0) {
+        /***** Pré-visualização da imagem de abertura da ordemServico *********/
+        const output = document.getElementById('output');
+        output.src = URL.createObjectURL(fileInput.files[0]);
+        output.onload = function () {
+          URL.revokeObjectURL(output.src) // free memory
+        }
+
+      }
+    }
+    /***** Fim do Script de abertura *************************/
+</script>
+
+
+@endsection
