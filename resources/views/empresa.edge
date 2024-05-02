@@ -51,7 +51,7 @@
                                         </div>
                                       </div>
 
-                                      <div class="field col-md-4">
+                                      <!-- div class="field col-md-4">
                                           <label class="label">logo</label>
                                           <div class="control is-expanded">
                                             <input
@@ -59,42 +59,42 @@
                                               id="logo"
                                               type="text"
                                               name="logo"
-                                              value="{{ objEmpresa.logo }}"
-                                            >
+                                              value="{{ objEmpresa.logo }}" >
                                           </div>
+                                      </div -->
+
+                                      <div class="col-md-1 field">
+                                        <label></label>
+                                        <label id="file-Logo" name="file-Logo" class="file is-warning">
+                                          <div class="file-label">
+                                            <input class="file-input" type="file" name="file-Logo">
+                                            <span class="file-cta">
+                                              <span class="file-icon">
+                                                <i class="fas fa-upload"></i>
+                                              </span>
+                                              <span class="file-label">
+                                                logo
+                                              </span>
+                                            </span>
+                                          </div>
+                                        </label>
                                       </div>
 
-                                        <div class="col-md-1 field">
-                                          <div id="file-Logo" class="file is-warning">
-                                            <label class="file-label">
-                                              <input class="file-input" type="file" name="fileLogo">
-                                              <span class="file-cta">
-                                                <span class="file-icon">
-                                                  <i class="fas fa-upload"></i>
-                                                </span>
-                                                <span class="file-label">
-                                                  logo
-                                                </span>
-                                              </span>
-                                            </label>
+                                      <div class="col-md-1 field" >
+                                        @if ( objEmpresa.logo )
+                                          <div class="image mt-1" style="width:80px;" > 
+                                                <img class="rounded" id="output" src={{ objEmpresa.logo }} alt='Clique aqui!' >
                                           </div>
-      
-                                          @if ( objEmpresa.logo )
-                                            <div class="gallery-container" > 
-                                                <a class="gallery-items">
-                                                  <img id="output" src={{ objEmpresa.logo }} alt='Clique aqui!' >
-                                                </a>
-                                            </div>
-                                          @else
-                                            <figure class="image mt-2" style="width: 256px;">
-                                              <img id="output" src={{ objEmpresa.logo }}>
-                                            </figure>
-                                          @endif
-                                        </div>
+                                        @else
+                                          <figure class="image mt-2" style="width: 80px;">
+                                            <img class="rounded" id="output" src={{ objEmpresa.logo }}>
+                                          </figure>
+                                        @endif
+                                      </div>
 
                                   </div>
-
                               </div>
+
                               <div class="column ">
                                 <div class="row">
                                     <div class="field col-md-6">
@@ -107,8 +107,7 @@
                                           class="input {{ flashMessages.has('errors.razaosocial') ? 'is-danger' : '' }}"
                                           placeholder="Informe Razão Social"
                                           value="{{ objEmpresa.razaosocial }}"
-                                          style="text-transform:uppercase" 
-                                        >
+                                          style="text-transform:uppercase">
                                       </div>
                                     </div>
 

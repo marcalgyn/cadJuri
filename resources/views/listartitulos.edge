@@ -14,10 +14,19 @@
           {{ flashMessages.get('notification') }}
         </div>
         @endif
+
+
         <div class="box is-size-7 p-0">
           <div class="box">
             <form action="/titulos/filtro" method="post">
               {{ csrfField() }}
+              @each(empresa in empresas)
+                <input type="hidden" name="logo" id="logo" value={{ empresa.logo }}>
+                <input type="hidden" name="nomeEmpresa" id="nomeEmpresa" value='{{ empresa.razaosocial }}'>
+              @endeach
+              <input type="hidden" name="nomeCliente" id="nomeCliente" value='{{ nomeCliente }}'>
+              <input type="hidden" name="dataI" id="dataI" value='{{ dataInicial }}'>
+              <input type="hidden" name="dataF" id="dataF" value='{{ dataFinal }}'>
 
               <div class="card has-background-light is-7">
                 <header class="card-header has-background-success cab">
@@ -39,7 +48,7 @@
                     <div class="field">
                       <label class="label is-size-7">Data Inicial</label>
                       <div class="control is-expanded">
-                        <input type="date" name="dataVencimento" class="input is-size-7">
+                        <input type="date" name="dataInicial" class="input is-size-7">
                       </div>
                     </div>
                     <div class="field">
@@ -51,9 +60,23 @@
                     <div class="field">
                       <label class="label is-size-7">CPF</label>
                           <div class="control is-expanded">
-                            <input type="text" name="cpf" id="cpf" class="input is-size-7 is-uppercase">
+                            <input type="text" mascara-cpf-cnpj name="cpfcnpj" id="cpfcnpj" class="input is-size-7 is-uppercase">
                           </div>
                     </div>
+
+                    <div class="field">
+                      <label class="label is-size-7">Status Titulo</label>
+                      <div class="select is-fullwidth">
+                        <select name="status" >
+                          <option value="Todos"> Todos</option>
+                          <option value="Pago" > Liquidado </option>
+                          <option value="Aberto" > Em Aberto </option>
+                          <option value="Parcial" > Pago Parcial </option>
+                          <option value="Credito" > Com Crédito </option>
+                        </select>
+                      </div>
+                    </div>
+
                   </div>
                   <hr>
                   <div class="field is-grouped">
@@ -86,7 +109,7 @@
           <div class="box">
             <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
 
-            <table class="table is-fullwidth is-striped is-hoverable is-size-7" id="lista">
+            <table class="table is-fullwidth is-striped is-hoverable is-size-7" id="listas">
               <thead>
                 <tr>
                   <th>
@@ -113,7 +136,7 @@
                   <th class="has-text-centered">
                     Valor Pentende
                   </th>
-                  <th class="has-text-centered">
+                  <th class="has-text-centered" id="colAcao">
                     Ações
                   </th>
                 </tr>
@@ -147,9 +170,8 @@
                     {{{ formatCurrency(titulo.saldo) }}}
                   </td>
 
-                  <td class="has-text-centered">
+                  <td class="has-text-centered" id="acoes" media="only print" >
                     <div class="buttons is-centered">
-
                       <!-- Botão Editar Título -->
                       @if(!titulo.datapagamento)
                       <button type="button" class="button is-success is-size-7"
@@ -193,7 +215,7 @@
                             <button class="delete" aria-label="close"></button>
                           </header>
                           <section class="modal-card-body">
-                            Nome do Sacado: <strong class="is-uppercase"> {{ titulo.$extras.nome }} </strong><br>
+                            Nome do Cliente: <strong class="is-uppercase"> {{ titulo.$extras.nome }} </strong><br>
                             Número da Parcela: <strong> {{ titulo.parcela }} / {{ titulo.totalparcela }}</strong><br>
                             Data de Vencimento: <strong> {{{ formatDate(titulo.datavencimento) }}} </strong><br>
                             Valor do Título: <strong> {{{ formatCurrency(titulo.valortitulo) }}} </strong>
@@ -412,15 +434,14 @@
 </div>
   FIM MODAL EXCLUIR --}}
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.2/jspdf.min.js" integrity="sha512-V+hL/3ApdUCHPWddxi3cOlryuqVfenO0k78Z8RobxNpHt/vidOWa894zvuroGebGoOr9g1hv9G7mrFZg87ZWcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.2.11/jspdf.plugin.autotable.min.js"></script>
- 
-
 
   <!-- CRIANDO RELATORIO -->
 <script type="text/javascript">
 
   function relatorioTitulos() {
+    
+    document.getElementById("colAcao").style.display = 'none';
+
     var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
     
     const doc = new jsPDF('l', 'pt', 'a4');
@@ -429,15 +450,14 @@
     doc.setTextColor(100);
     /* Anexa Imagem*/
     const img = new Image();
-    img.src = '/logo.jpeg';
+    img.src =  document.getElementById('logo').value;
+
     doc.addImage(img, 'jpeg', 10, 8, 80, 40);
     
     /*Titulo Relatorio*/
     doc.setFontSize(14);
-    doc.text('Relatório de Titulos', 300, 30);
+    doc.text('Relatório de Titulos', 400, 30);
     
-    
-
     /*Data Impressao*/
     doc.setFontSize(10);
     //doc.text('Data Emissão: ', 10, 60);
@@ -447,10 +467,14 @@
     doc.text(novaData.toLocaleString('pt-BR', {timezone: 'UTC'}), 80, posicaoH);
     
     posicaoH = posicaoH + 14;
-    doc.text('Empresa:  ', 10, posicaoH); //+ document.getElementById('nomeEmpresa').value, 10, posicaoH);
-    alert('1');
+    doc.text('Empresa:  ' + document.getElementById('nomeEmpresa').value, 10, posicaoH);
     posicaoH = posicaoH + 12;
-    doc.text('Usuario: ', 10, posicaoH); // + document.getElementById('usuario').value, 10, posicaoH);
+    doc.text('Cliente(s): ' + document.getElementById('nomeCliente').value, 10, posicaoH);
+
+    doc.text('Periodo: ' + document.getElementById('dataI').value + ' - ' + document.getElementById('dataF').value, 300, posicaoH);
+    
+
+
 
     /*Cria numeração da pagina*/
    
@@ -467,17 +491,17 @@
       align: 'center' });
 
     }
-    alert('2');
-    
     //doc.line(10, 70, 820, 70);
     posicaoH = posicaoH + 10;
     doc.line(10, posicaoH, 820, posicaoH);
     
     /**Criação Listagem de Tabelas startY: 71**/
     posicaoH = posicaoH + 1
+
       doc.autoTable({html: '#listas', startY: posicaoH, theme: 'striped',
         margin: Margin = 10, 
         columnStyles: {
+
           0: {
             halign: 'left',
             tableWidth:10,
@@ -510,10 +534,12 @@
             halign: 'right',
             tableWidth:10,
           },
-         
+          8: {
+            hidden: false,
+          }
         },
       });
-      alert('9');
+
     doc.save('ListaTitulos.pdf');
 
   };

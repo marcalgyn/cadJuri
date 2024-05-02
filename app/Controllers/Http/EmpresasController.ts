@@ -59,7 +59,7 @@ export default class EmpresasController {
 
   public async create({ request, response, session, auth }: HttpContextContract) {
     
-    let fileLogo : string = "";
+   
 
     const validationSchema = schema.create({
       cpfcnpj: schema.string({ trim: true }, [rules.maxLength(18)]),
@@ -79,22 +79,20 @@ export default class EmpresasController {
       
     });
         
-
+    let fileLogo : string = "";
     const imagemLogo = request.file("file-Logo");
 
     console.log('Endereco: ',  imagemLogo);
 
     if (imagemLogo) {
       const nomeImagem =  this.normalizaNomeImagem(imagemLogo.clientName, Number(auth.user?.empresa_id));
-      fileLogo = `/assets/public/${nomeImagem}`;
+
+      fileLogo = `/img/${nomeImagem}`;
       await imagemLogo.move("public/img/", {
         name: nomeImagem,
         overwrite: true,
       });
     }
-
-    console.log('endereço imagem: ', imagemLogo);
-
 
     try {
       if (request.input("id") === "0" && auth.user?.nivel === "9")  {
@@ -160,8 +158,10 @@ export default class EmpresasController {
   }
 
   public normalizaNomeImagem(value: string, id: Number): string {
+    value = id + value;
+    console.log(value);
     return (
-      value.normalize("logo"+ id).split(" ").join("")
+      value.normalize("NFD").split(" ").join("")
     );
   }
 

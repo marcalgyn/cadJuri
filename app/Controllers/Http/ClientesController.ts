@@ -43,7 +43,7 @@ export default class ClientesController {
   public async create({ request, response, session, auth }: HttpContextContract) {
     
     const validationSchema = schema.create({
-      cpfcnpj: schema.string({ trim: true }, [rules.maxLength(14)]),
+      cpfcnpj: schema.string({ trim: true }, [rules.maxLength(18)]),
       nome: schema.string({ trim: true }, [rules.maxLength(180)]),
       // email: schema.string({ trim: true }, [rules.maxLength(180)]),
     });

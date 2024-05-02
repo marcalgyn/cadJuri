@@ -39,7 +39,7 @@
                             <div class="control is-expanded">
                               <input
                                 id="cpfcnpj"
-                                type="text"
+                                type="text" mascara-cpf-cnpj
                                 name="cpfcnpj"
                                 class="input {{ flashMessages.has('errors.cpfcnpj') ? 'is-danger' : '' }}" placeholder="CPF/CNPJ"
                                 value="{{ objCliente.cpfcnpj }}"
@@ -241,7 +241,7 @@
                           <th>Telefone</th>
                           <th class="is-hidden-mobile">e-mail</th>
                           <th> Cidade-UF </th>
-                          <th class="has-text-centered">Ações</th>
+                          <th class="has-text-centered" id="colAcao">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -315,6 +315,8 @@ function pesquisaTabela() {
 <script type="text/javascript">
 
 function relatorioListaCliente() {
+    document.getElementById("colAcao").style.display = 'none';
+
   var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
   
   const doc = new jsPDF('l', 'pt', 'a4');
@@ -400,6 +402,7 @@ function relatorioListaCliente() {
       
   doc.save('RelatorioClientes.pdf');
   
+  document.getElementById("colAcao").style.display = '';
 
 };
 

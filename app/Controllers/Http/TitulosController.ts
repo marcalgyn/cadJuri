@@ -318,16 +318,24 @@ export default class TitulosController {
     return response.redirect("/titulos/lista");
   }
 
-  public async filtro({ request, view }: HttpContextContract) {
+  public async filtro({ request, view, auth }: HttpContextContract) {
     const clientes = await Cliente.all();
-    
+    const empresas = await Empresa.query()
+    .select('empresas.fantasia')
+    .select('empresas.razaosocial')
+    .select('empresas.logo')
+    .where('empresas.id', '=', Number(auth.user?.empresa_id));
+
     const page = request.input("page", 1);
     const limit = 50;
     const dataHoje = DateTime.now();
+ 
+    const cpf = request.input("cpfcnpj");
+    let nomeCliente = request.input("nome");
+    let dataInicial = request.input("dataInicial");
+    let dataFinal = request.input("dataFinal");
+    const status = request.input("status");
 
-    const cpf = request.input("cpf");
-    const nome = request.input("nome");
-    const dataVencimento = request.input("dataVencimento");
 
     const titulos = await Titulo.query()
       .select("titulos.*")
@@ -335,29 +343,52 @@ export default class TitulosController {
       .select("clientes.cpfcnpj")
       .join("clientes", "clientes.id", "=", "titulos.cliente_id")
       .where((query) => {
-        if (nome !== null) {
-          query.andWhereILike("nome", "%" + nome + "%");
+        if (nomeCliente !== null) {
+          query.andWhereILike("clientes.nome", "%" + nomeCliente + "%");
         }
 
-        if (dataVencimento !== null) {
-          query.andWhereBetween("dataVencimento", [
-            dataVencimento + " 00:00:00",
-            dataVencimento + " 23:59:59",
+        if (dataInicial !== null) {
+          query.andWhereBetween("titulos.dataVencimento", [
+            dataInicial + " 00:00:00",
+            dataFinal + " 23:59:59",
           ]);
         }
         if (cpf !== null) {
-          query.andWhereILike("cpfcnpj", "%" + cpf + "%");
+          query.andWhereILike("clientes.cpfcnpj", "%" + cpf + "%");
         }
+
+        if (status !== "Todos") {
+          query.where("estatus", "=", status);
+        }
+
       })
-      .orderBy("dataemissao", "asc")
-      .orderBy("datavencimento", "asc")
+
+      .orderBy("titulos.dataemissao", "asc")
+      .orderBy("titulos.datavencimento", "asc")
       .paginate(page, limit);
 
     titulos.baseUrl("lista");
 
+    nomeCliente = nomeCliente == null ? 'Todos Clientes' : nomeCliente;
+      
+    if (dataInicial !== null) {
+        let dtInicial = new Date(dataInicial);
+        dataInicial = dtInicial.toLocaleDateString('pt-BR');
+        
+        let dtFinal = new Date(dataFinal)
+        dataFinal = dtFinal.toLocaleDateString('pt-BR');
+    } else {
+      dataInicial = '';
+      dataFinal = '';
+    }
+
     return view.render("listartitulos", {
       titulos,
       clientes,
+      nomeCliente,
+      dataInicial,
+      dataFinal,
+      empresas,
       dataHoje,
     });
   }

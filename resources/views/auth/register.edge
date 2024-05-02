@@ -27,7 +27,7 @@
                       <label class=" label text-start ">CPF/CNPJ:</label>
                       <div class="control">
                         <input
-                          type="text"
+                          type="text" mascara-cpf-cnpj
                           class="input {{ flashMessages.get('errors.cpfcnpj') ? 'is-danger' : '' }}"
                           name="cpfcnpj"
                           value="{{ flashMessages.get('cpfcnpj') || '' }}" required
