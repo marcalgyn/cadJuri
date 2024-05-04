@@ -8,64 +8,58 @@
               <div class="column is-full margin-top: 80px">
                 <div class="box is-size-7 p-0">
                   <div class="box">
-                    <form action="/orcamento/filtro" method="post">
+                    <form action="/processo/filtro" method="post">
                       {{ csrfField() }}
                       <div class="card has-background-light is-7">
                         <header class="card-header has-background-link cab">
                           <p class="title is-6 p-2 has-text-white ">
-                            Listagem de Orçamento
+                            Listagem de Processos
                           </p>
                         </header>
                         <div class="card-content is-7">
                           <div class="field-body">
                             <div class="field">
-                              <label class="label is-size-7">Empresa</label>
+                              <label class="label is-size-7">Cliente</label>
                               <div class="select is-fullwidth">
-                                <select name="empDestino">
-                                  <option value="">Selecione uma Empresa</option>
-                                  @each(empresa in empresas)
-                                    <option value="{{ empresa.id }}">{{ empresa.razaoSocial }}</option>
+                                <select name="cliente">
+                                  <option value="">Selecione um Cliente</option>
+                                  @each(cliente in clientes)
+                                    <option value="{{ cliente.id }}">{{ clientes.nome }}</option>
                                   @endeach
                                 </select>
                               </div>
                             </div>
 
                             <div class="field">
-                              <label class="label is-size-7">Responsável</label>
+                              <label class="label is-size-7">Tribunal</label>
                               <div class="select is-fullwidth">
-                                <select name="usuDestino">
-                                  <option value="">Selecione um Responsável</option>
-                                  @each(pessoa in pessoas)
-                                    <option value="{{ pessoa.id }}">{{ pessoa.name }}</option>
+                                <select name="tribunal">
+                                  <option value="">Selecione um Tribunal</option>
+                                  @each(tribunal in tribunals)
+                                    <option value="{{ tribunal.id }}">{{ tribunal.name }}</option>
                                   @endeach
                                 </select>
                               </div>
                             </div>
 
                             <div class="field">
-                              <label class="label is-size-7">Data Inicial</label>
+                              <label class="label is-size-7">Numero Processo</label>
                               <div class="control is-expanded">
-                                <input type="date" name="dataInicial" class="input is-size-7">
+                                <input type="text" name="processo" class="input is-size-7">
                               </div>
                             </div>
                             <div class="field">
-                              <label class="label is-size-7">Data Final</label>
-                              <div class="control is-expanded">
-                                <input type="date" name="dataFinal" class="input is-size-7">
-                              </div>
-                            </div>
-                            <div class="field">
-                              <label class="label is-size-7">Departamento</label>
+                              <label class="label is-size-7">Status Processo</label>
                               <div class="select is-fullwidth">
-                                <select class="is-size-7" name="depTarefa">
-                                  <option value="">Departamento</option>
-                                  @each(departamento in departamentos)
-                                    <option value="{{ departamento.id }}">{{ departamento.nome }}</option>
+                                <select name="status">
+                                  <option value="">Todos</option>
+                                  @each(status in status)
+                                    <option value="{{ status.id }}">{{ status.descricao }}</option>
                                   @endeach
                                 </select>
                               </div>
                             </div>
-                          </div>
+                            
                           <hr>
                           <div class="field is-grouped" id="content">
                             <div class="control">
@@ -82,7 +76,7 @@
                               </button>
                             </div>
                             
-                            <button onclick="relatorioListaTarefa()" class="button is-success is-size-7" id="btnPDF">
+                            <button onclick="relatorioProcesso()" class="button is-success is-size-7" id="btnPDF">
                               Gerar PDF &nbsp;    
                               <i class="fa-solid fa-floppy-disk text-white">
                             </i></button>
@@ -90,7 +84,7 @@
                           </div>
 
                           <div class="field">
-                            <label class="label is-size-7 has-text-danger">* Lista de Tarefas Finalizadas </label>
+                            <label class="label is-size-7 has-text-danger">* Lista de Processos </label>
                           </div>
 
                         </div>
@@ -127,26 +121,26 @@
                           </tr>
                         </thead>
                         <tbody>
-                          @each(tarefa in tarefas.rows)
+                          @each(processo in processos.rows)
                           <tr>
                             <td>
-                              {{ tarefa.$extras.razao_social }}
+                             <!-- {{ processo.$extras.razao_social }} -->
                             </td>
                             <td class="is-hidden-mobile">
-                              {{ tarefa.$extras.name }}
+                              <!-- {{ tarefa.$extras.name }} -->
                             </td>
                             <td class="has-text-left is-uppercase">
-                              {{ tarefa.descricao }}
+                              <!-- {{ tarefa.descricao }} -->
                             </td>
                             <td class="has-text-centered is-hidden-mobile">
-                              {{ tarefa.$extras.nome }}
+                              <!-- {{ tarefa.$extras.nome }} -->
                             </td>
                             <td class="has-text-centered">
-                              {{{ formatDate(tarefa.dataConclusao) }}}
+                              <!-- {{{ formatDate(tarefa.dataConclusao) }}} -->
                             </td>
 
                             <td class="has-text-right" >
-                              {{{ formatCurrency(tarefa.valor) }}}
+                              <!-- {{{ formatCurrency(tarefa.valor) }}} -->
                             </td>
                           </tr>
                           @else

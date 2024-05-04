@@ -341,6 +341,8 @@ export default class TitulosController {
       .select("titulos.*")
       .select("clientes.nome")
       .select("clientes.cpfcnpj")
+      .select("estatus.descricao")
+      .select("tribunals.nome")
       .join("clientes", "clientes.id", "=", "titulos.cliente_id")
       .where((query) => {
         if (nomeCliente !== null) {
@@ -366,8 +368,37 @@ export default class TitulosController {
       .orderBy("titulos.dataemissao", "asc")
       .orderBy("titulos.datavencimento", "asc")
       .paginate(page, limit);
-
+    
     titulos.baseUrl("lista");
+
+    /* Totalizador do relatorio de titulos */
+
+    const totalTitulos = await Titulo.query()
+      .sum ("titulos.valortitulo", 'valorTitulo')  
+      .sum("titulos.valorpago", "valorPago")
+      .sum("titulos.saldo", "saldo")
+      .join("clientes", "clientes.id", "=", "titulos.cliente_id")
+      
+      .where((query) => {
+        if (nomeCliente !== null) {
+          query.andWhereILike("clientes.nome", "%" + nomeCliente + "%");
+        }
+
+        if (dataInicial !== null) {
+          query.andWhereBetween("titulos.dataVencimento", [
+            dataInicial + " 00:00:00",
+            dataFinal + " 23:59:59",
+          ]);
+        }
+        if (cpf !== null) {
+          query.andWhereILike("clientes.cpfcnpj", "%" + cpf + "%");
+        }
+
+        if (status !== "Todos") {
+          query.where("estatus", "=", status);
+        }
+      })
+
 
     nomeCliente = nomeCliente == null ? 'Todos Clientes' : nomeCliente;
       
@@ -382,6 +413,9 @@ export default class TitulosController {
       dataFinal = '';
     }
 
+
+  console.log(totalTitulos);
+
     return view.render("listartitulos", {
       titulos,
       clientes,
@@ -389,6 +423,7 @@ export default class TitulosController {
       dataInicial,
       dataFinal,
       empresas,
+      totalTitulos,
       dataHoje,
     });
   }

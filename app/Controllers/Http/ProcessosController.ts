@@ -6,7 +6,6 @@ import Processo from "App/Models/Processo";
 import Tribunal from "App/Models/Tribunal"
 import Estatus from "App/Models/Estatuses";
 
-
 import { DateTime } from "luxon";
 import moment from "moment";
 import Cliente from "App/Models/Cliente";
@@ -19,7 +18,6 @@ export default class ProcessosController {
     const nomeEmpresa = await Empresa.query()
     .where('id', '=', Number(idEmpresa))
     .select('fantasia');
-
 
 
     const tribunais = await Tribunal.query()
@@ -40,7 +38,6 @@ export default class ProcessosController {
     .where('empresas.id', '=', Number(auth.user?.empresa_id));
 
     const objProcesso = {
-
       id: 0,
       empresa_id: Number(idEmpresa),
       numeroprocesso: "",
@@ -78,8 +75,6 @@ export default class ProcessosController {
       
     });
   }
-
-
 
   public async create({ request, response, session, auth }: HttpContextContract) {
     try {
@@ -167,107 +162,114 @@ export default class ProcessosController {
     
     return response.redirect("back");
   }
-/** 
-  public async lista({ request, view }: HttpContextContract) {
+
+  public async filtro({ request, view, auth }: HttpContextContract) {
+ 
+    const clientes = await Cliente.all();
+    const tribunals = await Tribunal.all();
+    const estatus = await Estatus.all();
     
-     const empresas = await Empresa.all();
-    
-    const pessoas = await Usuario.all();
     const page = request.input("page", 1);
     const limit = 50;
 
-    const ordemServicos = await OrdemServico.query()
+    const processos = await Processo.query()
+      .select("processos.*")
+      .select("clientes.nome")
+      .select("tribunals.nome")
+      .select("estatus.descricao")
 
-      .select("ordens_servicos.*")
-      .select("empresas.razao_social")
-      .select("departamentos.nome")
-      .select("pessoas.name")
-      .join("empresas", "empresas.id", "=", "ordens_servicos.emp_destino")
-      .join("pessoas", "pessoas.id", "=", "ordens_servicos.usu_destino")
-      .join(
-        "departamentos",
-        "departamentos.id",
-        "=",
-        "ordens_servicos.dep_destino"
-      )
-      .andWhere("ordens_servicos.status_ordem_servico", "Completo")
-      .orderBy("data_conclusao", "desc")
-      .paginate(page, limit);
-
-    ordemServicos.baseUrl("lista");
-
-    return view.render("listaordemServico", {
-      ordemServicos,
-      empresas,
-      departamentos,
-      pessoas,
-    });
-
-    
-  }
-*/
-/**  
-public async filtro({ request, view }: HttpContextContract) {
-
-    const empresas = await Empresa.all();
-    const pessoas = await Usuario.all();
-    const page = request.input("page", 1);
-    const limit = 50;
-
-    const empDestino = request.input("empDestino");
-    const usuDestino = request.input("usuDestino");
-    const dataInicial = request.input("dataInicial");
-    const dataFinal = request.input("dataFinal");
-    const depDestino = request.input("depOrdemServico");
-
-    const ordemServicos = await OrdemServico.query()
-      .join("empresas", "empresas.id", "=", "ordens_servicos.emp_destino")
-      .join("pessoas", "pessoas.id", "=", "ordens_servicos.usu_destino")
-      .join(
-        "departamentos",
-        "departamentos.id",
-        "=",
-        "ordens_servicos.dep_destino"
-      )
+      .join("clientes", "clientes.id", "=", "processos.cliente_id")
+      .join("tribunals", "tribunals.id", "=", "processos.tribunal_id")
+      .join("estatus", "estatus.id", "=", "processos.estatus_id")
+      .where("processos.empresa_id", "=", Number(auth.user?.empresa_id))
       .where((query) => {
-        if (empDestino !== null) {
-          query.andWhere("empDestino", empDestino);
+        if (request.input("cliente") !== null){
+          query.where("processos.cliente_id", "=", Number(request.input("cliente")))
         }
 
-        if (usuDestino !== null) {
-          query.andWhere("usuDestino", usuDestino);
+        if (request.input("tribunal") !== null) {
+          query.where("processos.tribunal_id", "=", Number(request.input("tribunal")))
         }
 
-        if (dataInicial !== null && dataFinal !== null) {
-          query.andWhereBetween("dataConclusao", [
-            dataInicial + " 00:00:00",
-            dataFinal + " 23:59:59",
-          ]);
+        if (request.input("processo") !== null ){
+          query.andWhereILike("processos.numeroprocesso", "%"+ request.input("processo") + "%")
         }
 
-        if (depDestino !== null) {
-          query.andWhere("depDestino", depDestino);
+        if (request.input("status") !== null) {
+          query.where("processos.estatus", "=", request.input("status"))
         }
       })
-      .andWhere("ordens_servicos.status_ordem_servico", "Completo")
-      .select("ordens_servicos.*")
-      .select("empresas.razao_social")
-      .select("departamentos.nome")
-      .select("pessoas.name")
-      .orderBy("data_conclusao")
+      
+      .orderBy("clientes.nome", "asc")
       .paginate(page, limit);
 
-    ordemServicos.baseUrl("lista");
+    processos.baseUrl("lista");
 
-    return view.render("listaordemServico", {
-      ordemServicos,
-      pessoas,
-      empresas,
-      departamentos,
+    return view.render("listaProcesso", {
+      processos,
+      clientes,
+      tribunals,
+      estatus,
     });
+
     
   }
-*/
+
+ 
+public async listar({ request, view, auth }: HttpContextContract) {
+
+  const idEmpresa = auth.user?.empresa_id;
+  const nomeEmpresa = await Empresa.query()
+  .where('id', '=', Number(idEmpresa))
+  .select('fantasia');
+
+  const tribunais = await Tribunal.query()
+  .where("empresa_id", "=", Number(idEmpresa))
+  .orderBy("nome", "asc");
+
+  const estatus = await Estatus.query()
+  .where("empresa_id", "=", Number(idEmpresa))
+  .orderBy("descricao", "asc");
+
+  const clientes = await Cliente.query()
+  .where("empresa_id", "=", Number(idEmpresa))
+  .orderBy("nome", "asc");
+
+  const empresas = await Empresa.query()
+  .select('empresas.fantasia')
+  .select('empresas.logo')
+  .where('empresas.id', '=', Number(idEmpresa));
+
+  const page = request.input("page", 1);
+  const limit = 50;
+
+  const processos = await Processo.query()
+    .select("processos.*")
+    .select("clientes.nome")
+    .select("tribunals.nome")
+    .select("estatus.descricao")
+
+    .join("clientes", "clientes.id", "=", "processos.cliente_id")
+    .join("tribunals", "tribunals.id", "=", "processos.tribunal_id")
+    .join("estatus", "estatus.id", "=", "processos.estatus_id")
+    .andWhere("processos.empresa_id", "=", Number(idEmpresa))
+    
+    .orderBy("clientes.nome", "asc")
+    .paginate(page, limit);
+
+  processos.baseUrl("lista");
+
+  return view.render("listaProcesso", {
+    processos,
+    clientes,
+    tribunais,
+    estatus,
+    nomeEmpresa,
+    empresas,
+  });
+    
+  }
+
   
 
   /**

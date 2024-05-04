@@ -6,6 +6,8 @@ import Tribunal from "./Tribunal";
 import Estatus from "./Estatuses";
 
 export default class Processo extends BaseModel {
+  public static table = 'processo';
+  
   @column({ isPrimary: true })
   public id: number;
 

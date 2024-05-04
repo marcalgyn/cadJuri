@@ -65,7 +65,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get("/", "ProcessosController.index");
   Route.post("/filtro", "ProcessosController.filtro");
-  Route.get("/lista", "ProcessosController.lista");
+  Route.get("/listar", "ProcessosController.listar");
   Route.get("/:id", "ProcessosController.edit");
   Route.post("/", "ProcessosController.create");
   Route.patch("/:id", "ProcessosController.finalize");

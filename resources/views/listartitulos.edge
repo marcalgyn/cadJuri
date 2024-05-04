@@ -381,8 +381,6 @@
                       @endif
                     </div>
                   </td>
-
-
                 </tr>
                 @else
                 <tr>
@@ -390,6 +388,47 @@
                 </tr>
                 @endeach
               </tbody>
+              
+              <thead>
+                
+              </thead>
+
+              <tbody class="fs-6" style="text-align: right">
+                @each (totalTitulo in totalTitulos)
+                    <tr style="text-align: center; border: 1px solid rgb(160 160 160)">
+                      <td>
+                      </td>
+
+                      <td colspan="2" style="text-align: center" >
+                        TOTAL..:
+                      </td>
+
+                
+                      <td>
+                      </td>
+
+                      <td style="text-align: center">
+                        R$ {{{ formatCurrency(totalTitulo.$extras.valorTitulo) }}}
+                      </td>
+                    
+                      <td>
+                      </td>
+
+                      <td  style="text-align: center">
+                        R$ {{{ formatCurrency(totalTitulo.$extras.valorPago) }}}
+                      </td>
+
+                      <td  style="text-align: center">
+                        R$ {{{ formatCurrency(totalTitulo.saldo) }}}
+                      </td>
+                    </tr>
+
+                @endeach
+              </tbody>
+
+
+
+
             </table>
 
           </div>
