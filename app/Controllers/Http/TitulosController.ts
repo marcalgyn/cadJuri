@@ -341,8 +341,7 @@ export default class TitulosController {
       .select("titulos.*")
       .select("clientes.nome")
       .select("clientes.cpfcnpj")
-      .select("estatus.descricao")
-      .select("tribunals.nome")
+      .select("estatus")
       .join("clientes", "clientes.id", "=", "titulos.cliente_id")
       .where((query) => {
         if (nomeCliente !== null) {

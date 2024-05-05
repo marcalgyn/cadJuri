@@ -2,9 +2,7 @@
 
 @section('content')
 
-
 <div class="main">
-
   <div class="details">
     <div class="columns">
       <div class="column is-full margin-top: 80px">
@@ -14,8 +12,6 @@
           {{ flashMessages.get('notification') }}
         </div>
         @endif
-
-
         <div class="box is-size-7 p-0">
           <div class="box">
             <form action="/titulos/filtro" method="post">
@@ -108,8 +104,7 @@
 
           <div class="box">
             <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
-
-            <table class="table is-fullwidth is-striped is-hoverable is-size-7" id="listas">
+            <table class="table is-fullwidth is-striped is-hoverable" id="listas">
               <thead>
                 <tr>
                   <th>
@@ -281,7 +276,7 @@
                             <button class="delete" aria-label="close"></button>
                           </header>
                           <section class="modal-card-body">
-                            Nome do Sacado: <strong> {{ titulo.$extras.nome }} </strong><br>
+                            Nome do Cliente: <strong> {{ titulo.$extras.nome }} </strong><br>
                             Número do Título: <strong> {{ titulo.titulo }} </strong><br>
                             Data de Vencimento: <strong> {{{ formatDate(titulo.dataVencimento) }}} </strong><br>
                             Valor do Título: <strong> {{{ formatCurrency(titulo.valorTitulo) }}} </strong>
@@ -351,7 +346,7 @@
                             <button class="delete" aria-label="close"></button>
                           </header>
                           <section class="modal-card-body">
-                            Nome do Sacado: <strong class="is-uppercase"> {{ titulo.$extras.nome }} </strong><br>
+                            Nome do Cliente: <strong class="is-uppercase"> {{ titulo.$extras.nome }} </strong><br>
                             Número da Parcela: <strong> {{ titulo.parcela }} / {{ titulo.totalparcela }}</strong><br>
                             Data de Vencimento: <strong> {{{ formatDate(titulo.datavencimento) }}} </strong><br>
                             Valor do Título: <strong> {{{ formatCurrency(titulo.valortitulo) }}} </strong>

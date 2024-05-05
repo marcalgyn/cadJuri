@@ -45,7 +45,7 @@ export default class ProcessosController {
       descricaoacao: "",
       nivelprocesso: "",
       nomejuiz: "",
-      primeiraaudiencia: DateTime.now(),
+      audiencia: null,
       linkprocesso: "",
       senhaprocesso: "",
       vara: "",
@@ -55,7 +55,6 @@ export default class ProcessosController {
       estatus_id: 0,
       
     };
-
 
     return view.render("processos", {
       tribunais,
@@ -67,33 +66,52 @@ export default class ProcessosController {
     });
   }
 
-  public async edit({ view, params }: HttpContextContract) {
+  public async edit({ view, params, auth }: HttpContextContract) {
+    
     const objProcesso = await Processo.findOrFail(params.id)
-  
-    return view.render("processos", {
-      objProcesso,
-      
+    
+    const clientes = await Cliente.query()
+    .where('clientes.empresa_id', '=', Number(auth.user?.empresa_id) )
+    .orderBy("nome", "asc");
+
+    const tribunais = await Tribunal.query()
+    .where("tribunals.empresa_id", "=", Number(auth.user?.empresa_id) )
+    .orderBy("nome", "asc");
+
+    const estatus = await Estatus.query()
+    .where("estatuses.empresa_id", "=", Number(auth.user?.empresa_id) )
+    .orderBy("descricao", "asc");
+    
+     return view.render("processos", {
+      tribunais, estatus, clientes, objProcesso,
     });
+
   }
 
   public async create({ request, response, session, auth }: HttpContextContract) {
+    
     try {
       const validationSchema = schema.create({
         numeroprocesso: schema.string(),
       });
 
       const validateData = await request.validate({ schema: validationSchema });
+      console.log("Data Cadastro ", request.input('datacontratacao') )
+      console.log("Data Audiecia ", request.input('audiencia') )
+
 
       if (request.input("id") === "0") {
         await Processo.create({
           numeroprocesso: validateData.numeroprocesso,
+          
           datacontratacao: request.input('datacontratacao') !== undefined && request.input('datacontratacao') !== null
           ? request.input('datacontratacao') : null,
 
           descricaoacao: request.input('descricaoacao') === null ? '' : request.input('descricaoacao').toUpperCase(),
           nivelprocesso: request.input('nivelprocesso') === null ? '' : request.input('nivelprocesso').toUpperCase(),
-          primeiraaudiencia: request.input('primeiraaudiencia') !== undefined && request.input('primeiraaudiencia') !== null
-          ? request.input('primeiraaudiencia') : null,
+
+          audiencia: request.input('audiencia') !== undefined && request.input('audiencia') !== null
+          ? request.input('audiencia') : null,
 
           linkprocesso: request.input('linkprocesso') === null ? '' : request.input('linkprocesso').toLowerCase(),
           nomejuiz: request.input('nomejuiz') === null ? '' : request.input('nomejuiz').toUpperCase(),
@@ -108,17 +126,25 @@ export default class ProcessosController {
         });
 
         session.flash("notification", "Processo criado com sucesso!");
-      
+        return response.redirect("/processos");
       } else {
-        const processo = await Processo.findOrFail(request.input("id"));
-        
+
+          const processo = await Processo.findOrFail(request.input("id"));
           processo.numeroprocesso = validateData.numeroprocesso,
-          processo.datacontratacao= request.input('datacontratacao') !== undefined && request.input('datacontratacao') !== null
-          ? this.convertStrToDateTime(request.input('datacontratacao')) : null,
+
+          processo.datacontratacao = request.input('datacontratacao') !== undefined && request.input('datacontratacao') !== null
+          ? request.input('datacontratacao') : null,
+
           processo.descricaoacao= request.input('descricaoacao') === null ? '' :request.input('descricaoacao').toUpperCase(),
           processo.nivelprocesso= request.input('nivelprocesso'),
-          processo.primeiraaudiencia= request.input('primeiraaudiencia') !== undefined && request.input('primeiraaudiencia') !== null
-          ? this.convertStrToDateTime(request.input('primeiraaudiencia')) : null,
+
+          processo.audiencia = request.input('audiencia') !== undefined && request.input('audiencia') !== null
+          ? request.input('audiencia') : null,
+          
+          /*processo.primeiraaudiencia = request.input('primeiraaudiencia') !== undefined && request.input('primeiraaudiencia') !== null
+          ? request.input('primeiraaudiencia') : null,
+          */
+
           processo.linkprocesso= request.input('linkprocesso') === null ? '' : request.input('linkprocesso').toLowerCase(),
           processo.nomejuiz= request.input('nomejuiz') === null ? '' : request.input('nomejuiz').toUpperCase(),
           processo.senhaprocesso= request.input('senhaprocesso'),
@@ -127,11 +153,16 @@ export default class ProcessosController {
           processo.cliente_id= request.input('cliente_id'),
           processo.tribunal_id= request.input('tribunal_id'),
           processo.estatus_id= request.input('estatus_id'),
-
         await processo.save();
 
         session.flash("notification", "Processo alterado com sucesso!");
+        
+        return response.redirect("/processos");
+
       }
+      
+      
+
     } catch (error) {
       console.log("Error:", error);
       let msg: string = "";
@@ -151,7 +182,6 @@ export default class ProcessosController {
 
 
     return view.render("ordemServico", {
-
       empresas,
       pessoas,
 
@@ -164,25 +194,55 @@ export default class ProcessosController {
   }
 
   public async filtro({ request, view, auth }: HttpContextContract) {
- 
-    const clientes = await Cliente.all();
-    const tribunals = await Tribunal.all();
-    const estatus = await Estatus.all();
+    const idEmpresa = auth.user?.empresa_id;
+    const nomeEmpresa = await Empresa.query()
+    .select('fantasia')
+    .select('razaosocial')
+    .select('logo')
+    .where('id', '=', Number(idEmpresa));
     
+  
+    const tribunais = await Tribunal.query()
+    .where("empresa_id", "=", Number(idEmpresa))
+    .orderBy("nome", "asc");
+  
+    const estatus = await Estatus.query()
+    .where("empresa_id", "=", Number(idEmpresa))
+    .orderBy("descricao", "asc");
+    
+    let nomeCliente = '';
+    
+    const clientes = await Cliente.query()
+    .where("empresa_id", "=", Number(idEmpresa))
+    .where((query) =>{
+      if (request.input("cliente") !== null){
+        query.where('id', '=', request.input("cliente"));
+      }
+    })
+    .orderBy("nome", "asc");
+
+    nomeCliente = clientes.length == 1 ? clientes[0].nome : '';
+
+   const empresas = await Empresa.query()
+    .select('empresas.fantasia')
+    .select('empresas.logo')
+    .where('empresas.id', '=', Number(idEmpresa));
+  
     const page = request.input("page", 1);
     const limit = 50;
 
-    const processos = await Processo.query()
-      .select("processos.*")
-      .select("clientes.nome")
-      .select("tribunals.nome")
-      .select("estatus.descricao")
-
-      .join("clientes", "clientes.id", "=", "processos.cliente_id")
-      .join("tribunals", "tribunals.id", "=", "processos.tribunal_id")
-      .join("estatus", "estatus.id", "=", "processos.estatus_id")
-      .where("processos.empresa_id", "=", Number(auth.user?.empresa_id))
-      .where((query) => {
+    
+    
+  const processos = await Processo.query()
+    .select("processos.*")  
+    .select("clientes.nome as nomeCliente")
+    .select("tribunals.nome")
+    .select("estatuses.descricao")
+    .join("clientes", "clientes.id", "=", "processos.cliente_id")
+    .join("tribunals", "tribunals.id", "=", "processos.tribunal_id")
+    .join("estatuses", "estatuses.id", "=", "processos.estatus_id")
+    .where("processos.empresa_id", "=", Number(idEmpresa))
+    .where((query) => {
         if (request.input("cliente") !== null){
           query.where("processos.cliente_id", "=", Number(request.input("cliente")))
         }
@@ -192,11 +252,11 @@ export default class ProcessosController {
         }
 
         if (request.input("processo") !== null ){
-          query.andWhereILike("processos.numeroprocesso", "%"+ request.input("processo") + "%")
+          query.andWhereILike("processos.numeroprocesso", "%" + request.input("processo") + "%")
         }
 
         if (request.input("status") !== null) {
-          query.where("processos.estatus", "=", request.input("status"))
+          query.where("processos.estatus_id", "=", request.input("status"))
         }
       })
       
@@ -205,11 +265,16 @@ export default class ProcessosController {
 
     processos.baseUrl("lista");
 
+    nomeCliente = nomeCliente == '' ? 'Todos Clientes' : nomeCliente;
+
     return view.render("listaProcesso", {
       processos,
       clientes,
-      tribunals,
+      tribunais,
       estatus,
+      nomeEmpresa,
+      empresas,
+      nomeCliente,
     });
 
     
@@ -220,8 +285,10 @@ public async listar({ request, view, auth }: HttpContextContract) {
 
   const idEmpresa = auth.user?.empresa_id;
   const nomeEmpresa = await Empresa.query()
-  .where('id', '=', Number(idEmpresa))
-  .select('fantasia');
+  .select('fantasia')
+  .select('razaosocial')
+  .where('id', '=', Number(idEmpresa));
+  
 
   const tribunais = await Tribunal.query()
   .where("empresa_id", "=", Number(idEmpresa))
@@ -242,22 +309,22 @@ public async listar({ request, view, auth }: HttpContextContract) {
 
   const page = request.input("page", 1);
   const limit = 50;
-
+  
   const processos = await Processo.query()
-    .select("processos.*")
-    .select("clientes.nome")
+    .select("processos.*")  
+    .select("clientes.nome as nomeCliente")
     .select("tribunals.nome")
-    .select("estatus.descricao")
-
+    .select("estatuses.descricao")
     .join("clientes", "clientes.id", "=", "processos.cliente_id")
     .join("tribunals", "tribunals.id", "=", "processos.tribunal_id")
-    .join("estatus", "estatus.id", "=", "processos.estatus_id")
-    .andWhere("processos.empresa_id", "=", Number(idEmpresa))
-    
+    .join("estatuses", "estatuses.id", "=", "processos.estatus_id")
     .orderBy("clientes.nome", "asc")
+    .where("processos.empresa_id", "=", Number(idEmpresa))
     .paginate(page, limit);
 
   processos.baseUrl("lista");
+
+  console.log(processos)
 
   return view.render("listaProcesso", {
     processos,
@@ -277,12 +344,13 @@ public async listar({ request, view, auth }: HttpContextContract) {
    */
   public convertStrToDateTime(dataInput: string): any {
     const dataLuxon = DateTime.fromISO(dataInput);
+    //const dataLuxon = DateTime.fromISO(dataInput, {zone: 'utc'});
     return dataLuxon;
   }
 
   public normalizaNomeImagem(value: string): string {
     return (
-      moment().format("DDMMYYYYHHmmss") +
+      moment().format("DDMMYYYY") +
       "_" +
       value.normalize("NFD").split(" ").join("")
     );

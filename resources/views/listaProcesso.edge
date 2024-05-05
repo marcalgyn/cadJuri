@@ -8,8 +8,15 @@
               <div class="column is-full margin-top: 80px">
                 <div class="box is-size-7 p-0">
                   <div class="box">
-                    <form action="/processo/filtro" method="post">
+                    <form action="/processos/filtro" method="post">
                       {{ csrfField() }}
+                        @each(empresa in empresas)
+                          <input type="hidden" name="logo" id="logo" value={{ empresa.logo }}>
+                          <input type="hidden" name="nomeEmpresa" id="nomeEmpresa" value='{{ empresa.$attributes.fantasia }}'>
+                        @endeach
+
+                      <input type="hidden" name="nomeCliente" id="nomeCliente" value='{{ nomeCliente }}'>
+
                       <div class="card has-background-light is-7">
                         <header class="card-header has-background-link cab">
                           <p class="title is-6 p-2 has-text-white ">
@@ -24,7 +31,7 @@
                                 <select name="cliente">
                                   <option value="">Selecione um Cliente</option>
                                   @each(cliente in clientes)
-                                    <option value="{{ cliente.id }}">{{ clientes.nome }}</option>
+                                    <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
                                   @endeach
                                 </select>
                               </div>
@@ -35,8 +42,8 @@
                               <div class="select is-fullwidth">
                                 <select name="tribunal">
                                   <option value="">Selecione um Tribunal</option>
-                                  @each(tribunal in tribunals)
-                                    <option value="{{ tribunal.id }}">{{ tribunal.name }}</option>
+                                  @each(tribunal in tribunais)
+                                    <option value="{{ tribunal.id }}">{{ tribunal.nome }}</option>
                                   @endeach
                                 </select>
                               </div>
@@ -53,7 +60,7 @@
                               <div class="select is-fullwidth">
                                 <select name="status">
                                   <option value="">Todos</option>
-                                  @each(status in status)
+                                  @each(status in estatus)
                                     <option value="{{ status.id }}">{{ status.descricao }}</option>
                                   @endeach
                                 </select>
@@ -80,67 +87,89 @@
                               Gerar PDF &nbsp;    
                               <i class="fa-solid fa-floppy-disk text-white">
                             </i></button>
-                            
                           </div>
-
-                          <div class="field">
-                            <label class="label is-size-7 has-text-danger">* Lista de Processos </label>
-                          </div>
-
                         </div>
                       </div>
                     </form>
                   </div>
-                
-                  
-                  <input type="text" name="usuario" id="usuario" value={{ nomePessoa }} hidden>
-                  <input type="text" name="nomeEmpresa" id="nomeEmpresa" value={{ nomeEmpresa }} hidden>
 
                   <div class="box">
-                      <table class="table is-fullwidth is-striped is-hoverable is-size-7" id="listas">
+                      <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
+                      
+                      <table class="table is-fullwidth is-striped is-hoverable " id="listas">
                         <thead>
                           <tr>
                             <th>
-                              Empresa
+                              Cliente
                             </th>
                             <th class="is-hidden-mobile">
-                              Responsável
+                              Tribunal / Vara
                             </th>
-                            <th class="has-text-centered">
-                              Tarefa
+                            <th class="has-text-left">
+                              N. Processo
                             </th>
-                            <th class="has-text-centered is-hidden-mobile">
-                              Departamento
+
+                            <th class="has-text-left is-hidden-mobile">
+                              Status
                             </th>
-                            <th class="has-text-centered">
-                              Data Conclusão
+                            <th class="has-text-left">
+                              Juiz
                             </th>
-                            <th class="has-text-centered">
-                              Valor
+                            <th class="has-text-left">
+                              1ª Audiencia
                             </th>
+                            <th>
+                              Acesso
+                            </th>
+
+                            <th class="has-text-centered" id="colAcao">
+                              Ação
+                            </th>
+                            
                           </tr>
                         </thead>
                         <tbody>
                           @each(processo in processos.rows)
                           <tr>
-                            <td>
-                             <!-- {{ processo.$extras.razao_social }} -->
-                            </td>
                             <td class="is-hidden-mobile">
-                              <!-- {{ tarefa.$extras.name }} -->
+                              {{ processo.$extras.nomeCliente }}
                             </td>
                             <td class="has-text-left is-uppercase">
-                              <!-- {{ tarefa.descricao }} -->
+                              {{ processo.$extras.nome }} / <strong> {{ processo.vara !== null ? processo.vara : ''}} </strong>
                             </td>
-                            <td class="has-text-centered is-hidden-mobile">
-                              <!-- {{ tarefa.$extras.nome }} -->
+                            
+                            <td class="has-text-left is-hidden-mobile">
+                              {{ processo.numeroprocesso }}
                             </td>
-                            <td class="has-text-centered">
-                              <!-- {{{ formatDate(tarefa.dataConclusao) }}} -->
+                         
+
+                            <td class="has-text-left is-uppercase">
+                              {{processo.$extras.descricao }}
                             </td>
 
-                            <td class="has-text-right" >
-                              <!-- {{{ formatCurrency(tarefa.valor) }}} -->
+                            <td class="has-text-left is-uppercase" >
+                              {{ processo.nomejuiz }}
+                            </td>
+
+                            <td class="has-text-left" >
+                              {{{ formatDate(processo.audiencia) }}}
+                            </td>
+
+                            <td>
+                              {{processo.senhaprocesso !== null ? processo.senhaprocesso : ''}}
+                            </td>
+                            
+                            <td class="has-text-centered" id="acoes" media="only print" >
+                              <div class="buttons is-centered">
+                                <!-- Botão Editar Título -->
+                                <button type="button" class="button is-success is-size-7"
+                                  onclick="window.location.href='{{ `/processos/${processo.id}` }}'">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-edit"></i>
+                                  </span>
+                                  <span>Editar</span>
+                                </button>
+                              </div>
                             </td>
                           </tr>
                           @else
@@ -149,42 +178,23 @@
                           </tr>
                           @endeach
                         </tbody>
-                        <thead>
-                          <tr>
-                          </tr>
-                        </thead>
-                        <tbody class="fs-6" style="text-align: right">
-                          <tr style="text-align: right">
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                              <td style="text-align: right" >
-                                TOTAL
-                              </td>
-                            
-                            <td colspan="2" style="text-align: right">
-                              {{{ formatCurrency(totalTarefas) }}}
-                            </td>
-                          </tr>
-                        </tbody>
                           
                       </table>
                   </div>
-                
 
-                  @if(tarefas.hasPages)
+                  @if(processos.hasPages)
                   <div class="box">
                     <nav class="pagination" role="navigation" aria-label="pagination">
-                      <a class="pagination-previous" {{ tarefas.currentPage===1 && 'disabled' }}
-                        href="{{ tarefas.url }}?page={{ tarefas.currentPage - 1 }}">Anterior</a>
-                      <a class="pagination-next" {{ !tarefas.hasMorePages && 'disabled' }}
-                        href="{{ tarefas.url }}?page={{ tarefas.currentPage + 1 }}">Próxima</a>
+                      <a class="pagination-previous" {{ processos.currentPage===1 && 'disabled' }}
+                        href="{{ processos.url }}?page={{ processos.currentPage - 1 }}">Anterior</a>
+                      <a class="pagination-next" {{ !processo.hasMorePages && 'disabled' }}
+                        href="{{ processos.url }}?page={{ processos.currentPage + 1 }}">Próxima</a>
                       <ul class="pagination-list">
-                        @each(nTarefa in tarefas.getUrlsForRange(1, tarefas.lastPage))
+                        @each(nProcesso in processo.getUrlsForRange(1, processos.lastPage))
                         <li>
                           <a class="pagination-link
-                                  {{ tarefas.currentPage === nTarefa.page && 'is-current' }}" href="{{ nTarefa.url }}">
-                            {{ nTarefa.page }}
+                                  {{ processos.currentPage === nProcesso.page && 'is-current' }}" href="{{ nProcesso.url }}">
+                            {{ nProcesso.page }}
                           </a>
                         </li>
                         @endeach
@@ -199,102 +209,114 @@
     </div>
   
 
-    <!-- coloquei no app.js
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.2/jspdf.min.js" integrity="sha512-V+hL/3ApdUCHPWddxi3cOlryuqVfenO0k78Z8RobxNpHt/vidOWa894zvuroGebGoOr9g1hv9G7mrFZg87ZWcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.2.11/jspdf.plugin.autotable.min.js"></script>
-    -->
-
 <script type="text/javascript">
-
   
-function relatorioListaTarefa() {
-    var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
+  function relatorioProcesso() {
     
-    const doc = new jsPDF('l', 'pt', 'a4');
-    const novaData = new Date();
-    var numeroPagina = doc.internal.getNumberOfPages();
-    doc.setTextColor(100);
-    /* Anexa Imagem*/
-    const img = new Image();
-    img.src = '/logo.jpeg';
-    doc.addImage(img, 'jpeg', 10, 8, 80, 40);
     
-    /*Titulo Relatorio*/
-    doc.setFontSize(14);
-    doc.text('Lista de Tarefas Realizadas', 300, 30);
-    
+    document.getElementById("colAcao").style.display = 'none';
 
-    /*Data Impressao*/
-    doc.setFontSize(10);
-    //doc.text('Data Emissão: ', 10, 60);
-    posicaoH = posicaoH + 60
-    doc.text('Data Emissão: ', 10, posicaoH);
-    doc.text(novaData.toLocaleString('pt-BR', {timezone: 'UTC'}), 80, posicaoH);
-    posicaoH = posicaoH + 14;
-    doc.text('Empresa: ' + document.getElementById('nomeEmpresa').value, 10, posicaoH);
+       var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
+       const doc = new jsPDF('l', 'pt', 'a4');
+       const novaData = new Date();
+       var numeroPagina = doc.internal.getNumberOfPages();
+       doc.setTextColor(100);
+       /* Anexa Imagem*/
+       const img = new Image();
+       img.src =  document.getElementById('logo').value;
+       doc.addImage(img, 'jpeg', 10, 8, 80, 40);
+      
+       /*Titulo Relatorio*/
+       doc.setFontSize(14);
+       doc.text('Relatório de Processos', 400, 30);
+      
+       /*Data Impressao*/
+       doc.setFontSize(10);
+       //doc.text('Data Emissão: ', 10, 60);
+       posicaoH = posicaoH + 60;
+       doc.text('Data Emissão: ', 10, posicaoH);
+       doc.text(novaData.toLocaleString('pt-BR', {timezone: 'UTC'}), 80, posicaoH);
+       posicaoH = posicaoH + 14;
+       doc.text('Empresa:  ' + document.getElementById('nomeEmpresa').value, 10, posicaoH);
+       posicaoH = posicaoH + 12;
+       doc.text('Cliente(s): ' + document.getElementById('nomeCliente').value, 10, posicaoH);
+       //doc.text('Tribunal: ' + 'none', 300, posicaoH);
+      
+       /*Cria numeração da pagina*/
+       for (i=0; i < numeroPagina; i++) {
+         doc.setPage(i);
+         let paginaAtual = doc.internal.getCurrentPageInfo().numeroPagina;
+         doc.setFontSize(10);
+         //doc.text('Pagina: ' + numeroPagina, 750, 60);
+         doc.text('Pagina: ' + numeroPagina, 750, posicaoH);
+         /** Rodape do Relatorio **/
+         doc.text('Pagina ' + numeroPagina, doc.internal.pageSize.width / 2, 287, { align: 'center' });
 
-    posicaoH = posicaoH + 12;
-    doc.text('Usuario: ' + document.getElementById('usuario').value, 10, posicaoH);
+       }
+       //doc.line(10, 70, 820, 70);
+       posicaoH = posicaoH + 10;
+       doc.line(10, posicaoH, 820, posicaoH);
+       
+      // /**Criação Listagem de Tabelas startY: 71**/
+       posicaoH = posicaoH + 1;
 
-    /*Cria numeração da pagina*/
-  
-    for (i=0; i < numeroPagina; i++) {
-      doc.setPage(i);
-      let paginaAtual = doc.internal.getCurrentPageInfo().numeroPagina;
-      doc.setFontSize(10);
+       doc.autoTable({html: '#listas', startY: posicaoH, theme: 'striped',
+           margin: Margin = 10, 
+           columnStyles: {
+             0: {
+               halign: 'left',
+               tableWidth:100,
+             },
+             1: {
+               halign: 'left',
+               tableWidth:90,
+             },
+             2: {
+               halign: 'left',
+               tableWidth:150,
+             },
+             3: {
+               halign: 'left',
+               tableWidth:100,
+             },
+             4: {
+               halign: 'left',
+               tableWidth:100,
+             },
+             5: {
+               halign: 'center',
+               tableWidth:100,
+             },
+             6: {
+               halign: 'left',
+               tableWidth:80,
+             },
+           },
+         });
 
-      //doc.text('Pagina: ' + numeroPagina, 750, 60);
-      doc.text('Pagina: ' + numeroPagina, 750, posicaoH);
-
-      /** Rodape do Relatorio **/
-      doc.text('Pagina ' + numeroPagina, doc.internal.pageSize.width / 2, 287, {
-      align: 'center' });
-
-    }
-    
-    
-    //doc.line(10, 70, 820, 70);
-    posicaoH = posicaoH + 10;
-    doc.line(10, posicaoH, 820, posicaoH);
-    
-    /**Criação Listagem de Tabelas startY: 71**/
-    posicaoH = posicaoH + 1
-      doc.autoTable({html: '#listas', startY: posicaoH, theme: 'striped',
-        margin: Margin = 10, 
-        columnStyles: {
-          0: {
-            halign: 'left',
-            tableWidth:100,
-          },
-          1: {
-            halign: 'left',
-            tableWidth:90,
-          },
-          2: {
-            halign: 'left',
-            tableWidth:150,
-          },
-          3: {
-            halign: 'left',
-            tableWidth:100,
-          },
-          4: {
-            halign: 'center',
-            tableWidth:80,
-          },
-          5: {
-            halign: 'right',
-            tableWidth:100,
-          },
-         
-        },
-      });
-        
-    doc.save('TarefasFinalizadas.pdf');
-    
+       doc.save('ListaProcessos.pdf');
 
   };
 
+
 </script>
+
+<script>
+  document.getElementById('filtro-nome').addEventListener('keyup', pesquisaTabela());
+  function pesquisaTabela() {
+    var filter, table, tr, td, i;
+    table = document.getElementById("listas");
+    return function() {
+      tr = table.querySelectorAll("tbody tr");
+      filter = this.value.toUpperCase();
+      for (i = 0; i < tr.length; i++) {
+        var match = tr[i].innerHTML.toUpperCase().indexOf(filter) > -1;
+        tr[i].style.display = match ? "table-row" : "none";
+        
+      }
+    }
+  }
+ </script>
+
 
 @endsection

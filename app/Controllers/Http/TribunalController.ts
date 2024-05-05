@@ -4,9 +4,6 @@ import { schema } from "@ioc:Adonis/Core/Validator";
 import Empresa from "App/Models/Empresa";
 import Tribunais from "App/Models/Tribunal";
 
-
-
-
 export default class TribunalController {
   public async index({ view, auth }: HttpContextContract) {
     const idEmpresa = auth.user?.empresa_id

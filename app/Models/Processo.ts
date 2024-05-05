@@ -6,7 +6,7 @@ import Tribunal from "./Tribunal";
 import Estatus from "./Estatuses";
 
 export default class Processo extends BaseModel {
-  public static table = 'processo';
+  public static table = 'processos';
   
   @column({ isPrimary: true })
   public id: number;
@@ -17,14 +17,14 @@ export default class Processo extends BaseModel {
   @column.dateTime()
   public datacontratacao: DateTime;
 
+  @column.dateTime()
+  public audiencia: DateTime;
+
   @column()
   public descricaoacao: string;
 
   @column()
   public nivelprocesso: string;
-
-  @column()
-  public primeiraaudiencia: DateTime;
 
   @column()
   public linkprocesso: string;

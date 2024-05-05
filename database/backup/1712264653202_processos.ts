@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table.dateTime('datacontratacao').nullable;
       table.string('descricaoacao').nullable;
       table.string('nivelprocesso').nullable;
-      table.string('primeiraaudiencia').nullable;
+      table.dateTime('primeiraaudiencia').nullable;
       table.string('nomejuiz').nullable;
       table.string('linkprocesso').nullable;
       table.string('senhaprocesso').nullable;
