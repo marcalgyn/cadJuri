@@ -1,0 +1,299 @@
+@layout('layouts/app')
+
+@section('content')
+
+    <div class="main">
+        <div class="details">
+              <div class="columns">
+              <div class="column is-full margin-top: 80px">
+                <div class="box is-size-7 p-0">
+                  <div class="box">
+                    <form action="/clientes/filtro" method="post">
+                      {{ csrfField() }}
+                        @each(empresa in empresas)
+                          <input type="hidden" name="logo" id="logo" value={{ empresa.logo }}>
+                          <input type="hidden" name="nomeEmpresa" id="nomeEmpresa" value='{{ empresa.$attributes.fantasia }}'>
+                        @endeach
+
+                      <input type="hidden" name="nomeCliente" id="nomeCliente" value='{{ nomeCliente }}'>
+
+                      <div class="card has-background-light is-7">
+                        <header class="card-header has-background-link cab">
+                          <p class="title is-6 p-2 has-text-white ">
+                            Listagem de Clientes
+                          </p>
+                        </header>
+                        <div class="card-content is-7">
+                          <div class="field-body">
+                            <div class="field">
+                              <label class="label is-size-7">Cliente</label>
+                              <div class="select is-fullwidth">
+                                <select name="cliente">
+                                  <option value="">Selecione um Cliente</option>
+                                  @each(listCliente in listClientes)
+                                    <option value="{{ listCliente.id }}">{{ listCliente.nome }}</option>
+                                  @endeach
+                                </select>
+                              </div>
+                            </div>
+
+                            <div class="field">
+                              <label class="label is-size-7">CPF/CNPJ</label>
+                              <div class="control is-expanded">
+                                <input type="text" mascara-cpf-cnpj name="cpfcnpj" class="input is-size-7">
+                              </div>
+                            </div>
+
+                            <div class="field">
+                              <label class="label is-size-7">Telefone</label>
+                              <div class="control is-expanded">
+                                <input type="text" id="telefone" name="telefone" class="input is-size-7">
+                              </div>
+                            </div>
+                            
+                          <hr>
+                          <div class="field is-grouped" id="content">
+                            <div class="control">
+                              <button type="submit" class="button is-link is-size-7">
+                                <span class="icon is-small">
+                                  <i class="fas fa-check"></i>
+                                </span>
+                                <span>Buscar</span>
+                              </button>
+                            </div>
+                            <div class="control">
+                              <button type="reset" class="button is-warning is-size-7">
+                                Cancelar
+                              </button>
+                            </div>
+                            
+                            <button onclick="relatorioCliente()" class="button is-success is-size-7" id="btnPDF">
+                              Gerar PDF &nbsp;    
+                              <i class="fa-solid fa-floppy-disk text-white">
+                            </i></button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div class="box">
+                      <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
+                      
+                      <table class="table is-fullwidth is-striped is-hoverable " id="listas">
+                        <thead>
+                          <tr>
+                            <th>
+                              CPF/CNPJ
+                            </th>
+                            <th class="is-hidden-mobile">
+                              Nome/Razão Social
+                            </th>
+                            <th class="has-text-left">
+                              Endereço
+                            </th>
+
+                            <th class="has-text-left is-hidden-mobile">
+                              Cidade-UF
+                            </th>
+                            <th class="has-text-left">
+                              Telefone
+                            </th>
+                            <th class="has-text-left">
+                              E-mail
+                            </th>
+                            <th id="colAcao">
+                              Ação
+                            </th>
+                            
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @each(cliente in clientes.rows)
+                          <tr> 
+                            <td class="">
+                              {{ cliente.cpfcnpj }}
+                            </td>
+                            <td class="has-text-left is-uppercase">
+                              {{ cliente.nome }}
+                            </td>
+                            
+                            <td class="has-text-left is-hidden-mobile">
+                              {{ cliente.logradouro }}, {{cliente.bairro}}
+                            </td>
+                         
+
+                            <td class="has-text-left is-uppercase">
+                              {{cliente.cidade }} - {{cliente.estado}}
+                            </td>
+
+                            <td class="has-text-left is-uppercase" >
+                              {{ cliente.telefone !== null ? cliente.telefone : '' }}
+                            </td>
+
+                            <td class="has-text-left is-lowercase" >
+                              {{ cliente.email !== null ? cliente.email : ''}}
+                            </td>
+
+                            
+                            <td class="has-text-centered" id="colAcao" >
+                              <div class="buttons is-centered">
+                                <!-- Botão Editar Título -->
+                                <button type="button" class="button is-success is-size-7"
+                                  onclick="window.location.href='{{ `/clientes/${cliente.id}` }}'">
+                                  <span class="icon is-small">
+                                    <i class="fas fa-edit"></i>
+                                  </span>
+                                  <span>Editar</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                          @else
+                          <tr>
+                            <td colspan="7" class="has-text-centered">Nenhum Registro Encontrado com os Dados Informados</td>
+                          </tr>
+                          @endeach
+                        </tbody>
+                          
+                      </table>
+                  </div>
+
+                  @if(clientes.hasPages)
+                  <div class="box">
+                    <nav class="pagination" role="navigation" aria-label="pagination">
+                      <a class="pagination-previous" {{ clientes.currentPage===1 && 'disabled' }}
+                        href="{{ clientes.url }}?page={{ clientes.currentPage - 1 }}">Anterior</a>
+                      <a class="pagination-next" {{ !clientes.hasMorePages && 'disabled' }}
+                        href="{{ clientes.url }}?page={{ clientes.currentPage + 1 }}">Próxima</a>
+                      <ul class="pagination-list">
+                        @each(nCliente in cliente.getUrlsForRange(1, clientes.lastPage))
+                        <li>
+                          <a class="pagination-link
+                                  {{ clientes.currentPage === nCliente.page && 'is-current' }}" href="{{ nCliente.url }}">
+                            {{ nCliente.page }}
+                          </a>
+                        </li>
+                        @endeach
+                      </ul>
+                    </nav>
+                  </div>
+                  @endif
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  
+
+<script type="text/javascript">
+  
+  function relatorioCliente() {
+    
+    
+    document.getElementById("colAcao").style.display = 'none';
+
+       var posicaoH = 0; //Variavel Criada para caso queira modificar a posição do relatorio.
+       const doc = new jsPDF('l', 'pt', 'a4');
+       const novaData = new Date();
+       var numeroPagina = doc.internal.getNumberOfPages();
+       doc.setTextColor(100);
+       /* Anexa Imagem*/
+       const img = new Image();
+       img.src =  document.getElementById('logo').value;
+       doc.addImage(img, 'jpeg', 10, 8, 80, 40);
+      
+       /*Titulo Relatorio*/
+       doc.setFontSize(14);
+       doc.text('Relatório de Clientes', 400, 30);
+      
+       /*Data Impressao*/
+       doc.setFontSize(10);
+       //doc.text('Data Emissão: ', 10, 60);
+       posicaoH = posicaoH + 60;
+       doc.text('Data Emissão: ', 10, posicaoH);
+       doc.text(novaData.toLocaleString('pt-BR', {timezone: 'UTC'}), 80, posicaoH);
+       posicaoH = posicaoH + 14;
+       doc.text('Empresa:  ' + document.getElementById('nomeEmpresa').value, 10, posicaoH);
+       posicaoH = posicaoH + 12;
+       doc.text('Cliente(s): ' + document.getElementById('nomeCliente').value, 10, posicaoH);
+       //doc.text('Tribunal: ' + 'none', 300, posicaoH);
+      
+       /*Cria numeração da pagina*/
+       for (i=0; i < numeroPagina; i++) {
+         doc.setPage(i);
+         let paginaAtual = doc.internal.getCurrentPageInfo().numeroPagina;
+         doc.setFontSize(10);
+         //doc.text('Pagina: ' + numeroPagina, 750, 60);
+         doc.text('Pagina: ' + numeroPagina, 750, posicaoH);
+         /** Rodape do Relatorio **/
+         doc.text('Pagina ' + numeroPagina, doc.internal.pageSize.width / 2, 287, { align: 'center' });
+
+       }
+       //doc.line(10, 70, 820, 70);
+       posicaoH = posicaoH + 10;
+       doc.line(10, posicaoH, 820, posicaoH);
+       
+      // /**Criação Listagem de Tabelas startY: 71**/
+       posicaoH = posicaoH + 1;
+
+       doc.autoTable({html: '#listas', startY: posicaoH, theme: 'striped',
+           margin: Margin = 10, 
+           columnStyles: {
+             0: {
+               halign: 'left',
+               tableWidth:100,
+             },
+             1: {
+               halign: 'left',
+               tableWidth:90,
+             },
+             2: {
+               halign: 'left',
+               tableWidth:150,
+             },
+             3: {
+               halign: 'left',
+               tableWidth:100,
+             },
+             4: {
+               halign: 'left',
+               tableWidth:100,
+             },
+             5: {
+               halign: 'left',
+               tableWidth:100,
+             },
+             6: {
+               halign: 'left',
+               tableWidth:80,
+             },
+           },
+         });
+
+       doc.save('ListaCliente.pdf');
+
+  };
+
+
+</script>
+
+<script>
+  document.getElementById('filtro-nome').addEventListener('keyup', pesquisaTabela());
+  function pesquisaTabela() {
+    var filter, table, tr, td, i;
+    table = document.getElementById("listas");
+    return function() {
+      tr = table.querySelectorAll("tbody tr");
+      filter = this.value.toUpperCase();
+      for (i = 0; i < tr.length; i++) {
+        var match = tr[i].innerHTML.toUpperCase().indexOf(filter) > -1;
+        tr[i].style.display = match ? "table-row" : "none";
+        
+      }
+    }
+  }
+ </script>
+
+
+@endsection

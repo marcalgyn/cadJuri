@@ -29,8 +29,11 @@ Route.group(() => {
 
   Route.group(() => {
     Route.get("/", "ClientesController.index");
+    Route.post("/filtro", "ClientesController.filtro");
+    Route.get("/listar", "ClientesController.listar");
     Route.get("/:id", "ClientesController.edit");
     Route.post("/", "ClientesController.create");
+    
   })
     .prefix("/clientes")
     .middleware("auth");

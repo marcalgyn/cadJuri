@@ -4,8 +4,6 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Clientes from "App/Models/Cliente";
 import Empresa from 'App/Models/Empresa';
 
-
-
 export default class ClientesController {
   public async index({ view, auth }: HttpContextContract) {
     const idEmpresa = auth.user?.empresa_id;
@@ -35,7 +33,7 @@ export default class ClientesController {
     .where('empresas.id', '=', Number(auth.user?.empresa_id));
 
     const logo = empresas[0].logo;
-       
+  
 
     return view.render("cliente", { objCliente, clientes, idEmpresa, empresas, logo  });
   }
@@ -116,11 +114,105 @@ export default class ClientesController {
 
   public async edit({ view, params }: HttpContextContract) {
     let objCliente = await Clientes.findOrFail(params.id);
-    //const sacados = await Clientes.query().orderBy('nome', 'asc');
-
-
 
     return view.render("cliente", { objCliente });
+  }
+
+public async listar({request, view, auth} : HttpContextContract) {
+  const idEmpresa = auth.user?.empresa_id;
+  const empresas = await Empresa.query()
+    .select('empresas.fantasia')
+    .select('empresas.logo')
+    .where('empresas.id', '=', Number(auth.user?.empresa_id));
+
+  const page = request.input("page", 1);
+  const limit = 50;
+
+  const clientes = await Clientes.query()
+    .select('clientes.*')
+    .where('clientes.empresa_id', '=', Number(idEmpresa))
+    .orderBy('clientes.nome', 'asc')
+    .paginate(page, limit)
+  
+  const logo = empresas[0].logo;
+
+  const listClientes = await Clientes.query()
+      .select('clientes.*')
+      .where('clientes.empresa_id', '=', Number(idEmpresa))
+      .orderBy('clientes.nome', 'asc');
+
+        
+  clientes.baseUrl("listar");
+
+  return view.render('listaCliente', {
+    empresas,
+    listClientes,
+    clientes,
+    logo,
+  })
+
+}
+
+  public async filtro({view, request, auth} : HttpContextContract) {
+    
+    const idEmpresa = auth.user?.empresa_id;
+    const empresas = await Empresa.query()
+    .select('empresas.fantasia')
+    .select('empresas.logo')
+    .where('empresas.id', '=', Number(auth.user?.empresa_id));
+
+    const page = request.input("page", 1);
+    const limit = 50;
+
+    let idCliente =  request.input('cliente');
+    const cpfcnpj = request.input('cpfcnpj');
+    const telefone = request.input('telefone');
+
+    if (idCliente == undefined ) {
+      idCliente = null;
+    }
+
+    const clientes = await Clientes.query()
+    .select('clientes.*')
+    .select('clientes.nome')
+    .where('clientes.empresa_id', '=', Number(idEmpresa))
+    .where((query) =>{
+      if (idCliente !== null) {
+        query.where("clientes.id", "=", idCliente);
+      } 
+      if (cpfcnpj !== null ) {
+        query.where('cpfcnpj', '=', cpfcnpj);
+      }
+      if (telefone !== null ) {
+        query.where('telefone', '=', telefone);
+      }
+    })
+
+    .orderBy('clientes.nome', 'asc')
+    .paginate(page, limit)
+
+    let nomeCliente = idCliente > 0 ? clientes[0].nome : 'Todos os Clientes';
+    console.log(clientes);
+
+    const listClientes = await Clientes.query()
+      .select('clientes.*')
+      .where('clientes.empresa_id', '=', Number(idEmpresa))
+      .orderBy('clientes.nome', 'asc');
+
+
+    clientes.baseUrl('listar');
+    const logo = empresas[0].logo;
+    console.log('clientes', idCliente, '/', cpfcnpj, '/', telefone);
+
+    return view.render('listaCliente', {
+      listClientes,
+      clientes,
+      empresas,
+      logo,
+      nomeCliente,
+    })
+
+
   }
 
 }

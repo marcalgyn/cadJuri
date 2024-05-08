@@ -46,6 +46,7 @@ export default class ProcessosController {
       nivelprocesso: "",
       nomejuiz: "",
       audiencia: null,
+      conclusao: null,
       linkprocesso: "",
       senhaprocesso: "",
       vara: "",
@@ -96,9 +97,6 @@ export default class ProcessosController {
       });
 
       const validateData = await request.validate({ schema: validationSchema });
-      console.log("Data Cadastro ", request.input('datacontratacao') )
-      console.log("Data Audiecia ", request.input('audiencia') )
-
 
       if (request.input("id") === "0") {
         await Processo.create({
@@ -122,6 +120,8 @@ export default class ProcessosController {
           cliente_id: request.input('cliente_id'),
           tribunal_id: request.input('tribunal_id'),
           estatus_id: request.input('estatus_id'),
+          conclusao: request.input('conclusao') !== undefined && request.input('conclusao') !== null
+          ? request.input('conclusao') : null,
 
         });
 
@@ -153,6 +153,7 @@ export default class ProcessosController {
           processo.cliente_id= request.input('cliente_id'),
           processo.tribunal_id= request.input('tribunal_id'),
           processo.estatus_id= request.input('estatus_id'),
+          processo.conclusao= request.input('conclusao'),
         await processo.save();
 
         session.flash("notification", "Processo alterado com sucesso!");

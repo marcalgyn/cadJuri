@@ -222,6 +222,7 @@ export default class TitulosController {
     const clientes = await Cliente.query()
     .where('clientes.empresa_id', '=', Number(auth.user?.empresa_id) )
     .orderBy("nome", "asc");
+    
 
     return view.render("titulos", { objTitulo, clientes });
 

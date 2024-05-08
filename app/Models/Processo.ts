@@ -20,6 +20,9 @@ export default class Processo extends BaseModel {
   @column.dateTime()
   public audiencia: DateTime;
 
+  @column.dateTime()
+  public conclusao: DateTime;
+
   @column()
   public descricaoacao: string;
 
