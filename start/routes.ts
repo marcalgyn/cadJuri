@@ -78,6 +78,14 @@ Route.group(() => {
   .prefix("/processos")
   .middleware("auth");
 
+Route.group(() => {
+  Route.get("/", "AudienciaController.index");
+  Route.post("/filtro", "AudienciaController.filtro");
+  Route.get("/listar", "AudienciaController.listar");
+})
+.prefix("/audiencias")
+.middleware("auth");
+
 
 /*
 Route.group(() => {

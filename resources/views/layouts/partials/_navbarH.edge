@@ -27,7 +27,7 @@
                         <li>
                             <a href="#">
                                 <span class="titulo">CADASTROS</span>
-                                <span class="icon"> <ion-icon name="arrow-down-sharp"> </ion-icon></span>
+                                <span class="icon"> <ion-icon name="arrow-redo-outline"> </ion-icon></span>
                             </a>
                             <ul>
                                 <li>
@@ -58,8 +58,8 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="/audiencia">
-                                        <span class="icon"> <ion-icon name="documents-outline"></ion-icon></span>
+                                    <a href="/audiencias">
+                                        <span class="icon"> <ion-icon name="calendar-number-outline"></ion-icon></span>
                                         <span class="titulo">Audiência</span>
                                     </a>
                                 </li>
@@ -73,7 +73,7 @@
                         @if((auth.user.nivel == 0) || ((auth.user.nivel == 9)))
                             <a href="#">
                                 <span class="titulo">FINANCEIRO</span>
-                                <span class="icon"> <ion-icon name="arrow-down-sharp"> </ion-icon></span>
+                                <span class="icon"> <ion-icon name="arrow-redo-outline"> </ion-icon></span>
                             </a>
                         @endif
 
@@ -81,7 +81,7 @@
                             <li>
                                 @if((auth.user.nivel == 0) || ((auth.user.nivel == 9)))
                                 <a href="/titulos">
-                                    <span class="icon"><ion-icon name="wallet"></ion-icon></span>
+                                    <span class="icon"><ion-icon name="cash-outline"></ion-icon></span>
                                     <span class="titulo">Cadastro de Titulos</span>
                                 </a>
                                @endif
@@ -100,7 +100,7 @@
                                     <li>
                                         @if((auth.user.nivel == 0) || ((auth.user.nivel == 9)))
                                         <a href="/titulos/lista">
-                                            <span class="icon"><ion-icon name="albums"></ion-icon></span>
+                                            <span class="icon"><ion-icon name="cash-outline"></ion-icon></span>
                                             <span class="titulo">Titulos</span>
                                         </a>
                                         @endif
@@ -137,9 +137,17 @@
                                 </li>
                                 
                                 <li>
+                                    <a href="/audiencias/listar">
+                                        <span class="icon"><ion-icon name="calendar-number-outline"></ion-icon></span>
+                                        <span class="titulo">Audiência</span>
+                                    </a>
+
+                                </li>
+                                
+                                <li>
                                     @if((auth.user.nivel == 0) || ((auth.user.nivel == 9)))
-                                    <a href="/titulos/lista">
-                                        <span class="icon"><ion-icon name="albums"></ion-icon></span>
+                                    <a href="/titulos/lista"> 
+                                        <span class="icon"><ion-icon name="cash-outline"></ion-icon></span>
                                         <span class="titulo">Titulos</span>
                                     </a>
                                     @endif
@@ -153,7 +161,7 @@
                     <!-- Menu Controle de Usuarios -->
                     <li> <a href="#">
                             <span class="titulo">CONFIGURAÇÃO</span>
-                            <span class="icon"> <ion-icon name="arrow-down-sharp"> </ion-icon></span>
+                            <span class="icon"> <ion-icon name="arrow-redo-outline"> </ion-icon></span>
                         </a>
                         <ul>
                               <li>

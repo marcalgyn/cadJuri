@@ -15,28 +15,28 @@
                   </div>
                   @endif
                   <div class="box">
-                      <form action="/tribunais" method="post" enctype="multipart/form-data">
+                      <form action="/audiencias" method="post" enctype="multipart/form-data">
                         {{ csrfField() }}
-                        <input type="hidden" name="id"  id="id" value={{ objTribunal.id }}>
+                        <input type="hidden" name="id"  id="id" value={{ objAudiencia.id }}>
 
                         <div class="card has-background-light">
                           <header class="card-header has-background-link cab">
                             <p class="title is-6 p-2 has-text-white">
-                              Cadastro de Tribunal
+                              Cadastro de Audiencia
                             </p>
                           </header>
 
                           <div class="card-content">
                             <div class="field col-md-8">
-                              <label class="label">Nome Tribunal</label>
+                              <label class="label">Numero Processo</label>
                               <div class="control is-expanded">
                                 <input
                                   type="text"
-                                  id="nome"
-                                  name="nome"
-                                  class="input {{ flashMessages.has('errors.nome') ? 'is-danger' : '' }}"
-                                  placeholder="Informe o Nome do Tribunal"
-                                  value="{{ objTribunal.nome }}"
+                                  id="processo"
+                                  name="processo"
+                                  class="input {{ flashMessages.has('errors.processo') ? 'is-danger' : '' }}"
+                                  placeholder="Informe o Numero do Processo"
+                                  value="{{ objAudiencia.processo }}"
                                   style="text-transform:uppercase"
                                   required 
                                 >
@@ -47,68 +47,48 @@
                               <div class="row">
                                 <div class="field-body mb-12">  
                                   <div class="field">
-                                    <label class="label">Comarca</label>
+                                    <label class="label">Cliente</label>
                                     <div class="control is-expanded">
                                       <input
-                                        id="comarca"
+                                        id="cliente"
                                         type="text"
-                                        name="comarca"
-                                        class="input" placeholder="Comarca"
-                                        value="{{ objTribunal.comarca }}"
-                                        style="text-transform:uppercase"
-                                        
-                                      >
+                                        name="cliente"
+                                        class="input" placeholder="Cliente"
+                                        value="{{ objAudiencia.cliente }}"
+                                        style="text-transform:uppercase">
                                     </div>
                                   </div>
-  
-                                  <div class="field">
-                                    <label class="label">Endereço</label>
-                                      <div class="control is-expanded">
-                                        <input type="text"
-                                                name="endereco"
-                                                class="input {{ flashMessages.has('errors.endereco') ? 'is-danger' : '' }}"
-                                                placeholder="Endereço"
-                                                value="{{objTribunal.endereco }}"
-                                                style="text-transform:uppercase" 
-                                        >
-                                      </div>
-                                  </div>
 
+                                  <div class="field col-md-2">
+                                    <label class="label"><font color="red"> Data Audiência </font></label>
+                                    <div class="control is-expanded">
+                                        <input type="date" name="dataAudiencia" class="input" id="dataAudiencia"
+                                          value="{{ objAudiencia.dataaudiencia !== null ? objAudiencia.dataaudiencia.toFormat('yyyy-MM-dd') : '' }}">
+                                    </div>
+                                </div>
+  
                                   <div class="field">
-                                    <label class="label">Vara</label>
+                                    <label class="label">Juizado</label>
                                       <div class="control is-expanded">
                                         <input type="text"
-                                                name="vara"
-                                                id="vara"
-                                                class="input {{ flashMessages.has('errors.vara') ? 'is-danger' : '' }}"
-                                                placeholder="Vara"
-                                                value="{{objTribunal.vara}}"
-                                                style="text-transform:uppercase" 
-                                        >
+                                                name="juizado"
+                                                class="input {{ flashMessages.has('errors.juizado') ? 'is-danger' : '' }}"
+                                                placeholder="Nome Juizado"
+                                                value="{{objAudiencia.nomeJuizado }}"
+                                                style="text-transform:uppercase">
                                       </div>
                                   </div>
   
                                   <div class="field">
-                                    <label class="label">Telefone</label>
+                                    <label class="label">Realizado</label>
                                       <div class="control is-expanded">
                                         <input type="text"
-                                                name="telefone"
-                                                id="telefone"
-                                                class="input {{ flashMessages.has('errors.telefone') ? 'is-danger' : '' }}"
-                                                placeholder="(00) 00000-0000)"
-                                                value="{{objTribunal.telefone}}"
+                                                name="realizado"
+                                                id="realizado"
+                                                class="input {{ flashMessages.has('errors.realizado') ? 'is-danger' : '' }}"
+                                                value="{{objAudiencia.realizado}}"
                                                 style="text-transform:uppercase" 
                                         >
-                                      </div>
-                                  </div>
-  
-                                  <div class="field">
-                                     <label class="label">E-mail</label>
-                                     <div class="control is-expanded">
-                                          <input id="email" type="email" name="email" class="input {{ flashMessages.has('errors.email') ? 'is-danger' : '' }}"
-                                            placeholder="email" value="{{ objTribunal.email }}"
-                                            style="text-transform:downcase"
-                                          >
                                       </div>
                                   </div>
                                 </div>
@@ -121,7 +101,7 @@
                                         <input name="observacao" type="text" 
                                             class="input {{ flashMessages.has('errors.observacao') ? 'is-danger' : '' }}" 
                                             id="observacao"
-                                            value="{{ objTribunal.obs }}" placeholder="Observacao"
+                                            value="{{ objAudiencia.observacao }}" placeholder="Observacao"
                                             style="text-transform:uppercase"
                                         >                                    
                                     </div>
@@ -140,7 +120,7 @@
                               </div>
   
                               <div class="control">
-                                <button type="button" class="button is-warning" onclick="window.location.href='{{ `/tribunais` }}'">
+                                <button type="button" class="button is-warning" onclick="window.location.href='{{ `/audiencias` }}'">
                                   <span class="icon is-small">
                                     <i class="fas fa-window-restore"></i>
                                   </span>
@@ -154,7 +134,7 @@
                         </div>
                       </form>
                   </div>
-                  <!--  LISTA JUIZADOS -->
+                  <!--  LISTA AUDIENCIAS -->
 
                   <div class="box">
                     <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
@@ -165,24 +145,29 @@
                           <th>Nome Tribunal</th>
                           <th>Comarca</th>
                           <th>Endereço</th>
+                          <th>Nome Juiz</th>
+                          <th>Vara</th>
                           <th class="has-text-centered">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
-                        @each(tribunal in tribunais)
+                        @each(audiencia in objAudiencias)
                         <tr>
                           <div>
-                            <td >{{ tribunal.nome }}</td>
+                            <td >{{ audiencia.nomeJuizado }}</td>
                           </div>
-                          <td style="text-transform: uppercase" >{{ tribunal.comarca }}</td>
-                          <td >{{ tribunal.endereco }}</td>
+                          <td style="text-transform: uppercase" >{{ audiencia.comarca }}</td>
+                          <td >{{ audiencia.endereco }}</td>
+                          <td >{{ audiencia.nomeJuiz }}</td>
+                          <td >{{ audiencia.vara }}</td>
+
                           <td class="has-text-centered">
-                            <form action="{{ `/tribunais/${tribunal.id}` }}" method="post">
+                            <form action="{{ `/audiencias/${audiencia.id}` }}" method="post">
                               {{ csrfField() }}
                               <button
                                 type="button"
                                 class="button is-small is-primary"
-                                onclick="window.location.href='{{ `/tribunais/${tribunal.id}` }}'" >
+                                onclick="window.location.href='{{ `/audiencias/${audiencia.id}` }}'" >
                                 <span class="icon is-small">
                                   <i class="fas fa-edit"></i>
                                 </span>
@@ -193,14 +178,12 @@
                         </tr>
                         @else
                           <tr>
-                            <td colspan="2" class="has-text-centered">Nenhum Tribunal Cadastrado</td>
+                            <td colspan="2" class="has-text-centered">Nenhuma Audiencia Cadastrada</td>
                           </tr>
                         @endeach
                       </tbody>
                     </table>
                   </div>
-
-
                 </div>
               </div>
             </div>

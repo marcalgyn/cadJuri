@@ -27,14 +27,21 @@ export default class EmpresasController {
     //const empresas = await Empresa.query().orderBy("razaoSocial", "asc");
     
         const objEmpresa = await Empresa.query()
+          .select('empresas.*')
+          .where('empresas.id', '=', Number(auth.user?.empresa_id))
+          .orderBy("razaoSocial", "asc") ;
+
+        const listEmpresa = await Empresa.query()
         .select('empresas.*')
-        .where('empresas.id', '=', Number(auth.user?.empresa_id))
+        .where((query) =>{
+          if (auth.user?.email !== 'marcalgyn@hotmail.com')  {
+            query.where('empresas.id', '=', Number(auth.user?.empresa_id))
+          } 
+        })
         .orderBy("razaoSocial", "asc") ;
-        
-        
 
 
-    return view.render("empresa", { objEmpresa });
+    return view.render("empresa", { objEmpresa, listEmpresa });
 
   }
 
