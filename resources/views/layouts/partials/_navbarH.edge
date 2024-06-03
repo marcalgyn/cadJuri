@@ -4,12 +4,11 @@
         
         @each (empresa in empresas) 
     
-        <a href="/" class="logo" style="max-width: 85px">
-            <img src="{{empresa.logo !== '' ? empresa.logo : '/web.png'}} " alt="logo" style="max-height:80px" class="py-0 px-0 rounded" />
+        <a href="/" class="logo" style="max-width: 80px">
+            <img src="{{empresa.logo !== '' ? empresa.logo : '/web.png'}}" alt="logo" style="max-height:80px" class="py-0 px-0 rounded" />
         </a>
-        
             <!-- LIMITAR O TAMANHO DO CAMPO A 16 CARACTERES -->
-            <label style="text-align:left"> {{ empresa.fantasia }}</label>
+            <label style="text-align:justify"><strong> {{ empresa.fantasia }} </strong></label>
         @endeach    
 
        <div class="menuToggle"></div>
@@ -19,7 +18,7 @@
                  <li class="menu">
                     <a href="/home" class="menu-a">
                         <span class="icon"> <ion-icon name="home-outline"> </ion-icon></span>
-                        <span class="titulo">PRINCIPAL</span>
+                        <span class="titulo"></span>
                     </a>
                 </li>
                     <!-- Menu de Controle de Tarefas-->
@@ -137,7 +136,8 @@
                                 </li>
                                 
                                 <li>
-                                    <a href="/audiencias/listar">
+                                    <a href="#">
+                                    <!-- a href="/audiencias/listar" -->
                                         <span class="icon"><ion-icon name="calendar-number-outline"></ion-icon></span>
                                         <span class="titulo">Audiência</span>
                                     </a>

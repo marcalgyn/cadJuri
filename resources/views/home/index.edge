@@ -15,10 +15,28 @@
           height: 100%;
          
        }
+      .img-dashboard {
+
+          width: 80%;
+          height: 80%;
+          
+          max-width: 650px;
+
+          display: block;
+          justify-content: center;
+          align-items: center;
+          margin: 5% auto;
+          
+      }
+
+
     </style>
 
-    <div >
-      <img src="img/principal1.jpg" class="imgPrincipal"  />
+    <div class=".img-dashboard">
+      @each(empresa in empresas)
+          <img src="{{empresa.logo !== '' ? empresa.logo : '/web.png'}}" class="img-dashboard" />
+      @endeach
+      <!-- img src="img/principal1.jpg" class="imgPrincipal"  /  -->
       
     </div>
     

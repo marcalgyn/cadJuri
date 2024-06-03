@@ -89,7 +89,7 @@ export default class EmpresasController {
     let fileLogo : string = "";
     const imagemLogo = request.file("file-Logo");
 
-    console.log('Endereco: ',  imagemLogo);
+    console.log('Endereco:',  imagemLogo);
 
     if (imagemLogo) {
       const nomeImagem =  this.normalizaNomeImagem(imagemLogo.clientName, Number(auth.user?.empresa_id));
@@ -123,7 +123,9 @@ export default class EmpresasController {
       } else {
         const empresa = await Empresa.findOrFail(request.input("id"));
         //empresa.cpfcnpj = request.input("cpfcnpj");
-        empresa.logo = fileLogo === null ? '' : fileLogo;
+        if (fileLogo != '') {
+          empresa.logo = fileLogo;
+        }
         empresa.razaosocial = request.input("razaosocial") === null ? '' : request.input("razaosocial").toUpperCase();
         empresa.fantasia = request.input("fantasia") === null ? '' : request.input("fantasia").toUpperCase();
         empresa.email = request.input("email") === null ? '' : request.input("email").toLowerCase();

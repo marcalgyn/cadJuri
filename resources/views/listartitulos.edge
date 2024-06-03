@@ -110,10 +110,10 @@
                   <th>
                     Cliente
                   </th>
-                  <th class="has-text-centered">
+                  <th class="has-text-centered is-hidden-mobile">
                     Contrato
                   </th>
-                  <th class="has-text-centered">
+                  <th class="has-text-centered is-hidden-mobile">
                     Parcela(s)
                   </th>
                   <th class="has-text-centered">
@@ -122,13 +122,13 @@
                   <th class="has-text-right">
                     Valor do Título
                   </th>
-                  <th class="has-text-centered">
+                  <th class="has-text-centered is-hidden-mobile">
                     Data Pagamento
                   </th>
                   <th class="has-text-centered">
                     Valor Pago
                   </th>
-                  <th class="has-text-centered">
+                  <th class="has-text-centered is-hidden-mobile">
                     Valor Pentende
                   </th>
                   <th class="has-text-centered" id="colAcao">
@@ -139,7 +139,7 @@
               <tbody>
                 @each(titulo in titulos.rows)
                 <tr>
-                  <td class="is-hidden-mobile is-uppercase">
+                  <td class="is-uppercase">
                     {{ titulo.$extras.nome }}
                   </td>
                   
@@ -155,13 +155,13 @@
                   <td class="has-text-right">
                     {{{ formatCurrency(titulo.valortitulo) }}}
                   </td>
-                  <td class="has-text-centered ">
+                  <td class="has-text-centered is-hidden-mobile ">
                     {{{ formatDate(titulo.datapagamento) }}}
                   </td>
                   <td class="has-text-centered ">
                     {{{ formatCurrency(titulo.valorpago) }}}
                   </td>
-                  <td class="has-text-centered ">
+                  <td class="has-text-centered is-hidden-mobile">
                     {{{ formatCurrency(titulo.saldo) }}}
                   </td>
 

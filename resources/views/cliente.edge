@@ -1,6 +1,7 @@
 @layout('layouts/app')
 
 @section('content')
+
     <div class="main">
         <div class="details">
             <div class="columns">
@@ -120,12 +121,12 @@
                           <div class="column">
                               <div class="row">
                                 <div class="field-body mb-12">    
-                                      <div class="col-3 col-sm-1 field">
+                                      <div class="col-3 col-sm-2 field">
                                         <button type="button" class="btn btn-primary"
                                             onclick="pesquisacep(cep.value)">Buscar</button>
                                       </div>
 
-                                      <div class="col-2 field">
+                                      <div class="field col-sm-3 col-md-2">
                                           <input name="cep" type="search" class="input" id="cep"
                                               value="{{objCliente.cep}}" placeholder="Cep" onblur="pesquisacep(cep.value)"
                                               required onkeypress="$(this).mask('00.000-000')">
@@ -212,8 +213,6 @@
                         </p>
                       @endif
                     </form>
-                    
-
                   </div>
 
 

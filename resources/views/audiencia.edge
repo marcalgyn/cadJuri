@@ -5,17 +5,26 @@
     <div class="main">
         <div class="details">
             <div class="columns">
-              <div class="column is-fullwidth">
+              <div class="column is-full">
                 <div class="box p-0">
 
                   @if(flashMessages.has('notification'))
-                  <div class="notification is-success is-light notificacao">
-                    <button class="delete"></button>
-                    {{ flashMessages.get('notification') }}
-                  </div>
+                    <div class="notification is-success is-light notificacao">
+                      <button class="delete"></button>
+                      {{ flashMessages.get('notification') }}
+                    </div>
                   @endif
+
+                  @if(flashMessages.has('notification-danger'))
+                    <div class="notification is-danger is-light notificacao">
+                      <button class="delete"></button>
+                      {{ flashMessages.get('notification') }}
+                    </div>
+                  @endif
+
+
                   <div class="box">
-                      <form action="/audiencias" method="post" enctype="multipart/form-data">
+                      <form action="/audiencias" method="post">
                         {{ csrfField() }}
                         <input type="hidden" name="id"  id="id" value={{ objAudiencia.id }}>
 
@@ -27,7 +36,8 @@
                           </header>
 
                           <div class="card-content">
-                            <div class="field col-md-8">
+
+                            <div class="field col-md-3">
                               <label class="label">Numero Processo</label>
                               <div class="control is-expanded">
                                 <input
@@ -45,7 +55,7 @@
   
                             <div class="column ">
                               <div class="row">
-                                <div class="field-body mb-12">  
+                                <div class="field-body mb-4">  
                                   <div class="field">
                                     <label class="label">Cliente</label>
                                     <div class="control is-expanded">
@@ -60,14 +70,14 @@
                                   </div>
 
                                   <div class="field col-md-2">
-                                    <label class="label"><font color="red"> Data Audiência </font></label>
                                     <div class="control is-expanded">
+                                        <label class="label"><font color="red"> Data Audiência </font></label>
                                         <input type="date" name="dataAudiencia" class="input" id="dataAudiencia"
                                           value="{{ objAudiencia.dataaudiencia !== null ? objAudiencia.dataaudiencia.toFormat('yyyy-MM-dd') : '' }}">
                                     </div>
-                                </div>
+                                  </div>
   
-                                  <div class="field">
+                                  <div class="field col-md-3">
                                     <label class="label">Juizado</label>
                                       <div class="control is-expanded">
                                         <input type="text"
@@ -79,7 +89,7 @@
                                       </div>
                                   </div>
   
-                                  <div class="field">
+                                  <div class="field col-md-3">
                                     <label class="label">Realizado</label>
                                       <div class="control is-expanded">
                                         <input type="text"
@@ -94,10 +104,11 @@
                                 </div>
                               </div>
                             </div>
+
                             <div class="column">
                                 <div class="row">
-                                  <div class="field-body mb-12">    
-                                    <div class="field">
+                                  <div class="field mb-12">    
+                                    <div class="control is-expanded">
                                         <input name="observacao" type="text" 
                                             class="input {{ flashMessages.has('errors.observacao') ? 'is-danger' : '' }}" 
                                             id="observacao"
@@ -137,16 +148,20 @@
                   <!--  LISTA AUDIENCIAS -->
 
                   <div class="box">
-                    <input class="input col-sm-2"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
-                    
+                    <div class="field is-grouped">
+                        <div class="control">
+                          <input class="input col-md-12"  id="filtro-nome" placeholder="Pesquisa" onblur="pesquisaTabela();" />
+                        </div>
+                    </div>
+
                     <table class="table is-fullwidth is-striped is-hoverable" id="lista">
                       <thead>
                         <tr>
                           <th>Nome Tribunal</th>
                           <th>Comarca</th>
-                          <th>Endereço</th>
-                          <th>Nome Juiz</th>
-                          <th>Vara</th>
+                          <th class="is-hidden-mobile">Endereço</th>
+                          <th class="is-hidden-mobile">Nome Juiz</th>
+                          <th class="is-hidden-mobile">Vara</th>
                           <th class="has-text-centered">Ações</th>
                         </tr>
                       </thead>
@@ -157,9 +172,9 @@
                             <td >{{ audiencia.nomeJuizado }}</td>
                           </div>
                           <td style="text-transform: uppercase" >{{ audiencia.comarca }}</td>
-                          <td >{{ audiencia.endereco }}</td>
-                          <td >{{ audiencia.nomeJuiz }}</td>
-                          <td >{{ audiencia.vara }}</td>
+                          <td class="is-hidden-mobile">{{ audiencia.endereco }}</td>
+                          <td class="is-hidden-mobile">{{ audiencia.nomeJuiz }}</td>
+                          <td class="is-hidden-mobile">{{ audiencia.vara }}</td>
 
                           <td class="has-text-centered">
                             <form action="{{ `/audiencias/${audiencia.id}` }}" method="post">
@@ -184,6 +199,7 @@
                       </tbody>
                     </table>
                   </div>
+
                 </div>
               </div>
             </div>
